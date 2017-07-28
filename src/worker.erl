@@ -13,17 +13,18 @@
 -export([code_change/3]).
 
 -record(state, {
+
 }).
 
 %% API.
 
 -spec start_link() -> {ok, pid()}.
-start_link() ->
-	gen_server:start_link(?MODULE, [], []).
+start_link(Args) ->
+	gen_server:start_link(?MODULE, [Args], []).
 
 %% gen_server.
 
-init([]) ->
+init([Args]) ->
 	{ok, #state{}}.
 
 handle_call(_Request, _From, State) ->

@@ -30,29 +30,31 @@ checkin(Name) ->
 
 %% gen_server.
 
+
 init([Name, Limit, MFA]) ->
 	{ok, #state{limit=Limit, mfa=MFA, name=Name }}.
 
 
-handle_call({checkin}, _From, State) ->
-    Name = State#state.name,
-    NewLimit = State#state.limit-1,
-    % MFA = State#state.mfa,
 
-    case NewLimit > 0 of
-        true ->
+handle_call({checkin}, _From, #state{name=Name, limit=Limit, mfa=MFA}=State) 
+  when Limit > 0 ->
+
+    NewLimit = Limit - 1,
+    {_, _, A} = MFA,
+
          {ok, Pid} = supervisor:start_child(
                        list_to_atom(atom_to_list(Name)++"_sup"),
-                       []),
+                       [A]),
 
-	      {reply, Pid, State#state{limit=NewLimit-1}};
-        false ->
-          	{reply, full_limit_error, State}
-    end;
+	      {reply, Pid, State#state{limit=NewLimit}};
 
+handle_call({checkin}, _From, State) ->
+    {reply, full_limit_error, State};
 
 handle_call(_Request, _From, State) ->
 	{reply, ignored, State}.
+
+
 
 handle_cast(_Msg, State) ->
 	{noreply, State}.
