@@ -1,23 +1,23 @@
 -module(ppool_worker_sup).
 -behaviour(supervisor).
 
--export([start_link/0]).
+-export([start_link/2]).
 -export([init/1]).
 
-start_link(Name, Limit, MFA) ->
-	supervisor:start_link({local, Name}, ?MODULE, [Name, Limit, MFA]).
+start_link(Name, MFA) ->
+	supervisor:start_link({local, 
+                           list_to_atom(atom_to_list(Name)++"_sup")},
+                          ?MODULE, [MFA]).
 
-init(Name, Limit, MFA) ->
-    Ppool_worker = {Name,
-             {ppool_worker, start_link, [Limit]},
+init([MFA]) ->
+   {M,F,A}=MFA,
+    Proc = [{ppool_worker,
+             {M,F,A},
              permanent,
              brutal_kill,
              worker,
-             [ppool_worker]
-     },
+             [M]
+     }],
+ 
 
-
-
-	Procs = [Ppool_worker, ],
-	{ok, {{one_for_one, 1, 5}, Procs}}.
-
+	{ok, {{simple_one_for_one, 1, 5}, Proc}}.
