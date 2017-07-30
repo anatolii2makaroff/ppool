@@ -2,7 +2,7 @@
 -behaviour(gen_server).
 
 %% API.
--export([start_link/0]).
+-export([start_link/1]).
 
 %% gen_server.
 -export([init/1]).
@@ -18,13 +18,13 @@
 
 %% API.
 
--spec start_link() -> {ok, pid()}.
+-spec start_link(_) -> {ok, pid()}.
 start_link(Args) ->
 	gen_server:start_link(?MODULE, [Args], []).
 
 %% gen_server.
 
-init([Args]) ->
+init([_Args]) ->
 	{ok, #state{}}.
 
 handle_call(_Request, _From, State) ->
