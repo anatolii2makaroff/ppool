@@ -4,7 +4,7 @@
 %% API.
 -export([start_link/3,
          checkin/1,
-         run/3
+         run/2
         
         ]).
 
@@ -19,8 +19,7 @@
 -record(state, {
           limit=10, 
           mfa, 
-          name,
-          pids=
+          name
 }).
 
 %% API.
@@ -33,11 +32,11 @@ checkin(Name) ->
     gen_server:call(Name, {checkin}).
 
 
-run(Name, Task, Args) ->
+run(Name, Args) ->
     case checkin(Name) of 
 
        full_limit -> {error, full_limit};
-        Pid -> gen_server:call(Pid, {run, Task, Args})
+        Pid -> gen_server:call(Pid, {run, Args})
 
     end.
 

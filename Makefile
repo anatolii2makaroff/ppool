@@ -3,3 +3,6 @@ PROJECT_DESCRIPTION = Simple OPT ppool
 PROJECT_VERSION = 0.1.0
 
 include erlang.mk
+
+run:
+	erl -pa ./ebin -s main
