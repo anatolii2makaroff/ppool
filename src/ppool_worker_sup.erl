@@ -10,7 +10,7 @@ start_link(Name, MFA) ->
                           ?MODULE, [MFA]).
 
 init([MFA]) ->
-   {M,F,A}=MFA,
+   {M,F,A} = MFA,
     Proc = [{ppool_worker,
              {M,F,A},
              permanent,
@@ -18,6 +18,5 @@ init([MFA]) ->
              worker,
              [M]
      }],
- 
 
 	{ok, {{simple_one_for_one, 1, 5}, Proc}}.

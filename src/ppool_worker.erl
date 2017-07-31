@@ -2,7 +2,11 @@
 -behaviour(gen_server).
 
 %% API.
--export([start_link/3, checkin/1]).
+-export([start_link/3,
+         checkin/1,
+         run/3
+        
+        ]).
 
 %% gen_server.
 -export([init/1]).
@@ -15,12 +19,12 @@
 -record(state, {
           limit=10, 
           mfa, 
-          name
+          name,
+          pids=
 }).
 
 %% API.
 
--spec start_link(atom(), atom(), atom()) -> {ok, pid()}.
 start_link(Name, Limit, MFA) ->
 	gen_server:start_link({local, Name}, ?MODULE, [Name, Limit, MFA], []).
 
@@ -28,11 +32,20 @@ start_link(Name, Limit, MFA) ->
 checkin(Name) ->
     gen_server:call(Name, {checkin}).
 
+
+run(Name, Task, Args) ->
+    case checkin(Name) of 
+
+       full_limit -> {error, full_limit};
+        Pid -> gen_server:call(Pid, {run, Task, Args})
+
+    end.
+
 %% gen_server.
 
 
 init([Name, Limit, MFA]) ->
-	{ok, #state{limit=Limit, mfa=MFA, name=Name }}.
+	{ok, #state{limit=Limit, mfa=MFA, name=Name}}.
 
 
 
@@ -49,7 +62,7 @@ handle_call({checkin}, _From, #state{name=Name, limit=Limit, mfa=MFA}=State)
 	      {reply, Pid, State#state{limit=NewLimit}};
 
 handle_call({checkin}, _From, State) ->
-    {reply, full_limit_error, State};
+    {reply, full_limit, State};
 
 handle_call(_Request, _From, State) ->
 	{reply, ignored, State}.

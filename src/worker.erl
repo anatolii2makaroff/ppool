@@ -2,7 +2,7 @@
 -behaviour(gen_server).
 
 %% API.
--export([start_link/1]).
+-export([start_link/1, sleep/1]).
 
 %% gen_server.
 -export([init/1]).
@@ -27,6 +27,13 @@ start_link(Args) ->
 init([_Args]) ->
 	{ok, #state{}}.
 
+
+handle_call({run, Fun, Args}, _From, State) ->
+
+    Res = ?MODULE:Fun(Args),
+	    {reply, Res, State};
+
+
 handle_call(_Request, _From, State) ->
 	{reply, ignored, State}.
 
@@ -41,3 +48,11 @@ terminate(_Reason, _State) ->
 
 code_change(_OldVsn, State, _Extra) ->
 	{ok, State}.
+
+
+sleep(T) ->
+    timer:sleep(T),
+      {ok, T}.
+
+
+

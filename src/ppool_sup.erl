@@ -6,19 +6,27 @@
 -export([start_pool/3, stop_pool/1]).
 
 
-
 start_link() ->
 	supervisor:start_link({local, ?MODULE}, ?MODULE, []).
 
+
 init([]) ->
-	Procs = [],
+    Procs = [{ppool,
+              {ppool, start_link, []},
+              permanent,
+              brutal_kill,
+              worker,
+             [ppool]
+     }],
+
 	{ok, {{one_for_one, 1, 5}, Procs}}.
+
 
 start_pool(Name, Limit, MFA) ->
     Child = {Name,
              {ppool_master_worker_sup, start_link, [Name, Limit, MFA]},
              permanent,
-             10000,
+             3600,
              supervisor,
              [ppool_master_worker_sup]
      },
