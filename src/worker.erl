@@ -13,7 +13,7 @@
 -export([code_change/3]).
 
 -record(state, {
-
+          restart_after_msg=10
 }).
 
 %% API.
@@ -24,13 +24,16 @@ start_link(Args) ->
 
 %% gen_server.
 
-init([_Args]) ->
-	{ok, #state{}}.
+init([Args]) ->
+    gen_server:call(Args, {register, self()}),
+	    {ok, #state{restart_after_msg=Args}}.
 
-handle_call({run, Args}, _From, State) ->
+handle_call({run, T}, _From, State) ->
     
-    timer:sleep(Args),
+    timer:sleep(T),
 	    {reply, ok, State};
+
+
 
 handle_call(_Request, _From, State) ->
 	{reply, ignored, State}.

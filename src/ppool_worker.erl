@@ -3,9 +3,10 @@
 
 %% API.
 -export([start_link/3,
-         checkin/1,
-         run/2
-        
+         start_worker/1,
+         start_all_workers/2,
+         call_all_workers/2,
+         register_worker/2
         ]).
 
 %% gen_server.
@@ -19,7 +20,9 @@
 -record(state, {
           limit=10, 
           mfa, 
-          name
+          name,
+          workers_pids=[]
+          
 }).
 
 %% API.
@@ -28,39 +31,65 @@ start_link(Name, Limit, MFA) ->
 	gen_server:start_link({local, Name}, ?MODULE, [Name, Limit, MFA], []).
 
 
-checkin(Name) ->
-    gen_server:call(Name, {checkin}).
+start_worker(Name) ->
+    gen_server:call(Name, {start_worker}).
 
 
-run(Name, Args) ->
-    case checkin(Name) of 
+register_worker(Name, Pid) ->
+    gen_server:call(Name, {register, Pid}).
 
-       full_limit -> {error, full_limit};
-        Pid -> gen_server:call(Pid, {run, Args})
+
+start_all_workers(Name, Args) ->
+    case start_worker(Name) of 
+
+       full_limit -> {ok, full_limit};
+        Pid -> gen_server:call(Pid, {run, Args}),
+                start_all_workers(Name, Args)
 
     end.
 
-%% gen_server.
+
+call_all_workers(Name, Msg) ->
+    gen_server:call(Name, {call_all_workers, Msg}).
+
 
 
 init([Name, Limit, MFA]) ->
 	{ok, #state{limit=Limit, mfa=MFA, name=Name}}.
 
 
+handle_call({call_all_workers, Msg}, _From, #state{workers_pids=Pids}=State) ->
 
-handle_call({checkin}, _From, #state{name=Name, limit=Limit, mfa=MFA}=State) 
+            Fun = call_worker_by_pid(Msg),
+                lists:foreach(Fun, Pids),
+
+	        {reply, ok, State};
+
+
+handle_call({start_worker}, _From, #state{name=Name, 
+                                          limit=Limit, 
+                                          workers_pids=Pids
+                                         }=State) 
   when Limit > 0 ->
 
     NewLimit = Limit - 1,
-    {_, _, A} = MFA,
 
          {ok, Pid} = supervisor:start_child(
                        list_to_atom(atom_to_list(Name)++"_sup"),
-                       [A]),
+                       [Name]),
 
-	      {reply, Pid, State#state{limit=NewLimit}};
+	        {reply, Pid, State#state{limit=NewLimit, 
+                                     workers_pids=[Pid|Pids]} };
 
-handle_call({checkin}, _From, State) ->
+
+handle_call({register, Pid}, _From, State) ->
+
+            erlang:monitor(process, Pid),
+
+	        {reply, ok, State};
+
+
+handle_call({start_worker}, _From, State) ->
     {reply, full_limit, State};
 
 handle_call(_Request, _From, State) ->
@@ -71,6 +100,15 @@ handle_call(_Request, _From, State) ->
 handle_cast(_Msg, State) ->
 	{noreply, State}.
 
+handle_info({'DOWN', _MonitorRef, process, Pid, _Info}, 
+            #state{workers_pids=Pids}=State) ->
+
+    NewPids = lists:delete(Pid, Pids),
+    
+    	{noreply, State#state{workers_pids=NewPids}};
+
+
+
 handle_info(_Info, State) ->
 	{noreply, State}.
 
@@ -79,3 +117,9 @@ terminate(_Reason, _State) ->
 
 code_change(_OldVsn, State, _Extra) ->
 	{ok, State}.
+
+
+call_worker_by_pid(Msg) ->
+    fun(Pid) -> gen_server:cast(Pid, {msg, Msg}) end.
+
+

@@ -43,7 +43,7 @@ handle_call({start_pool, {Name, Limit, MFA}}, _From, State) ->
 
 
 handle_call({stop_pool, Name}, _From, State) ->
-    P = ppool_sup:stot_pool(Name),
+    P = ppool_sup:stop_pool(Name),
 
 	{reply, P, State};
 

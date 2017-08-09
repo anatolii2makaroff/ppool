@@ -16,10 +16,10 @@ ppool_test_() ->
      {
       foreach,
       fun() ->
-              ppool_sup:start_pool(my, 10, {worker, start_link, []})
+              ppool:start_pool(my, 10, {worker, start_link, []})
       end,
       fun(_) ->
-              ppool_sup:stop_pool(my)
+              ppool:stop_pool(my)
       end,
       basic_tests()
 
@@ -29,23 +29,43 @@ ppool_test_() ->
 
 basic_tests() ->
     [
-     {"children limit",
+     {"worker run ok",
      fun() ->
-             P1 =ppool_worker:checkin(my),
-             P2 =ppool_worker:checkin(my),
-             ?assert(P1=/=P2)
+             P1 = ppool_worker:run(my, 0),
+             P2 = ppool_worker:run(my, 0),
+             
+             ?assert(P1=:=P2),
+             ?assert(P1=:=ok)
+ 
      end
      },
-
-     {"blah blah blah..",
+     {"worker limit ",
      fun() ->
-             
-             P1 =ppool_worker:checkin(my),
-             P2 =ppool_worker:checkin(my),
-             ?assert(2=:=P2)
+            
+             P1 = for(10, fun ppool_worker:run/2, {my, 0}),
+             % ?debugFmt("P1 = ~p~n", [P1]),
+             ?assert(P1 =:= {error, full_limit})
+ 
      end
      }
 
 
 
+
+
     ].
+
+
+for(N, Fun, {Pn, T}=Args) 
+  when N>0 ->
+    Fun(Pn, T),
+    for(N-1, Fun, Args);
+
+for(0, Fun, {Pn, T}) ->
+    Fun(Pn, T).
+
+
+
+
+
+

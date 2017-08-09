@@ -25,5 +25,5 @@ init([Name, Limit, MFA]) ->
      },
 
 	Procs = [Ppool_worker, Ppool_worker_sup],
-	{ok, {{one_for_one, 1, 5}, Procs}}.
+	{ok, {{one_for_all, 1, 5}, Procs}}.
 
