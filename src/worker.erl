@@ -13,7 +13,8 @@
 -export([code_change/3]).
 
 -record(state, {
-          restart_after_msg=10
+          restart_after_msg=10,
+          master
 }).
 
 %% API.
@@ -25,18 +26,35 @@ start_link(Args) ->
 %% gen_server.
 
 init([Args]) ->
-    gen_server:call(Args, {register, self()}),
-	    {ok, #state{restart_after_msg=Args}}.
+    io:format("~p~n",[{Args, self()}]),
+    gen_server:cast(Args, {register, self()}),
+	    {ok, #state{master=Args}}.
 
-handle_call({run, T}, _From, State) ->
+handle_call({msg, T}, _From, #state{restart_after_msg=C}=State) 
+    when C > 0 ->
     
     timer:sleep(T),
-	    {reply, ok, State};
 
+    io:format("~p~n", [{self(), C, ok}]),
+	    {reply, ok, State#state{restart_after_msg=C-1}};
+
+handle_call(_Msg, _From, #state{restart_after_msg=C}=State) 
+    when C=:=0 ->
+
+        {stop, normal, State};
 
 
 handle_call(_Request, _From, State) ->
 	{reply, ignored, State}.
+
+
+handle_cast({msg, T}, State) ->
+    
+    timer:sleep(T),
+    io:format("~p~n", [{self(), T, ok}]),
+	    {noreply, State};
+
+
 
 handle_cast(_Msg, State) ->
 	{noreply, State}.

@@ -67,26 +67,17 @@ handle_call({call_all_workers, Msg}, _From, #state{workers_pids=Pids}=State) ->
 
 
 handle_call({start_worker}, _From, #state{name=Name, 
-                                          limit=Limit, 
-                                          workers_pids=Pids
-                                         }=State) 
+                                          limit=Limit
+                                         }=State ) 
   when Limit > 0 ->
 
     NewLimit = Limit - 1,
 
          {ok, Pid} = supervisor:start_child(
                        list_to_atom(atom_to_list(Name)++"_sup"),
-                       [Name]),
+                       []),
 
-	        {reply, Pid, State#state{limit=NewLimit, 
-                                     workers_pids=[Pid|Pids]} };
-
-
-handle_call({register, Pid}, _From, State) ->
-
-            erlang:monitor(process, Pid),
-
-	        {reply, ok, State};
+	        {reply, Pid, State#state{limit=NewLimit} };
 
 
 handle_call({start_worker}, _From, State) ->
@@ -95,6 +86,15 @@ handle_call({start_worker}, _From, State) ->
 handle_call(_Request, _From, State) ->
 	{reply, ignored, State}.
 
+
+handle_cast({register, Pid}, #state{workers_pids=Pids}=State) ->
+
+
+    io:format("~p~n", [Pid]),
+
+    erlang:monitor(process, Pid),
+
+	    {noreply, State#state{workers_pids=[Pid|Pids]} };
 
 
 handle_cast(_Msg, State) ->
