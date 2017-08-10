@@ -10,4 +10,26 @@ start() ->
     ppool_worker:start_worker(my),
 
 
-    ppool_worker:call_all_workers(my, 2000).
+    ppool_worker:call_all_workers(my, 1000),
+    ppool_worker:call_all_workers(my, 1000),
+
+    ppool_worker:call_all_workers(my, 1000),
+    ppool_worker:call_all_workers(my, 1000),
+
+    ppool_worker:call_all_workers(my, 1000),
+    ppool_worker:call_all_workers(my, 1000),
+
+    ppool_worker:call_all_workers(my, 1000),
+    ppool_worker:call_all_workers(my, 1000),
+
+
+    ppool_worker:call_all_workers(my, 1000),
+    ppool_worker:call_all_workers(my, 1000),
+
+    ppool_worker:call_all_workers(my, 1000),
+    ppool_worker:call_all_workers(my, 1000),
+
+
+
+    ok.
+

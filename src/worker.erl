@@ -30,34 +30,27 @@ init([Args]) ->
     gen_server:cast(Args, {register, self()}),
 	    {ok, #state{master=Args}}.
 
-handle_call({msg, T}, _From, #state{restart_after_msg=C}=State) 
+handle_call(_Request, _From, State) ->
+	{reply, ignored, State}.
+
+
+
+handle_cast({msg, T}, #state{restart_after_msg=C}=State) 
     when C > 0 ->
     
     timer:sleep(T),
 
     io:format("~p~n", [{self(), C, ok}]),
-	    {reply, ok, State#state{restart_after_msg=C-1}};
+	    {noreply, State#state{restart_after_msg=C-1}};
 
-handle_call(_Msg, _From, #state{restart_after_msg=C}=State) 
+handle_cast(_Msg, #state{restart_after_msg=C}=State) 
     when C=:=0 ->
-
-        {stop, normal, State};
-
-
-handle_call(_Request, _From, State) ->
-	{reply, ignored, State}.
-
-
-handle_cast({msg, T}, State) ->
-    
-    timer:sleep(T),
-    io:format("~p~n", [{self(), T, ok}]),
-	    {noreply, State};
-
-
+        {stop, kill, State};
 
 handle_cast(_Msg, State) ->
 	{noreply, State}.
+
+
 
 handle_info(_Info, State) ->
 	{noreply, State}.

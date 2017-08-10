@@ -13,10 +13,10 @@ init([MFA]) ->
    {M,F,A} = MFA,
     Proc = [{ppool_worker,
              {M,F,A},
-             permanent,
+             transient,
              brutal_kill,
              worker,
              [M]
      }],
 
-	{ok, {{simple_one_for_one, 1, 5}, Proc}}.
+	{ok, {{simple_one_for_one, 2, 10}, Proc}}.
