@@ -12,6 +12,9 @@
 -export([terminate/2]).
 -export([code_change/3]).
 
+-include("common.hrl").
+
+
 -record(state, {
           restart_after_msg=10,
           master
@@ -26,9 +29,8 @@ start_link(Args) ->
 %% gen_server.
 
 init([Args]) ->
-    io:format("~p~n",[{Args, self()}]),
-    gen_server:cast(Args, {register, self()}),
-	    {ok, #state{master=Args}}.
+    ?Debug({Args, self()}),
+	    {ok, #state{master=Args}, 0}.
 
 handle_call(_Request, _From, State) ->
 	{reply, ignored, State}.
@@ -40,20 +42,29 @@ handle_cast({msg, T}, #state{restart_after_msg=C}=State)
     
     timer:sleep(T),
 
-    io:format("~p~n", [{self(), C, ok}]),
+    ?Debug({self(), C, ok}),
 	    {noreply, State#state{restart_after_msg=C-1}};
 
 handle_cast(_Msg, #state{restart_after_msg=C}=State) 
     when C=:=0 ->
-        {stop, kill, State};
+        {stop, restart, State};
 
 handle_cast(_Msg, State) ->
 	{noreply, State}.
 
 
 
+
+handle_info(timeout, #state{master=M}=State) ->
+    ?Debug({registering, self()}),
+     ppool_worker:register_worker(M, self()),
+	  {noreply, State};
+
 handle_info(_Info, State) ->
 	{noreply, State}.
+
+
+
 
 terminate(_Reason, _State) ->
 	ok.

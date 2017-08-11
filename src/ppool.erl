@@ -28,8 +28,8 @@ init([]) ->
 	{ok, #state{}}.
 
 
-start_pool(Name, Limit, MFA) ->
-    gen_server:call(?MODULE, {start_pool, {Name, Limit, MFA}}).
+start_pool(Name, Limit, {M, F, _}) ->
+    gen_server:call(?MODULE, {start_pool, {Name, Limit, {M, F, [Name]}} }).
 
 
 stop_pool(Name) ->

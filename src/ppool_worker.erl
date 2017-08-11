@@ -1,6 +1,8 @@
 -module(ppool_worker).
 -behaviour(gen_server).
 
+-include("common.hrl").
+
 %% API.
 -export([start_link/3,
          start_worker/1,
@@ -60,6 +62,7 @@ init([Name, Limit, MFA]) ->
 
 handle_call({call_all_workers, Msg}, _From, #state{workers_pids=Pids}=State) ->
 
+            ?Debug(Pids),
             Fun = call_worker_by_pid(Msg),
                 lists:foreach(Fun, Pids),
 
@@ -83,18 +86,16 @@ handle_call({start_worker}, _From, #state{name=Name,
 handle_call({start_worker}, _From, State) ->
     {reply, full_limit, State};
 
-handle_call(_Request, _From, State) ->
-	{reply, ignored, State}.
 
-
-handle_cast({register, Pid}, #state{workers_pids=Pids}=State) ->
-
-
-    io:format("~p~n", [Pid]),
+handle_call({register, Pid}, _From, #state{workers_pids=Pids}=State) ->
 
     erlang:monitor(process, Pid),
 
-	    {noreply, State#state{workers_pids=[Pid|Pids]} };
+	    {reply, ok, State#state{workers_pids=[Pid|Pids]} };
+
+
+handle_call(_Request, _From, State) ->
+	{reply, ignored, State}.
 
 
 handle_cast(_Msg, State) ->

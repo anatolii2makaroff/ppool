@@ -4,7 +4,7 @@
 
 start() ->
     application:start(ppool),
-    ppool:start_pool(my, 10, {worker, start_link, [my]}),
+    ppool:start_pool(my, 10, {worker, start_link, []}),
     ppool_worker:start_worker(my),
     ppool_worker:start_worker(my),
     ppool_worker:start_worker(my),
@@ -15,13 +15,6 @@ start() ->
 
     ppool_worker:call_all_workers(my, 1000),
     ppool_worker:call_all_workers(my, 1000),
-
-    ppool_worker:call_all_workers(my, 1000),
-    ppool_worker:call_all_workers(my, 1000),
-
-    ppool_worker:call_all_workers(my, 1000),
-    ppool_worker:call_all_workers(my, 1000),
-
 
     ppool_worker:call_all_workers(my, 1000),
     ppool_worker:call_all_workers(my, 1000),
