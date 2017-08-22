@@ -19,4 +19,4 @@ init([MFA]) ->
              [M]
      }],
 
-	{ok, {{simple_one_for_one, 3, 10}, Proc}}.
+	{ok, {{simple_one_for_one, 100, 1}, Proc}}.

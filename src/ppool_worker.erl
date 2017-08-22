@@ -7,6 +7,8 @@
 -export([start_link/3,
          start_worker/1,
          start_all_workers/2,
+         stop_all_workers/1,
+         cast_all_workers/2,
          call_all_workers/2,
          register_worker/2
         ]).
@@ -36,20 +38,25 @@ start_link(Name, Limit, MFA) ->
 start_worker(Name) ->
     gen_server:call(Name, {start_worker}).
 
+start_all_workers(Name, Args) ->
+    case start_worker(Name) of 
+
+       full_limit -> {ok, full_limit};
+        _ -> start_all_workers(Name, Args)
+
+    end.
+
+stop_all_workers(Name) ->
+    gen_server:call(Name, {stop_all_workers}).
+
 
 register_worker(Name, Pid) ->
     gen_server:call(Name, {register, Pid}).
 
 
-start_all_workers(Name, Args) ->
-    case start_worker(Name) of 
 
-       full_limit -> {ok, full_limit};
-        Pid -> gen_server:call(Pid, {run, Args}),
-                start_all_workers(Name, Args)
-
-    end.
-
+cast_all_workers(Name, Msg) ->
+    gen_server:call(Name, {cast_all_workers, Msg}).
 
 call_all_workers(Name, Msg) ->
     gen_server:call(Name, {call_all_workers, Msg}).
@@ -60,13 +67,30 @@ init([Name, Limit, MFA]) ->
 	{ok, #state{limit=Limit, mfa=MFA, name=Name}}.
 
 
-handle_call({call_all_workers, Msg}, _From, #state{workers_pids=Pids}=State) ->
-
-            ?Debug(Pids),
-            Fun = call_worker_by_pid(Msg),
-                lists:foreach(Fun, Pids),
+handle_call({cast_all_workers, Msg}, _From, #state{workers_pids=Pids}=State) ->
+    ?Debug(Pids),
+        lists:foreach(fun(Pid) -> gen_server:cast(Pid, {msg, Msg}) end, Pids),
 
 	        {reply, ok, State};
+
+
+handle_call({stop_all_workers}, _From, #state{workers_pids=Pids}=State) ->
+    ?Debug(Pids),
+        lists:foreach(fun(Pid) -> gen_server:call(Pid, stop) end, Pids),
+
+	        {reply, ok, State};
+
+
+
+handle_call({call_all_workers, Msg}, _From, #state{workers_pids=Pids}=State) ->
+    
+        R=lists:map(fun(Pid) -> 
+                            ?Debug({call, Pid}),
+                             gen_server:call(Pid, {msg, Msg})
+                    end, Pids),
+          ?Debug(R),
+          
+	        {reply, {ok, R}, State};
 
 
 handle_call({start_worker}, _From, #state{name=Name, 
@@ -102,11 +126,11 @@ handle_cast(_Msg, State) ->
 	{noreply, State}.
 
 handle_info({'DOWN', _MonitorRef, process, Pid, _Info}, 
-            #state{workers_pids=Pids}=State) ->
+            #state{workers_pids=Pids, limit=Limit}=State) ->
 
     NewPids = lists:delete(Pid, Pids),
     
-    	{noreply, State#state{workers_pids=NewPids}};
+    	{noreply, State#state{workers_pids=NewPids, limit=Limit+1}};
 
 
 
@@ -118,9 +142,5 @@ terminate(_Reason, _State) ->
 
 code_change(_OldVsn, State, _Extra) ->
 	{ok, State}.
-
-
-call_worker_by_pid(Msg) ->
-    fun(Pid) -> gen_server:cast(Pid, {msg, Msg}) end.
 
 

@@ -26,7 +26,7 @@ start_pool(Name, Limit, MFA) ->
     Child = {Name,
              {ppool_master_worker_sup, start_link, [Name, Limit, MFA]},
              permanent,
-             3600,
+             10000,
              supervisor,
              [ppool_master_worker_sup]
      },

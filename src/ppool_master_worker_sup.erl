@@ -19,7 +19,7 @@ init([Name, Limit, MFA]) ->
     Ppool_worker_sup = {ppool_worker_sup,
                         {ppool_worker_sup, start_link, [Name, MFA]},
                         permanent,
-                        3600,
+                        5000,
                         supervisor,
                         [ppool_worker_sup] 
      },

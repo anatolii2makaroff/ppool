@@ -16,7 +16,6 @@
 
 
 -record(state, {
-          restart_after_msg=10,
           master
 }).
 
@@ -32,26 +31,33 @@ init([Args]) ->
     ?Debug({Args, self()}),
 	    {ok, #state{master=Args}, 0}.
 
+
+
+handle_call({msg, T}, _From, State) ->
+    
+    timer:sleep(T),
+
+    ?Debug({self(), ok}),
+	    {reply, {ok, self()}, State};
+
+handle_call(stop, _From, State) ->
+        {stop, normal, ok, State};
+
 handle_call(_Request, _From, State) ->
 	{reply, ignored, State}.
 
 
 
-handle_cast({msg, T}, #state{restart_after_msg=C}=State) 
-    when C > 0 ->
+
+handle_cast({msg, T}, State) ->
     
     timer:sleep(T),
 
-    ?Debug({self(), C, ok}),
-	    {noreply, State#state{restart_after_msg=C-1}};
-
-handle_cast(_Msg, #state{restart_after_msg=C}=State) 
-    when C=:=0 ->
-        {stop, restart, State};
+    ?Debug({self(), ok}),
+	    {noreply, State};
 
 handle_cast(_Msg, State) ->
 	{noreply, State}.
-
 
 
 
@@ -60,10 +66,10 @@ handle_info(timeout, #state{master=M}=State) ->
      ppool_worker:register_worker(M, self()),
 	  {noreply, State};
 
+
+
 handle_info(_Info, State) ->
 	{noreply, State}.
-
-
 
 
 terminate(_Reason, _State) ->
