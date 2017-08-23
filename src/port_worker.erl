@@ -45,8 +45,8 @@ handle_call({msg, Msg}, _From, #state{port=Port}=State) ->
                 {reply, Response, State};
             {error, Status, Err} ->
                 {reply, {error, Status, Err}, State};
-            timeout ->
-                {stop, port_timeout, State}
+            {error, timeout} ->
+                 {stop, port_timeout, State}
         end;
 
 
@@ -123,8 +123,9 @@ collect_response(Port, Lines, OldLine) ->
             end;
         {Port, {exit_status, Status}} ->
             {error, Status, Lines}
+
     after
-        30000 ->
-             timeout
+         30000 ->
+            {error, timeout}
     end.
 
