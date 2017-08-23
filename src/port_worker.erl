@@ -41,8 +41,10 @@ handle_call({msg, Msg}, _From, #state{port=Port}=State) ->
     
     port_command(Port, Msg),
         case collect_response(Port) of
-            {response, Response} -> 
+            {ok, Response} -> 
                 {reply, Response, State};
+            {error, Status, Err} ->
+                {reply, {error, Status, Err}, State};
             timeout ->
                 {stop, port_timeout, State}
         end;
@@ -73,26 +75,28 @@ handle_info(timeout, #state{master=M, cmd=Cmd}=State) ->
         ?Debug({open_port, Cmd}),
  
       Port = open_port({spawn, Cmd},
-                           [{line, 4096}, exit_status]),
+                           [{line, 4096}, 
+                             stderr_to_stdout, exit_status, binary]),
 
 	  {noreply, State#state{port=Port}};
 
 
 
 handle_info({'EXIT', Port, Reason}, #state{port=Port}=State) ->
-    {stop, {port_terminated, Reason}, State};
+    ?Debug({exit, Reason}),
+
+        {stop, {port_terminated, Reason}, State};
 
 
 handle_info(_Info, State) ->
 	{noreply, State}.
 
 
+terminate({port_terminated, _Reason}, _State) ->
+    ok;
 
-% terminate({port_terminated, _Reason}, _State) ->
-%     ok;
-
-% terminate(_Reason, #state{port=Port}=_State) ->
-%     port_close(Port);
+terminate(_Reason, #state{port=Port}=_State) ->
+    port_close(Port);
 
 terminate(_Reason, _State) ->
 	ok.
@@ -105,14 +109,22 @@ code_change(_OldVsn, State, _Extra) ->
 
 
 
-
-
 collect_response(Port) ->
-    receive
-        {Port, {data, Resp}} ->
-            {response, Resp}
+    collect_response(Port, [], <<>>).
 
-    after 5000 ->
-            timeout
+collect_response(Port, Lines, OldLine) ->
+   receive
+        {Port, {data, Data}} ->
+            case Data of
+                {eol, Line} ->
+                    {ok, [<<OldLine/binary,Line/binary>> | Lines]};
+                {noeol, Line} ->
+                    collect_response(Port, Lines, <<OldLine/binary,Line/binary>>)
+            end;
+        {Port, {exit_status, Status}} ->
+            {error, Status, Lines}
+    after
+        30000 ->
+             timeout
     end.
 
