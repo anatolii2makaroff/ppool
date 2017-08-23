@@ -5,7 +5,7 @@
 
 %% API.
 -export([start_link/3,
-         start_worker/1,
+         start_worker/2,
          start_all_workers/2,
          stop_all_workers/1,
          cast_all_workers/2,
@@ -35,14 +35,14 @@ start_link(Name, Limit, MFA) ->
 	gen_server:start_link({local, Name}, ?MODULE, [Name, Limit, MFA], []).
 
 
-start_worker(Name) ->
-    gen_server:call(Name, {start_worker}).
+start_worker(Name, Cmd) ->
+    gen_server:call(Name, {start_worker, Cmd}).
 
-start_all_workers(Name, Args) ->
-    case start_worker(Name) of 
+start_all_workers(Name, Cmd) ->
+    case start_worker(Name, Cmd) of 
 
        full_limit -> {ok, full_limit};
-        _ -> start_all_workers(Name, Args)
+        _ -> start_all_workers(Name, Cmd)
 
     end.
 
@@ -93,7 +93,7 @@ handle_call({call_all_workers, Msg}, _From, #state{workers_pids=Pids}=State) ->
 	        {reply, {ok, R}, State};
 
 
-handle_call({start_worker}, _From, #state{name=Name, 
+handle_call({start_worker, Cmd}, _From, #state{name=Name, 
                                           limit=Limit
                                          }=State ) 
   when Limit > 0 ->
@@ -102,12 +102,12 @@ handle_call({start_worker}, _From, #state{name=Name,
 
          {ok, Pid} = supervisor:start_child(
                        list_to_atom(atom_to_list(Name)++"_sup"),
-                       []),
+                       [Cmd]),
 
 	        {reply, Pid, State#state{limit=NewLimit} };
 
 
-handle_call({start_worker}, _From, State) ->
+handle_call({start_worker, _}, _From, State) ->
     {reply, full_limit, State};
 
 

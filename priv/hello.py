@@ -1,16 +1,17 @@
 
 import sys
-import time
 
 
-def main(t):
+def main():
+    while 1:
+        line = sys.stdin.readline()
+        if not line:
+            break
 
-    while True:
-            line = sys.stdin.readline()
-            time.sleep(int(t))
-            sys.stdout.write("%s" % line)
-            sys.stdout.flush()
+        sys.stdout.write(line)
+        sys.stdout.flush()
+
 
 
 if __name__ == "__main__":
-    main(sys.argv[1])
+    main()

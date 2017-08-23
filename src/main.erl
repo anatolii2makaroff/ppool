@@ -21,13 +21,13 @@ for(0, _) ->
 
 start() ->
     application:start(ppool),
-    ppool:start_pool(my, 10, {worker, start_link, []}),
-    ppool_worker:start_all_workers(my, 0),
-
-    for(9, fun() -> 
-                    ppool_worker:call_all_workers(my, 0)
-            end
-    ),
+    ppool:start_pool(my, 10, {port_worker, start_link, []}),
+    % ppool_worker:start_worker(my, "python ./priv/hello.py 2"),
+    % 
+    % for(9, fun() -> 
+    %                 ppool_worker:call_all_workers(my, 0)
+    %         end
+    % ),
  
 
     ok.
