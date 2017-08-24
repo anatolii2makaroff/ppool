@@ -27,7 +27,7 @@ start() ->
         ppool_worker:start_all_workers(my, "python ./priv/hello.py 2 2>> ./logs/hello_err.log"),
         
         for(1, fun() -> 
-                        ppool_worker:cast_all_workers(my, "{\"in\":1}\n")
+                        ppool_worker:cast_all_workers(my, "{\"in\":2}\n")
                 end
         ),
     

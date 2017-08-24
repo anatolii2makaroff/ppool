@@ -19,6 +19,8 @@ def main():
 
         data = json.loads(line)
 
+        # exit(0)
+
 
 
         # raise Exception(exc)
