@@ -24,10 +24,10 @@ start() ->
       fun() ->
         application:start(ppool),
         ppool:start_pool(my, 10, {port_worker, start_link, []}),
-        ppool_worker:start_all_workers(my, "python ./priv/hello.py 2"),
+        ppool_worker:start_all_workers(my, "python ./priv/hello.py 2 2>> ./logs/hello_err.log"),
         
-        for(10, fun() -> 
-                        ppool_worker:call_all_workers(my, "{'in':1}\n")
+        for(1, fun() -> 
+                        ppool_worker:cast_all_workers(my, "{\"in\":1}\n")
                 end
         ),
     

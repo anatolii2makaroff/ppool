@@ -42,7 +42,7 @@ handle_call({msg, Msg}, _From, #state{port=Port}=State) ->
     port_command(Port, Msg),
         case collect_response(Port) of
             {ok, Response} -> 
-                {reply, Response, State};
+                {reply, {ok, Response}, State};
             {error, Status, Err} ->
                 {reply, {error, Status, Err}, State};
             {error, timeout} ->
@@ -57,12 +57,20 @@ handle_call(_Request, _From, State) ->
 	{reply, ignored, State}.
 
 
-handle_cast({msg, T}, State) ->
-    
-    timer:sleep(T),
 
-    ?Debug({self(), ok}),
-	    {noreply, State};
+
+handle_cast({msg, Msg}, #state{port=Port}=State) ->
+    
+    port_command(Port, Msg),
+        case collect_response(Port) of
+            {ok, _Response} -> 
+                {noreply, State};
+            {error, _Status, _Err} ->
+                {noreply, State};
+            {error, timeout} ->
+                 {stop, port_timeout, State}
+        end;
+
 
 handle_cast(_Msg, State) ->
 	{noreply, State}.
@@ -70,14 +78,16 @@ handle_cast(_Msg, State) ->
 
 
 handle_info(timeout, #state{master=M, cmd=Cmd}=State) ->
-    ?Debug({registering, self()}),
-      ppool_worker:register_worker(M, self()),
-        ?Debug({open_port, Cmd}),
+
+    ?Debug({open_port, Cmd}),
  
       Port = open_port({spawn, Cmd},
                            [{line, 4096}, 
-                             stderr_to_stdout, exit_status, binary]),
-
+                              exit_status, binary]),
+    
+        ?Debug({registering, self()}),
+        ppool_worker:register_worker(M, self()),
+ 
 	  {noreply, State#state{port=Port}};
 
 

@@ -1,0 +1,439 @@
+Traceback (most recent call last):
+  File "./priv/hello.py", line 26, in <module>
+    main()
+  File "./priv/hello.py", line 22, in main
+    sys.stdout.write("{}\n".format(data["in"]))
+KeyError: 'in'
+Traceback (most recent call last):
+  File "./priv/hello.py", line 26, in <module>
+    main()
+  File "./priv/hello.py", line 22, in main
+    sys.stdout.write("{}\n".format(data["in"]))
+KeyError: 'in'
+Traceback (most recent call last):
+  File "./priv/hello.py", line 26, in <module>
+    main()
+  File "./priv/hello.py", line 22, in main
+    sys.stdout.write("{}\n".format(data["in"]))
+KeyError: 'in'
+Traceback (most recent call last):
+  File "./priv/hello.py", line 26, in <module>
+    main()
+  File "./priv/hello.py", line 22, in main
+    sys.stdout.write("{}\n".format(data["in"]))
+KeyError: 'in'
+Traceback (most recent call last):
+  File "./priv/hello.py", line 26, in <module>
+    main()
+  File "./priv/hello.py", line 22, in main
+    sys.stdout.write("{}\n".format(data["in"]))
+KeyError: 'in'
+Traceback (most recent call last):
+  File "./priv/hello.py", line 26, in <module>
+    main()
+  File "./priv/hello.py", line 22, in main
+    sys.stdout.write("{}\n".format(data["in"]))
+KeyError: 'in'
+Traceback (most recent call last):
+  File "./priv/hello.py", line 26, in <module>
+    main()
+  File "./priv/hello.py", line 22, in main
+    sys.stdout.write("{}\n".format(data["in"]))
+KeyError: 'in'
+Traceback (most recent call last):
+  File "./priv/hello.py", line 26, in <module>
+    main()
+  File "./priv/hello.py", line 22, in main
+    sys.stdout.write("{}\n".format(data["in"]))
+KeyError: 'in'
+Traceback (most recent call last):
+  File "./priv/hello.py", line 26, in <module>
+    main()
+  File "./priv/hello.py", line 22, in main
+    sys.stdout.write("{}\n".format(data["in"]))
+KeyError: 'in'
+Traceback (most recent call last):
+  File "./priv/hello.py", line 26, in <module>
+    main()
+  File "./priv/hello.py", line 22, in main
+    sys.stdout.write("{}\n".format(data["in"]))
+KeyError: 'in'
+Traceback (most recent call last):
+  File "./priv/hello.py", line 26, in <module>
+    main()
+  File "./priv/hello.py", line 22, in main
+    sys.stdout.write("{}\n".format(data["in"]))
+KeyError: 'in'
+Traceback (most recent call last):
+  File "./priv/hello.py", line 26, in <module>
+    main()
+  File "./priv/hello.py", line 22, in main
+    sys.stdout.write("{}\n".format(data["in"]))
+KeyError: 'in'
+Traceback (most recent call last):
+  File "./priv/hello.py", line 26, in <module>
+    main()
+  File "./priv/hello.py", line 22, in main
+    sys.stdout.write("{}\n".format(data["in"]))
+KeyError: 'in'
+Traceback (most recent call last):
+  File "./priv/hello.py", line 26, in <module>
+    main()
+  File "./priv/hello.py", line 22, in main
+    sys.stdout.write("{}\n".format(data["in"]))
+KeyError: 'in'
+Traceback (most recent call last):
+  File "./priv/hello.py", line 26, in <module>
+    main()
+  File "./priv/hello.py", line 22, in main
+    sys.stdout.write("{}\n".format(data["in"]))
+KeyError: 'in'
+Traceback (most recent call last):
+  File "./priv/hello.py", line 26, in <module>
+    main()
+  File "./priv/hello.py", line 22, in main
+    sys.stdout.write("{}\n".format(data["in"]))
+KeyError: 'in'
+Traceback (most recent call last):
+  File "./priv/hello.py", line 26, in <module>
+    main()
+  File "./priv/hello.py", line 22, in main
+    sys.stdout.write("{}\n".format(data["in"]))
+KeyError: 'in'
+Traceback (most recent call last):
+  File "./priv/hello.py", line 26, in <module>
+    main()
+  File "./priv/hello.py", line 22, in main
+    sys.stdout.write("{}\n".format(data["in"]))
+KeyError: 'in'
+Traceback (most recent call last):
+  File "./priv/hello.py", line 26, in <module>
+    main()
+  File "./priv/hello.py", line 22, in main
+    sys.stdout.write("{}\n".format(data["in"]))
+KeyError: 'in'
+Traceback (most recent call last):
+  File "./priv/hello.py", line 26, in <module>
+    main()
+  File "./priv/hello.py", line 22, in main
+    sys.stdout.write("{}\n".format(data["in"]))
+KeyError: 'in'
+Traceback (most recent call last):
+  File "./priv/hello.py", line 26, in <module>
+    main()
+  File "./priv/hello.py", line 22, in main
+    sys.stdout.write("{}\n".format(data["in"]))
+KeyErrorTraceback (most recent call last):
+:   File "./priv/hello.py", line 26, in <module>
+'in'
+    main()
+  File "./priv/hello.py", line 22, in main
+    sys.stdout.write("{}\n".format(data["in"]))
+KeyError: 'in'
+Traceback (most recent call last):
+  File "./priv/hello.py", line 26, in <module>
+    main()
+  File "./priv/hello.py", line 22, in main
+    sys.stdout.write("{}\n".format(data["in"]))
+KeyError: 'in'
+Traceback (most recent call last):
+  File "./priv/hello.py", line 26, in <module>
+    main()
+  File "./priv/hello.py", line 22, in main
+    sys.stdout.write("{}\n".format(data["in"]))
+KeyError: 'in'
+Traceback (most recent call last):
+  File "./priv/hello.py", line 26, in <module>
+    main()
+  File "./priv/hello.py", line 22, in main
+    sys.stdout.write("{}\n".format(data["in"]))
+KeyError: 'in'
+Traceback (most recent call last):
+  File "./priv/hello.py", line 26, in <module>
+    main()
+  File "./priv/hello.py", line 22, in main
+    sys.stdout.write("{}\n".format(data["in"]))
+KeyError: 'in'
+Traceback (most recent call last):
+  File "./priv/hello.py", line 26, in <module>
+    main()
+  File "./priv/hello.py", line 22, in main
+    sys.stdout.write("{}\n".format(data["in"]))
+KeyError: 'in'
+Traceback (most recent call last):
+  File "./priv/hello.py", line 26, in <module>
+    main()
+  File "./priv/hello.py", line 22, in main
+    sys.stdout.write("{}\n".format(data["in"]))
+KeyError: 'in'
+Traceback (most recent call last):
+  File "./priv/hello.py", line 26, in <module>
+Traceback (most recent call last):
+  File "./priv/hello.py", line 26, in <module>
+    main()
+    main()
+  File "./priv/hello.py", line 22, in main
+  File "./priv/hello.py", line 22, in main
+    sys.stdout.write("{}\n".format(data["in"]))
+    sys.stdout.write("{}\n".format(data["in"]))
+KeyErrorKeyError: : 'in''in'
+
+Traceback (most recent call last):
+  File "./priv/hello.py", line 26, in <module>
+    main()
+  File "./priv/hello.py", line 22, in main
+    sys.stdout.write("{}\n".format(data["in"]))
+KeyError: 'in'
+Traceback (most recent call last):
+  File "./priv/hello.py", line 26, in <module>
+    main()
+  File "./priv/hello.py", line 22, in main
+    sys.stdout.write("{}\n".format(data["in"]))
+KeyError: 'in'
+Traceback (most recent call last):
+  File "./priv/hello.py", line 26, in <module>
+    main()
+  File "./priv/hello.py", line 22, in main
+    sys.stdout.write("{}\n".format(data["in"]))
+KeyError: 'in'
+Traceback (most recent call last):
+Traceback (most recent call last):
+  File "./priv/hello.py", line 26, in <module>
+  File "./priv/hello.py", line 26, in <module>
+        main()
+main()
+  File "./priv/hello.py", line 22, in main
+  File "./priv/hello.py", line 22, in main
+        sys.stdout.write("{}\n".format(data["in"]))
+sys.stdout.write("{}\n".format(data["in"]))
+KeyErrorKeyError: : 'in''in'
+
+Traceback (most recent call last):
+Traceback (most recent call last):
+  File "./priv/hello.py", line 26, in <module>
+  File "./priv/hello.py", line 26, in <module>
+        main()
+main()
+  File "./priv/hello.py", line 22, in main
+  File "./priv/hello.py", line 22, in main
+        sys.stdout.write("{}\n".format(data["in"]))
+sys.stdout.write("{}\n".format(data["in"]))
+KeyErrorKeyError: : 'in''in'
+
+Traceback (most recent call last):
+  File "./priv/hello.py", line 26, in <module>
+    main()
+  File "./priv/hello.py", line 22, in main
+    sys.stdout.write("{}\n".format(data["in"]))
+KeyError: 'in'
+Traceback (most recent call last):
+Traceback (most recent call last):
+  File "./priv/hello.py", line 26, in <module>
+  File "./priv/hello.py", line 26, in <module>
+        main()
+main()
+  File "./priv/hello.py", line 22, in main
+  File "./priv/hello.py", line 22, in main
+        sys.stdout.write("{}\n".format(data["in"]))
+sys.stdout.write("{}\n".format(data["in"]))
+KeyErrorKeyError: : 'in''in'
+
+Traceback (most recent call last):
+  File "./priv/hello.py", line 26, in <module>
+Traceback (most recent call last):
+  File "./priv/hello.py", line 26, in <module>
+        main()
+main()
+  File "./priv/hello.py", line 22, in main
+  File "./priv/hello.py", line 22, in main
+    sys.stdout.write("{}\n".format(data["in"]))
+    sys.stdout.write("{}\n".format(data["in"]))
+KeyErrorKeyError: : 'in''in'
+
+Traceback (most recent call last):
+Traceback (most recent call last):
+  File "./priv/hello.py", line 26, in <module>
+  File "./priv/hello.py", line 26, in <module>
+        main()
+main()
+  File "./priv/hello.py", line 22, in main
+  File "./priv/hello.py", line 22, in main
+        sys.stdout.write("{}\n".format(data["in"]))
+sys.stdout.write("{}\n".format(data["in"]))
+KeyErrorKeyError: : 'in''in'
+
+Traceback (most recent call last):
+  File "./priv/hello.py", line 26, in <module>
+    main()
+  File "./priv/hello.py", line 22, in main
+    sys.stdout.write("{}\n".format(data["in"]))
+KeyError: 'in'
+Traceback (most recent call last):
+Traceback (most recent call last):
+  File "./priv/hello.py", line 26, in <module>
+  File "./priv/hello.py", line 26, in <module>
+        main()
+main()
+  File "./priv/hello.py", line 22, in main
+  File "./priv/hello.py", line 22, in main
+        sys.stdout.write("{}\n".format(data["in"]))
+sys.stdout.write("{}\n".format(data["in"]))
+KeyErrorKeyError: : 'in''in'
+
+Traceback (most recent call last):
+Traceback (most recent call last):
+  File "./priv/hello.py", line 26, in <module>
+  File "./priv/hello.py", line 26, in <module>
+        main()
+main()
+  File "./priv/hello.py", line 22, in main
+  File "./priv/hello.py", line 22, in main
+    sys.stdout.write("{}\n".format(data["in"]))
+    sys.stdout.write("{}\n".format(data["in"]))
+KeyErrorKeyError: : 'in''in'
+
+Traceback (most recent call last):
+  File "./priv/hello.py", line 26, in <module>
+    main()
+  File "./priv/hello.py", line 22, in main
+    sys.stdout.write("{}\n".format(data["in"]))
+KeyError: 'in'
+start workget_data:{"in":1}
+start workget_data:{"in":1}
+start workstart workstart workget_data:{"in":1}
+start workstart workget_data:{"in":1}
+start workstart workget_data:{"in":1}
+start workstart workget_data:{"in":1}
+start workstart workget_data:{"in":1}
+start workstart workstart workget_data:{"in":1}
+start workstart workget_data:asda
+Traceback (most recent call last):
+  File "./priv/hello.py", line 31, in <module>
+    main()
+  File "./priv/hello.py", line 20, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+get_data:asda
+Traceback (most recent call last):
+  File "./priv/hello.py", line 31, in <module>
+    main()
+  File "./priv/hello.py", line 20, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+get_data:asda
+Traceback (most recent call last):
+  File "./priv/hello.py", line 31, in <module>
+    main()
+  File "./priv/hello.py", line 20, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+get_data:asda
+Traceback (most recent call last):
+  File "./priv/hello.py", line 31, in <module>
+    main()
+  File "./priv/hello.py", line 20, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+get_data:asda
+Traceback (most recent call last):
+  File "./priv/hello.py", line 31, in <module>
+    main()
+  File "./priv/hello.py", line 20, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+get_data:asda
+Traceback (most recent call last):
+  File "./priv/hello.py", line 31, in <module>
+    main()
+  File "./priv/hello.py", line 20, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+get_data:asda
+Traceback (most recent call last):
+  File "./priv/hello.py", line 31, in <module>
+    main()
+  File "./priv/hello.py", line 20, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+get_data:asda
+Traceback (most recent call last):
+  File "./priv/hello.py", line 31, in <module>
+    main()
+  File "./priv/hello.py", line 20, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+get_data:asda
+Traceback (most recent call last):
+  File "./priv/hello.py", line 31, in <module>
+    main()
+  File "./priv/hello.py", line 20, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+get_data:asda
+Traceback (most recent call last):
+  File "./priv/hello.py", line 31, in <module>
+    main()
+  File "./priv/hello.py", line 20, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start workstart workstart workstart workstart workstart workstart workstart workstart workstart work

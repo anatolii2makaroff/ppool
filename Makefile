@@ -7,4 +7,4 @@ ERLC_OPTS= -Ddebug
 include erlang.mk
 
 run:
-	make && erl -pa ./ebin -s main
+	make && erl -config ppool -boot start_sasl -pa ./ebin -s main
