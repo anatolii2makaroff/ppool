@@ -1,7 +1,7 @@
 
 -module(main).
 -export([start/0
-        ,call_all_workers/0
+        ,call_sync_all_workers/0
         ]).
 
 
@@ -43,7 +43,7 @@ start() ->
 
         
         for(1, fun() -> 
-                        ppool_worker:call_all_workers(my, "{\"in\":2}\n")
+                        ppool_worker:call_sync_all_workers(my, "{\"in\":2}\n")
                 end
         ),
     
@@ -53,7 +53,7 @@ start() ->
       end).
 
 
-call_all_workers() ->
-    ppool_worker:call_all_workers(my, "{\"in\":2}\n").
+call_sync_all_workers() ->
+    ppool_worker:call_sync_all_workers(my, "{\"in\":2}\n").
 
 

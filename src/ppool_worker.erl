@@ -10,6 +10,7 @@
          start_map_workers/2,
          stop_all_workers/1,
          cast_all_workers/2,
+         call_sync_all_workers/2,
          call_all_workers/2,
          register_worker/2
         ]).
@@ -74,12 +75,16 @@ register_worker(Name, Pid) ->
 cast_all_workers(Name, Msg) ->
     gen_server:call(Name, {cast_all_workers, Msg}).
 
+call_sync_all_workers(Name, Msg) ->
+    gen_server:call(Name, {call_sync_all_workers, Msg}).
+
 call_all_workers(Name, Msg) ->
     gen_server:call(Name, {call_all_workers, Msg}).
 
 
 
 init([Name, Limit, MFA]) ->
+    Name = ets:new(Name, [set, public, named_table]),
 	{ok, #state{limit=Limit, mfa=MFA, name=Name}}.
 
 
@@ -100,6 +105,17 @@ handle_call({stop_all_workers}, _From, #state{workers_map=Pids}=State) ->
 
 
 
+handle_call({call_sync_all_workers, Msg}, _From, #state{workers_map=Pids}=State) ->
+    
+        R=lists:map(fun(Pid) -> 
+                            ?Debug({call, Pid}),
+                             gen_server:call(Pid, {sync_msg, Msg})
+                    end, maps:keys(Pids)),
+          ?Debug(R),
+          
+	        {reply, {ok, R}, State};
+
+
 handle_call({call_all_workers, Msg}, _From, #state{workers_map=Pids}=State) ->
     
         R=lists:map(fun(Pid) -> 
@@ -109,6 +125,8 @@ handle_call({call_all_workers, Msg}, _From, #state{workers_map=Pids}=State) ->
           ?Debug(R),
           
 	        {reply, {ok, R}, State};
+
+
 
 
 handle_call({start_worker, Cmd}, _From, #state{name=Name, 

@@ -37,7 +37,25 @@ init({N, Cmd}) ->
 
 
 
-handle_call({msg, Msg}, _From, #state{port=Port}=State) ->
+handle_call({msg, Msg}, From, #state{port=Port}=State) ->
+
+    gen_server:reply(From, make_ref()),
+    
+    port_command(Port, Msg),
+        case collect_response(Port) of
+            {ok, Response} -> 
+                % {ok, Response},
+                {noreply,  State};
+            {error, Status, Err} ->
+                % {error, Status, Err}, 
+                {noreply, State};
+            {error, timeout} ->
+                 {stop, port_timeout, State}
+        end;
+
+
+
+handle_call({sync_msg, Msg}, _From, #state{port=Port}=State) ->
     
     port_command(Port, Msg),
         case collect_response(Port) of
@@ -48,6 +66,7 @@ handle_call({msg, Msg}, _From, #state{port=Port}=State) ->
             {error, timeout} ->
                  {stop, port_timeout, State}
         end;
+
 
 
 handle_call(stop, _From, State) ->
@@ -63,7 +82,6 @@ handle_cast({msg, Msg}, #state{port=Port}=State) ->
     
     port_command(Port, Msg),
         case collect_response(Port) of
-            {ok, _Response} -> 
                 {noreply, State};
             {error, _Status, _Err} ->
                 {noreply, State};
