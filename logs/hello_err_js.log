@@ -1,0 +1,41 @@
+readline.js:113
+    input.on('data', ondata);
+         ^
+
+TypeError: Cannot read property 'on' of undefined
+    at new Interface (readline.js:113:10)
+    at Object.exports.createInterface (readline.js:23:10)
+    at Object.<anonymous> (/home/amak/erlsource/ppool/priv/hello.js:3:19)
+    at Module._compile (module.js:410:26)
+    at Object.Module._extensions..js (module.js:417:10)
+    at Module.load (module.js:344:32)
+    at Function.Module._load (module.js:301:12)
+    at Function.Module.runMain (module.js:442:10)
+    at startup (node.js:136:18)
+    at node.js:966:3
+start worker
+start worker
+start worker
+start worker
+start worker
+start worker
+start worker
+start worker
+events.js:141
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: write EPIPE
+    at Object.exports._errnoException (util.js:870:11)
+    at exports._exceptionWithHostPort (util.js:893:20)
+    at WriteWrap.afterWrite (net.js:763:14)
+start worker
+events.js:141
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: write EPIPE
+    at Object.exports._errnoException (util.js:870:11)
+    at exports._exceptionWithHostPort (util.js:893:20)
+    at WriteWrap.afterWrite (net.js:763:14)
+start worker

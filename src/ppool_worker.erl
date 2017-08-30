@@ -7,6 +7,7 @@
 -export([start_link/3,
          start_worker/2,
          start_all_workers/2,
+         start_map_workers/2,
          stop_all_workers/1,
          cast_all_workers/2,
          call_all_workers/2,
@@ -25,7 +26,7 @@
           limit=10, 
           mfa, 
           name,
-          workers_pids=[]
+          workers_map=maps:new()
           
 }).
 
@@ -45,6 +46,21 @@ start_all_workers(Name, Cmd) ->
         _ -> start_all_workers(Name, Cmd)
 
     end.
+
+
+
+start_map_workers(Name, [Cmd|T]) ->
+    case start_worker(Name, Cmd) of 
+
+       full_limit -> {ok, full_limit};
+        _ -> start_map_workers(Name, T)
+
+    end;
+
+start_map_workers(_Name, []) ->
+    ok.
+
+
 
 stop_all_workers(Name) ->
     gen_server:call(Name, {stop_all_workers}).
@@ -67,27 +83,29 @@ init([Name, Limit, MFA]) ->
 	{ok, #state{limit=Limit, mfa=MFA, name=Name}}.
 
 
-handle_call({cast_all_workers, Msg}, _From, #state{workers_pids=Pids}=State) ->
-    ?Debug(Pids),
-        lists:foreach(fun(Pid) -> gen_server:cast(Pid, {msg, Msg}) end, Pids),
+handle_call({cast_all_workers, Msg}, _From, #state{workers_map=Pids}=State) ->
+    ?Debug(maps:keys(Pids)),
+        lists:foreach(fun(Pid) -> gen_server:cast(Pid, {msg, Msg}) end,
+                                   maps:keys(Pids)),
 
 	        {reply, ok, State};
 
 
-handle_call({stop_all_workers}, _From, #state{workers_pids=Pids}=State) ->
-    ?Debug(Pids),
-        lists:foreach(fun(Pid) -> gen_server:call(Pid, stop) end, Pids),
+handle_call({stop_all_workers}, _From, #state{workers_map=Pids}=State) ->
+    ?Debug(maps:keys(Pids)),
+        lists:foreach(fun(Pid) -> gen_server:call(Pid, stop) end, 
+                                  maps:keys(Pids) ),
 
 	        {reply, ok, State};
 
 
 
-handle_call({call_all_workers, Msg}, _From, #state{workers_pids=Pids}=State) ->
+handle_call({call_all_workers, Msg}, _From, #state{workers_map=Pids}=State) ->
     
         R=lists:map(fun(Pid) -> 
                             ?Debug({call, Pid}),
                              gen_server:call(Pid, {msg, Msg})
-                    end, Pids),
+                    end, maps:keys(Pids)),
           ?Debug(R),
           
 	        {reply, {ok, R}, State};
@@ -111,11 +129,11 @@ handle_call({start_worker, _}, _From, State) ->
     {reply, full_limit, State};
 
 
-handle_call({register, Pid}, _From, #state{workers_pids=Pids}=State) ->
+handle_call({register, Pid}, _From, #state{workers_map=Pids}=State) ->
 
     erlang:monitor(process, Pid),
 
-	    {reply, ok, State#state{workers_pids=[Pid|Pids]} };
+	    {reply, ok, State#state{workers_map=maps:put(Pid, 0, Pids) } };
 
 
 handle_call(_Request, _From, State) ->
@@ -126,11 +144,10 @@ handle_cast(_Msg, State) ->
 	{noreply, State}.
 
 handle_info({'DOWN', _MonitorRef, process, Pid, _Info}, 
-            #state{workers_pids=Pids, limit=Limit}=State) ->
-
-    NewPids = lists:delete(Pid, Pids),
+            #state{workers_map=Pids, limit=Limit}=State) ->
     
-    	{noreply, State#state{workers_pids=NewPids, limit=Limit+1}};
+    	{noreply, State#state{workers_map=maps:remove(Pid, Pids),
+                              limit=Limit+1}};
 
 
 
