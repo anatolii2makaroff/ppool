@@ -17,13 +17,13 @@ def main(t):
 
         sys.stderr.write("get_data:{}".format(line))
 
-        time.sleep(int(t))
-
 
 
         data = json.loads(line)
 
         # exit(0)
+
+        time.sleep(data["in"])
 
 
 

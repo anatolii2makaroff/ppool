@@ -12,7 +12,7 @@
 -export([terminate/2]).
 -export([code_change/3]).
 
--include("common.hrl").
+-include("ppool.hrl").
 
 
 -record(state, {
@@ -37,22 +37,15 @@ init({N, Cmd}) ->
 
 
 
-handle_call({msg, Msg}, From, #state{port=Port}=State) ->
+handle_call({msg, Msg}, From, #state{master=N, port=Port}=State) ->
 
-    gen_server:reply(From, make_ref()),
-    
-    port_command(Port, Msg),
-        case collect_response(Port) of
-            {ok, Response} -> 
-                % {ok, Response},
-                {noreply,  State};
-            {error, Status, Err} ->
-                % {error, Status, Err}, 
-                {noreply, State};
-            {error, timeout} ->
-                 {stop, port_timeout, State}
-        end;
-
+    Ref = new_ets_msg(N),
+      gen_server:reply(From, Ref),
+ 
+       case process_ets_msg(N, Port, Ref, Msg) of
+           noreply -> {noreply, State};
+           stop -> {stop, port_timeout, State} 
+       end;
 
 
 handle_call({sync_msg, Msg}, _From, #state{port=Port}=State) ->
@@ -78,16 +71,26 @@ handle_call(_Request, _From, State) ->
 
 
 
+handle_cast({msg, restart}, State) ->
+    {stop, restart, State};
+
+
+handle_cast({msg, stop}, State) ->
+    {stop, normal, State};
+
+
 handle_cast({msg, Msg}, #state{port=Port}=State) ->
-    
+
     port_command(Port, Msg),
         case collect_response(Port) of
-                {noreply, State};
+            {ok, _Response} -> 
+                {noreply,  State};
             {error, _Status, _Err} ->
-                {noreply, State};
+                {noreply,  State};
             {error, timeout} ->
                  {stop, port_timeout, State}
         end;
+
 
 
 handle_cast(_Msg, State) ->
@@ -103,9 +106,12 @@ handle_info(timeout, #state{master=M, cmd=Cmd}=State) ->
                            [{line, 4096}, 
                               exit_status, binary]),
     
-        ?Debug({registering, self()}),
+       ?Debug({registering, self()}),
         ppool_worker:register_worker(M, self()),
- 
+
+        true = ets:insert(M, 
+                          #worker_stat{pid=self(), cmd=Cmd, status=0}),
+
 	  {noreply, State#state{port=Port}};
 
 
@@ -153,7 +159,52 @@ collect_response(Port, Lines, OldLine) ->
             {error, Status, Lines}
 
     after
-         30000 ->
+         600000 ->
             {error, timeout}
     end.
+
+
+
+new_ets_msg(N) ->
+    Ref = make_ref(),
+     true=ets:update_element(N, self(), [{#worker_stat.ref,Ref},
+                                 {#worker_stat.status, 2},
+                                 {#worker_stat.time_start, os:timestamp()}
+                                ]),
+     Ref.
+
+
+process_ets_msg(N, Port, Ref, Msg) ->
+
+     port_command(Port, Msg),
+        case collect_response(Port) of
+            {ok, Response} -> 
+                true=ets:update_element(N, self(), [{#worker_stat.ref,Ref},
+                                 {#worker_stat.status, 1},
+                                 {#worker_stat.result, Response},
+                                 {#worker_stat.time_end, os:timestamp()}
+                                ]),
+
+                noreply;
+            {error, Status, _Err} ->
+
+                true=ets:update_element(N, self(), [{#worker_stat.ref,Ref},
+                                 {#worker_stat.status, -1},
+                                 {#worker_stat.result, Status},
+                                 {#worker_stat.time_end, os:timestamp()}
+                                ]),
+
+                noreply;
+            {error, timeout} ->
+
+                true=ets:update_element(N, self(), [{#worker_stat.ref,Ref},
+                                 {#worker_stat.status, -1},
+                                 {#worker_stat.result, timeout},
+                                 {#worker_stat.time_end, os:timestamp()}
+                                ]),
+
+                 stop
+        end.
+
+
 

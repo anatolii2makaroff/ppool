@@ -1,7 +1,8 @@
 -module(ppool_worker).
 -behaviour(gen_server).
 
--include("common.hrl").
+-include("ppool.hrl").
+-include_lib("stdlib/include/ms_transform.hrl").
 
 %% API.
 -export([start_link/3,
@@ -12,6 +13,7 @@
          cast_all_workers/2,
          call_sync_all_workers/2,
          call_all_workers/2,
+         get_result_worker/2,
          register_worker/2
         ]).
 
@@ -27,9 +29,11 @@
           limit=10, 
           mfa, 
           name,
-          workers_map=maps:new()
+          workers_pids=[]
           
 }).
+
+
 
 %% API.
 
@@ -81,51 +85,65 @@ call_sync_all_workers(Name, Msg) ->
 call_all_workers(Name, Msg) ->
     gen_server:call(Name, {call_all_workers, Msg}).
 
+get_result_worker(Name, Msg) ->
+    gen_server:call(Name, {get_result_worker, Msg}).
+
 
 
 init([Name, Limit, MFA]) ->
-    Name = ets:new(Name, [set, public, named_table]),
+    Name = ets:new(Name, [set, public, named_table, 
+                          {keypos, #worker_stat.pid}]),
 	{ok, #state{limit=Limit, mfa=MFA, name=Name}}.
 
 
-handle_call({cast_all_workers, Msg}, _From, #state{workers_map=Pids}=State) ->
-    ?Debug(maps:keys(Pids)),
+handle_call({cast_all_workers, Msg}, _From, #state{workers_pids=Pids}=State) ->
+    ?Debug(Pids),
         lists:foreach(fun(Pid) -> gen_server:cast(Pid, {msg, Msg}) end,
-                                   maps:keys(Pids)),
+                                   Pids),
 
 	        {reply, ok, State};
 
 
-handle_call({stop_all_workers}, _From, #state{workers_map=Pids}=State) ->
-    ?Debug(maps:keys(Pids)),
+handle_call({stop_all_workers}, _From, #state{workers_pids=Pids}=State) ->
+    ?Debug(Pids),
         lists:foreach(fun(Pid) -> gen_server:call(Pid, stop) end, 
-                                  maps:keys(Pids) ),
+                                  Pids),
 
 	        {reply, ok, State};
 
 
 
-handle_call({call_sync_all_workers, Msg}, _From, #state{workers_map=Pids}=State) ->
+handle_call({call_sync_all_workers, Msg}, _From, #state{workers_pids=Pids}=State) ->
     
         R=lists:map(fun(Pid) -> 
                             ?Debug({call, Pid}),
                              gen_server:call(Pid, {sync_msg, Msg})
-                    end, maps:keys(Pids)),
+                    end, Pids),
           ?Debug(R),
           
 	        {reply, {ok, R}, State};
 
 
-handle_call({call_all_workers, Msg}, _From, #state{workers_map=Pids}=State) ->
+handle_call({call_all_workers, Msg}, _From, #state{workers_pids=Pids}=State) ->
     
         R=lists:map(fun(Pid) -> 
                             ?Debug({call, Pid}),
                              gen_server:call(Pid, {msg, Msg})
-                    end, maps:keys(Pids)),
+                    end, Pids),
           ?Debug(R),
           
 	        {reply, {ok, R}, State};
 
+
+handle_call({get_result_worker, Msg}, _From, #state{name=Name}=State) ->
+    
+    R = ets:select(Name, 
+                   ets:fun2ms(fun(N=#worker_stat{ref=P}) 
+                                    when P=:=Msg -> N 
+                              end)
+                  ),
+
+	        {reply, {ok, R}, State};
 
 
 
@@ -140,18 +158,18 @@ handle_call({start_worker, Cmd}, _From, #state{name=Name,
                        list_to_atom(atom_to_list(Name)++"_sup"),
                        [Cmd]),
 
-	        {reply, Pid, State#state{limit=NewLimit} };
-
+               {reply, Pid, State#state{limit=NewLimit} };
+ 
 
 handle_call({start_worker, _}, _From, State) ->
     {reply, full_limit, State};
 
 
-handle_call({register, Pid}, _From, #state{workers_map=Pids}=State) ->
+handle_call({register, Pid}, _From, #state{workers_pids=Pids}=State) ->
 
     erlang:monitor(process, Pid),
 
-	    {reply, ok, State#state{workers_map=maps:put(Pid, 0, Pids) } };
+	    {reply, ok, State#state{workers_pids=[Pid|Pids] } };
 
 
 handle_call(_Request, _From, State) ->
@@ -162,9 +180,9 @@ handle_cast(_Msg, State) ->
 	{noreply, State}.
 
 handle_info({'DOWN', _MonitorRef, process, Pid, _Info}, 
-            #state{workers_map=Pids, limit=Limit}=State) ->
-    
-    	{noreply, State#state{workers_map=maps:remove(Pid, Pids),
+            #state{workers_pids=Pids, limit=Limit}=State) ->
+
+    	{noreply, State#state{workers_pids=lists:delete(Pid, Pids),
                               limit=Limit+1}};
 
 
