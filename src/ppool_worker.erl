@@ -113,23 +113,35 @@ handle_call({stop_all_workers}, _From, #state{workers_pids=Pids}=State) ->
 
 
 
-handle_call({call_sync_all_workers, Msg}, _From, #state{workers_pids=Pids}=State) ->
+handle_call({call_sync_all_workers, Msg}, _From, #state{name=Name}=State) ->
     
+    Free=ets:select(Name, 
+                   ets:fun2ms(fun(N=#worker_stat{status=P}) 
+                                    when P=:=1 orelse P=:=0 -> N 
+                              end)
+                  ),
+
         R=lists:map(fun(Pid) -> 
                             ?Debug({call, Pid}),
                              gen_server:call(Pid, {sync_msg, Msg})
-                    end, Pids),
+                    end, [X#worker_stat.pid||X<-Free]),
           ?Debug(R),
           
 	        {reply, {ok, R}, State};
 
 
-handle_call({call_all_workers, Msg}, _From, #state{workers_pids=Pids}=State) ->
+handle_call({call_all_workers, Msg}, _From, #state{name=Name}=State) ->
     
+    Free=ets:select(Name, 
+                   ets:fun2ms(fun(N=#worker_stat{status=P}) 
+                                    when P=:=1 orelse P=:=0 -> N 
+                              end)
+                  ),
+
         R=lists:map(fun(Pid) -> 
                             ?Debug({call, Pid}),
                              gen_server:call(Pid, {msg, Msg})
-                    end, Pids),
+                    end, [X#worker_stat.pid||X<-Free]),
           ?Debug(R),
           
 	        {reply, {ok, R}, State};
