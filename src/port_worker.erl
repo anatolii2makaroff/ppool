@@ -39,7 +39,7 @@ init({N, Cmd}) ->
 
 handle_call({msg, Msg}, From, #state{master=N, port=Port}=State) ->
 
-    Ref = new_ets_msg(N),
+    Ref = new_ets_msg(N, Msg),
       gen_server:reply(From, Ref),
  
        case process_ets_msg(N, Port, Ref, Msg) of
@@ -165,9 +165,10 @@ collect_response(Port, Lines, OldLine) ->
 
 
 
-new_ets_msg(N) ->
+new_ets_msg(N, Msg) ->
     Ref = make_ref(),
      true=ets:update_element(N, self(), [{#worker_stat.ref,Ref},
+                                 {#worker_stat.req, Msg},
                                  {#worker_stat.status, 2},
                                  {#worker_stat.time_start, os:timestamp()}
                                 ]),

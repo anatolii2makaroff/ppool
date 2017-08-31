@@ -10,6 +10,7 @@
           pid,
           cmd,
           ref,
+          req,
           result,
           status,
           time_start,

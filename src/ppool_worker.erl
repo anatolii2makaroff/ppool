@@ -91,7 +91,7 @@ get_result_worker(Name, Msg) ->
 
 
 init([Name, Limit, MFA]) ->
-    Name = ets:new(Name, [set, public, named_table, 
+    Name = ets:new(Name, [bag, public, named_table, 
                           {keypos, #worker_stat.pid}]),
 	{ok, #state{limit=Limit, mfa=MFA, name=Name}}.
 
@@ -116,7 +116,7 @@ handle_call({stop_all_workers}, _From, #state{workers_pids=Pids}=State) ->
 handle_call({call_sync_all_workers, Msg}, _From, #state{name=Name}=State) ->
     
     Free=ets:select(Name, 
-                   ets:fun2ms(fun(N=#worker_stat{status=P}) 
+                   ets:fun2ms(fun(N=#worker_stat{status=P, pid=P}) 
                                     when P=:=1 orelse P=:=0 -> N 
                               end)
                   ),
