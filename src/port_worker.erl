@@ -39,19 +39,22 @@ init({N, Cmd}) ->
 
 handle_call({msg, Msg}, From, #state{master=N, port=Port}=State) ->
 
+    ?Debug(Msg),
     Ref = new_ets_msg(N, Msg),
       gen_server:reply(From, Ref),
  
        case process_ets_msg(N, Port, Ref, Msg) of
-           noreply -> {noreply, State};
-           stop -> {stop, port_timeout, State} 
+           {error, timeout} -> {stop, port_timeout, State};
+            _ -> {noreply, State}
+
        end;
 
 
-handle_call({sync_msg, Msg}, _From, #state{port=Port}=State) ->
-    
-    port_command(Port, Msg),
-        case collect_response(Port) of
+handle_call({sync_msg, Msg}, _From, #state{master=N, port=Port}=State) ->
+ 
+    Ref = new_ets_msg(N, Msg),
+
+        case process_ets_msg(N, Port, Ref, Msg) of
             {ok, Response} -> 
                 {reply, {ok, Response}, State};
             {error, Status, Err} ->
@@ -61,14 +64,11 @@ handle_call({sync_msg, Msg}, _From, #state{port=Port}=State) ->
         end;
 
 
-
 handle_call(stop, _From, State) ->
         {stop, normal, ok, State};
 
 handle_call(_Request, _From, State) ->
 	{reply, ignored, State}.
-
-
 
 
 handle_cast({msg, restart}, State) ->
@@ -79,18 +79,15 @@ handle_cast({msg, stop}, State) ->
     {stop, normal, State};
 
 
-handle_cast({msg, Msg}, #state{port=Port}=State) ->
+handle_cast({msg, Msg}, #state{master=N, port=Port}=State) ->
 
-    port_command(Port, Msg),
-        case collect_response(Port) of
-            {ok, _Response} -> 
-                {noreply,  State};
-            {error, _Status, _Err} ->
-                {noreply,  State};
-            {error, timeout} ->
-                 {stop, port_timeout, State}
-        end;
+    Ref = new_ets_msg(N, Msg),
+ 
+       case process_ets_msg(N, Port, Ref, Msg) of
+           {error, timeout} -> {stop, port_timeout, State};
+            _ -> {noreply, State}
 
+       end;
 
 
 handle_cast(_Msg, State) ->
@@ -136,7 +133,6 @@ terminate(_Reason, _State) ->
 	ok.
 
 
-
 code_change(_OldVsn, State, _Extra) ->
 	{ok, State}.
 
@@ -167,6 +163,7 @@ collect_response(Port, Lines, OldLine) ->
 
 new_ets_msg(N, Msg) ->
     Ref = make_ref(),
+    ?Debug({new_ets_msg, self()}),
      true=ets:update_element(N, self(), [{#worker_stat.ref,Ref},
                                  {#worker_stat.req, Msg},
                                  {#worker_stat.status, 2},
@@ -178,33 +175,22 @@ new_ets_msg(N, Msg) ->
 process_ets_msg(N, Port, Ref, Msg) ->
 
      port_command(Port, Msg),
+
         case collect_response(Port) of
             {ok, Response} -> 
                 true=ets:update_element(N, self(), [{#worker_stat.ref,Ref},
                                  {#worker_stat.status, 1},
-                                 {#worker_stat.result, Response},
                                  {#worker_stat.time_end, os:timestamp()}
                                 ]),
 
-                noreply;
-            {error, Status, _Err} ->
+                {ok, Response};
 
-                true=ets:update_element(N, self(), [{#worker_stat.ref,Ref},
-                                 {#worker_stat.status, -1},
-                                 {#worker_stat.result, Status},
-                                 {#worker_stat.time_end, os:timestamp()}
-                                ]),
+            {error, Status, Err} ->
 
-                noreply;
+                {error, Status, Err};
             {error, timeout} ->
 
-                true=ets:update_element(N, self(), [{#worker_stat.ref,Ref},
-                                 {#worker_stat.status, -1},
-                                 {#worker_stat.result, timeout},
-                                 {#worker_stat.time_end, os:timestamp()}
-                                ]),
-
-                 stop
+                 {error, timeout}
         end.
 
 

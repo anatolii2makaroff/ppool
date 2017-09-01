@@ -11,7 +11,6 @@
           cmd,
           ref,
           req,
-          result,
           status,
           time_start,
           time_end
