@@ -1,7 +1,7 @@
 
 -module(main).
 -export([start/0
-        ,call_sync_all_workers/0
+        ,call_sync_workers/0
         ]).
 
 
@@ -34,7 +34,7 @@ start() ->
 
         Workers = ["python ./priv/hello.py 1 2>> ./logs/hello_err.log",
                    "python ./priv/hello.py 2 2>> ./logs/hello_err.log",
-                   "node ./priv/hello.js 2>> ./logs/hello_err_js.log"
+                   "nodejs ./priv/hello.js 2>> ./logs/hello_err_js.log"
                   ],
 
         ppool_worker:start_map_workers(my, Workers),
@@ -42,8 +42,8 @@ start() ->
 
 
         
-        for(1, fun() -> 
-                        ppool_worker:call_sync_all_workers(my, "{\"in\":2}\n")
+        for(10, fun() -> 
+                        ppool_worker:call_workers(my, "{\"in\":2}\n")
                 end
         ),
     
@@ -53,7 +53,7 @@ start() ->
       end).
 
 
-call_sync_all_workers() ->
-    ppool_worker:call_sync_all_workers(my, "{\"in\":2}\n").
+call_sync_workers() ->
+    ppool_worker:call_sync_workers(my, "{\"in\":2}\n").
 
 

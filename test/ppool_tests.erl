@@ -16,10 +16,10 @@ ppool_test_() ->
      {
       foreach,
       fun() ->
-              ppool:start_pool(my, 10, {worker, start_link, []})
+              ppool:start_pool(test, 10, {port_worker, start_link, []})
       end,
       fun(_) ->
-              ppool:stop_pool(my)
+              ppool:stop_pool(test)
       end,
       basic_tests()
 
@@ -29,29 +29,19 @@ ppool_test_() ->
 
 basic_tests() ->
     [
-     {"worker run ok",
+     {"start_worker",
      fun() ->
-             P1 = ppool_worker:run(my, 0),
-             P2 = ppool_worker:run(my, 0),
-             
-             ?assert(P1=:=P2),
-             ?assert(P1=:=ok)
- 
-     end
-     },
-     {"worker limit ",
-     fun() ->
-            
-             P1 = for(10, fun ppool_worker:run/2, {my, 0}),
-             % ?debugFmt("P1 = ~p~n", [P1]),
-             ?assert(P1 =:= {error, full_limit})
- 
+             P1 = ppool_worker:start_worker(test, "python ./priv/hello.py 1"
+                                                  "2>> ./logs/hello_err.log"),
+             P2 = ppool_worker:start_worker(test, "python ./priv/hello.py 2"
+                                                  "2>> ./logs/hello_err.log"),
+             P3 = ppool_worker:start_worker(test, "python ./priv/hello2.py 2"
+                                                  "2>> ./logs/hello_err.log"),
+
+
+             ?assert(P1=/=P2)
      end
      }
-
-
-
-
 
     ].
 

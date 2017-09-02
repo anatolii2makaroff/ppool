@@ -46,9 +46,7 @@ handle_call({msg, Msg}, From, #state{master=N, port=Port}=State) ->
        case process_ets_msg(N, Port, Ref, Msg) of
            {error, timeout} -> {stop, port_timeout, State};
             _ -> {noreply, State}
-
        end;
-
 
 handle_call({sync_msg, Msg}, _From, #state{master=N, port=Port}=State) ->
  
@@ -63,21 +61,22 @@ handle_call({sync_msg, Msg}, _From, #state{master=N, port=Port}=State) ->
                  {stop, port_timeout, State}
         end;
 
-
-handle_call(stop, _From, State) ->
-        {stop, normal, ok, State};
+handle_call(stop, From, State) ->
+    ?Debug({stop, self()}),
+    gen_server:reply(From, ok),
+     {stop, normal, State};
 
 handle_call(_Request, _From, State) ->
 	{reply, ignored, State}.
 
 
+
+
 handle_cast({msg, restart}, State) ->
     {stop, restart, State};
 
-
 handle_cast({msg, stop}, State) ->
     {stop, normal, State};
-
 
 handle_cast({msg, Msg}, #state{master=N, port=Port}=State) ->
 
@@ -89,7 +88,6 @@ handle_cast({msg, Msg}, #state{master=N, port=Port}=State) ->
 
        end;
 
-
 handle_cast(_Msg, State) ->
 	{noreply, State}.
 
@@ -98,7 +96,6 @@ handle_cast(_Msg, State) ->
 handle_info(timeout, #state{master=M, cmd=Cmd}=State) ->
 
     ?Debug({open_port, Cmd}),
- 
       Port = open_port({spawn, Cmd},
                            [{line, 4096}, 
                               exit_status, binary]),
@@ -115,23 +112,23 @@ handle_info(timeout, #state{master=M, cmd=Cmd}=State) ->
 
 handle_info({'EXIT', Port, Reason}, #state{port=Port}=State) ->
     ?Debug({exit, Reason}),
-
         {stop, {port_terminated, Reason}, State};
-
 
 handle_info(_Info, State) ->
 	{noreply, State}.
 
 
-terminate({port_terminated, _Reason}, _State) ->
+
+terminate({port_terminated, _Reason}, #state{master=M}=_State) ->
+    true = ets:delete(M, self()),
     ok;
 
-terminate(_Reason, #state{port=Port}=_State) ->
-    port_close(Port);
+terminate(_Reason, #state{master=M, port=Port}=_State) ->
+    true = ets:delete(M, self()),   
+    port_close(Port);
 
 terminate(_Reason, _State) ->
 	ok.
-
 
 code_change(_OldVsn, State, _Extra) ->
 	{ok, State}.
