@@ -15,7 +15,13 @@ init([Name, Limit, MFA]) ->
                     worker,
                     [ppool_worker]
      },
-
+    Ppool_event = {ppool_ev,
+                    {ppool_ev, start_link, [Name, Limit, MFA]},
+                    permanent,
+                    brutal_kill,
+                    worker,
+                    [ppool_worker]
+     },
     Ppool_worker_sup = {ppool_worker_sup,
                         {ppool_worker_sup, start_link, [Name, MFA]},
                         permanent,
@@ -24,6 +30,6 @@ init([Name, Limit, MFA]) ->
                         [ppool_worker_sup] 
      },
 
-	Procs = [Ppool_worker, Ppool_worker_sup],
+	Procs = [Ppool_worker, Ppool_event, Ppool_worker_sup],
 	{ok, {{one_for_all, 1, 5}, Procs}}.
 
