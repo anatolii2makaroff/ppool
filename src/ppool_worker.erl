@@ -14,6 +14,7 @@
          call_workers/2,
          call_sync_workers/2,
          cast_all_workers/2,
+
          set_status_worker/3,
          get_result_worker/2
          
@@ -93,8 +94,6 @@ call_worker(Name, Msg) ->
 call_map_workers(Name, Msg) ->
     lists:map(fun(M) -> call_worker(Name, M) end, 
                                    Msg).
-	
-
 
 call_workers(Name, Msg) ->
     gen_server:call(Name, {call_workers, {msg, Msg}}).
@@ -233,9 +232,10 @@ handle_info({'DOWN', _MonitorRef, process, Pid, _Info},
                               limit=Limit+1}};
 
 
-
 handle_info(_Info, State) ->
 	{noreply, State}.
+
+
 
 terminate(_Reason, _State) ->
 	ok.
