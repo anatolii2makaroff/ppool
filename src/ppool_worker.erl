@@ -202,7 +202,7 @@ handle_call(_Request, _From, State) ->
 
 handle_cast({cast_all_workers, Msg},  #state{workers_pids=Pids}=State) ->
     ?Debug(Pids),
-        lists:foreach(fun(Pid) -> gen_server:cast(Pid, {msg, Msg}) end,
+        lists:foreach(fun(Pid) -> gen_server:cast(Pid, Msg) end,
                                    Pids),
 
 	        {noreply, State};
