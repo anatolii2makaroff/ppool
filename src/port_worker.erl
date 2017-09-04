@@ -17,6 +17,7 @@
 
 -record(state, {
           master,
+          ev,
           port,
           cmd
 }).
@@ -33,27 +34,29 @@ init({N, Cmd}) ->
     ?Debug({N, Cmd,  self()}),
       process_flag(trap_exit, true),
 
-	    {ok, #state{master=N, cmd=Cmd}, 0}.
+	    {ok, #state{master=N, 
+                    ev=list_to_atom(atom_to_list(N)++"_ev"),
+                    cmd=Cmd}, 0}.
 
 
 
-handle_call({msg, Msg}, From, #state{master=N, cmd=Cmd, port=Port}=State) ->
+handle_call({msg, Msg}, From, #state{master=N, ev=E, cmd=Cmd, port=Port}=State) ->
 
     ?Debug(Msg),
     Ref = new_ets_msg(N, Cmd, Msg),
       gen_server:reply(From, Ref),
  
-       case process_ets_msg(N, Port, Ref, Msg) of
+       case process_ets_msg(N, E, Port, Ref, Msg) of
            {error, timeout} -> {stop, port_timeout, State};
             _ -> {noreply, State}
        end;
 
-handle_call({sync_msg, Msg}, _From, #state{master=N, 
+handle_call({sync_msg, Msg}, _From, #state{master=N, ev=E,
                                            cmd=Cmd, port=Port}=State) ->
  
     Ref = new_ets_msg(N, Cmd, Msg),
 
-        case process_ets_msg(N, Port, Ref, Msg) of
+        case process_ets_msg(N, E, Port, Ref, Msg) of
             {ok, Response} -> 
                 {reply, {ok, Response}, State};
             {error, Status, Err} ->
@@ -79,11 +82,11 @@ handle_cast({msg, restart}, State) ->
 handle_cast({msg, stop}, State) ->
     {stop, normal, State};
 
-handle_cast({msg, Msg}, #state{master=N, cmd=Cmd, port=Port}=State) ->
+handle_cast({msg, Msg}, #state{master=N, ev=E, cmd=Cmd, port=Port}=State) ->
 
     Ref = new_ets_msg(N, Cmd, Msg),
  
-       case process_ets_msg(N, Port, Ref, Msg) of
+       case process_ets_msg(N, E, Port, Ref, Msg) of
            {error, timeout} -> {stop, port_timeout, State};
             _ -> {noreply, State}
 
@@ -169,7 +172,7 @@ new_ets_msg(N, Cmd, Msg) ->
      Ref.
 
 
-process_ets_msg(N, Port, Ref, Msg) ->
+process_ets_msg(N, E, Port, Ref, Msg) ->
 
      port_command(Port, Msg),
 
@@ -182,6 +185,7 @@ process_ets_msg(N, Port, Ref, Msg) ->
                                 ]),
 
                   ppool_worker:set_status_worker(N, self(), 1),
+                  gen_event:notify(E, {msg, Response}),
 
                 {ok, Response};
 

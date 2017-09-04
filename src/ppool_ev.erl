@@ -3,7 +3,7 @@
 
 
 %% API.
--export([start_link/3,
+-export([start_link/1
         
         ]).
 
@@ -13,34 +13,45 @@
          handle_call/2,
          handle_info/2, 
          code_change/3,
-         terminate/2]).
+         terminate/2
+        ]).
  
+
+-include("ppool.hrl").
+
 -record(state, {
-          master,
-          mfa
+          pid
 }).
 
 
-start_link(Name, MFA) ->
-	gen_server:start_link({local, Name}, ?MODULE, [Name, MFA], []).
+start_link(Name) ->
+	gen_event:start_link({local, list_to_atom(atom_to_list(Name)++"_ev")}).
 
 
-init([Name, MFA]) ->
-	{ok, #state{mfa=MFA, master=Name}}.
+init([Pid]) ->
+	{ok, #state{pid=Pid}}.
 
 
+
+handle_event({msg, Msg}, #state{pid=Pid}=State) ->
+    ?Debug({event, self(), Pid, Msg}),
+      {ok, State};
+
+handle_event(_Event, State) ->
+      {ok, State}.
  
-handle_event(_, State) ->
-{ok, State}.
- 
+
+
 handle_call(_, State) ->
-{ok, ok, State}.
+    {ok, ok, State}.
  
+
+
 handle_info(_, State) ->
-{ok, State}.
+    {ok, State}.
  
 code_change(_OldVsn, State, _Extra) ->
-{ok, State}.
+    {ok, State}.
  
 terminate(_Reason, _State) ->
-ok.
+    ok.
