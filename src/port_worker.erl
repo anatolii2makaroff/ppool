@@ -37,10 +37,10 @@ init({N, Cmd}) ->
 
 
 
-handle_call({msg, Msg}, From, #state{master=N, port=Port}=State) ->
+handle_call({msg, Msg}, From, #state{master=N, cmd=Cmd, port=Port}=State) ->
 
     ?Debug(Msg),
-    Ref = new_ets_msg(N, Msg),
+    Ref = new_ets_msg(N, Cmd, Msg),
       gen_server:reply(From, Ref),
  
        case process_ets_msg(N, Port, Ref, Msg) of
@@ -48,9 +48,10 @@ handle_call({msg, Msg}, From, #state{master=N, port=Port}=State) ->
             _ -> {noreply, State}
        end;
 
-handle_call({sync_msg, Msg}, _From, #state{master=N, port=Port}=State) ->
+handle_call({sync_msg, Msg}, _From, #state{master=N, 
+                                           cmd=Cmd, port=Port}=State) ->
  
-    Ref = new_ets_msg(N, Msg),
+    Ref = new_ets_msg(N, Cmd, Msg),
 
         case process_ets_msg(N, Port, Ref, Msg) of
             {ok, Response} -> 
@@ -78,9 +79,9 @@ handle_cast({msg, restart}, State) ->
 handle_cast({msg, stop}, State) ->
     {stop, normal, State};
 
-handle_cast({msg, Msg}, #state{master=N, port=Port}=State) ->
+handle_cast({msg, Msg}, #state{master=N, cmd=Cmd, port=Port}=State) ->
 
-    Ref = new_ets_msg(N, Msg),
+    Ref = new_ets_msg(N, Cmd, Msg),
  
        case process_ets_msg(N, Port, Ref, Msg) of
            {error, timeout} -> {stop, port_timeout, State};
@@ -103,9 +104,6 @@ handle_info(timeout, #state{master=M, cmd=Cmd}=State) ->
        ?Debug({registering, self()}),
         ppool_worker:register_worker(M, self()),
 
-        true = ets:insert(M, 
-                          #worker_stat{pid=self(), cmd=Cmd, status=0}),
-
 	  {noreply, State#state{port=Port}};
 
 
@@ -119,12 +117,10 @@ handle_info(_Info, State) ->
 
 
 
-terminate({port_terminated, _Reason}, #state{master=M}=_State) ->
-    true = ets:delete(M, self()),
+terminate({port_terminated, _Reason}, _State) ->
     ok;
 
-terminate(_Reason, #state{master=M, port=Port}=_State) ->
-    true = ets:delete(M, self()),   
+terminate(_Reason, #state{port=Port}=_State) ->
     port_close(Port);
 
 terminate(_Reason, _State) ->
@@ -158,14 +154,18 @@ collect_response(Port, Lines, OldLine) ->
 
 
 
-new_ets_msg(N, Msg) ->
+new_ets_msg(N, Cmd, Msg) ->
     Ref = make_ref(),
     ?Debug({new_ets_msg, self()}),
-     true=ets:update_element(N, self(), [{#worker_stat.ref,Ref},
-                                 {#worker_stat.req, Msg},
-                                 {#worker_stat.status, 2},
-                                 {#worker_stat.time_start, os:timestamp()}
-                                ]),
+
+     true=ets:insert(N, #worker_stat{ref=Ref, pid=self(),cmd=Cmd,
+                                     req=Msg, status=running,
+                                     time_start=os:timestamp()}
+                        ),
+
+     ppool_worker:set_status_worker(N, self(), 2),
+
+
      Ref.
 
 
@@ -175,17 +175,31 @@ process_ets_msg(N, Port, Ref, Msg) ->
 
         case collect_response(Port) of
             {ok, Response} -> 
-                true=ets:update_element(N, self(), [{#worker_stat.ref,Ref},
-                                 {#worker_stat.status, 1},
-                                 {#worker_stat.time_end, os:timestamp()}
+                true=ets:update_element(N, Ref, [
+                                               {#worker_stat.status, ok},
+                                               {#worker_stat.result, Response},
+                                               {#worker_stat.time_end, os:timestamp()}
                                 ]),
+
+                  ppool_worker:set_status_worker(N, self(), 1),
 
                 {ok, Response};
 
             {error, Status, Err} ->
+                true=ets:update_element(N, Ref, [
+                                 {#worker_stat.status, error},
+                                 {#worker_stat.result, Status},
+                                 {#worker_stat.time_end, os:timestamp()}
+                                ]),
 
                 {error, Status, Err};
             {error, timeout} ->
+                true=ets:update_element(N, Ref, [
+                                 {#worker_stat.status, timeout},
+                                 {#worker_stat.time_end, os:timestamp()}
+                                ]),
+
+
 
                  {error, timeout}
         end.

@@ -9,11 +9,12 @@
 
 
 -record(worker_stat, {
+          ref,
           pid,
           cmd,
-          ref,
           req,
           status,
+          result,
           time_start,
           time_end
 }).

@@ -6820,4 +6820,1848 @@ start work: 2
 get_data:{"in":2}
 start work: 1
  start work: 2
+ start work: 1
+ start work: 2
+ start work: 1
+ start work: 2
+ start work: 2
+ start work: 1
+ start work: 1
+ start work: 2
+ start work: 1
+ start work: 2
+ start work: 1
+ start work: 2
+ start work: 1
+ start work: 2
+ start work: 1
+ start work: 2
+ get_data:{"in":2}
+get_data:{"in":2}
+start work: 1
+ start work: 1
+ start work: 2
+ start work: 2
+ start work: 1
+ start work: 2
+ get_data:{"in":2}
+get_data:{"in":2}
+start work: 1
+ start work: 1
+ start work: 2
+ start work: 2
+ start work: 2
+ start work: 1
+ get_data:{"in":2}
+get_data:{"in":2}
+start work: 1
+ start work: 1
+ start work: 2
+ start work: 2
+ start work: 1
+ start work: 2
+ get_data:{"in":2}
+get_data:{"in":2}
+start work: 1
+ start work: 1
+ start work: 2
+ start work: 2
+ start work: 1
+ start work: 2
+ get_data:{"in":2}
+get_data:{"in":2}
+start work: 1
+ start work: 2
+ start work: 2
+ start work: 1
+ get_data:{"in":2}
+get_data:{"in":2}
+start work: 1
+ start work: 2
+ start work: 1
+ start work: 2
+ get_data:{"in":2}
+get_data:{"in":2}
+start work: 1
+ start work: 2
+ start work: 1
+ start work: 2
+ get_data:{"in":2}
+get_data:{"in":2}
+start work: 1
+ start work: 2
+ get_data:asdada
+get_data:asdada
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 2
+ start work: 1
+ get_data:asdada
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+get_data:asdada
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 2
+ start work: 1
+ get_data:asdada
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 1
+ get_data:asdada
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 2
+ get_data:asdada
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 1
+ get_data:asdada
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 1
+ get_data:asdada
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 2
+ get_data:asdada
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 1
+ get_data:asdada
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 2
+ get_data:asdada
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+get_data:asdada
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+        return _default_decoder.decode(s)
+raise ValueError("No JSON object could be decoded")
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+ValueError: No JSON object could be decoded
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 2
+ start work: 1
+ get_data:asdada
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+get_data:asdada
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    return _default_decoder.decode(s)
+      File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 1
+ start work: 2
+ get_data:asdada
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+get_data:asdada
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 1
+ start work: 2
+ get_data:asdada
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 1
+ get_data:asdada
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 2
+ get_data:asdada
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 1
+ get_data:asdada
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 1
+ get_data:asdada
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 2
+ get_data:asdada
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 1
+ get_data:asdada
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 1
+ get_data:asdada
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 2
+ get_data:asdada
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 1
+ get_data:asdada
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+get_data:asdada
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "./priv/hello.py", line 22, in main
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    raise ValueError("No JSON object could be decoded")
+ValueError:     No JSON object could be decodedreturn _default_decoder.decode(s)
+
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 1
+ start work: 2
+ get_data:asdada
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 1
+ get_data:asdada
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 2
+ get_data:asdada
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+get_data:asdada
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 1
+ start work: 2
+ get_data:asdada
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 1
+ get_data:asdada
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 2
+ start work: 1
+ start work: 2
+ get_data:{"in":2}
+get_data:{"in":2}
+start work: 1
+ start work: 2
+ start work: 1
+ start work: 2
+ start work: 1
+ start work: 2
+ get_data:{"in":2}
+get_data:{"in":2}
+start work: 1
+ start work: 2
+ get_data:asdada
+get_data:asdada
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 1
+ start work: 2
+ get_data:asdada
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+get_data:asdada
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 1
+ start work: 2
+ get_data:asdada
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+get_data:asdada
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 2
+ start work: 1
+ get_data:asdada
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 1
+ get_data:asdada
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 2
+ get_data:asdada
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+get_data:asdada
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 2
+ start work: 1
+ get_data:asdada
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+get_data:asdada
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 1
+ start work: 2
+ get_data:asdada
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 1
+ get_data:asdada
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 2
+ get_data:asdada
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 1
+ get_data:asdada
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 1
+ get_data:asdada
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 2
+ get_data:asdada
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 1
+ get_data:asdada
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 1
+ get_data:asdada
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 2
+ get_data:asdada
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    get_data:asdada
+obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    raise ValueError("No JSON object could be decoded")
+    data = json.loads(line)
+ValueError  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+: No JSON object could be decoded
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 1
+ start work: 2
+ get_data:asdada
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+get_data:asdada
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 2
+ start work: 1
+ get_data:{"in":2}
+get_data:{"in":2}
+start work: 2
+ start work: 1
+ get_data:{"in":2}
+get_data:{"in":2}
+start work: 1
+ start work: 2
+ start work: 2
+ start work: 1
+ get_data:{"in":2}
+get_data:{"in":2}
+start work: 1
+ start work: 2
+ get_data:asdad
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+get_data:asdad
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 2
+ start work: 1
+ get_data:asdad
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 1
+ get_data:asdad
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 2
+ get_data:asdad
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 1
+ get_data:asdad
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 1
+ get_data:asdad
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 2
+ get_data:asdad
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 1
+ get_data:asdad
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 2
+ get_data:asdad
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 1
+ get_data:asdad
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 2
+ get_data:asdad
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+get_data:asdad
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 2
+ start work: 1
+ start work: 1
+ start work: 2
+ get_data:{"in":2}
+get_data:{"in":2}
+start work: 1
+ start work: 2
+ get_data:asda
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+get_data:asda
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 2
+ start work: 1
+ get_data:asda
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+get_data:asda
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 2
+ start work: 1
+ start work: 1
+ start work: 2
+ get_data:{"in":2}
+get_data:{"in":2}
+start work: 1
+ start work: 2
+ start work: 1
+ start work: 2
+ get_data:{"in":2}
+get_data:{"in":2}
+start work: 1
+ start work: 2
+ get_data:asda
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+get_data:asda
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 2
+ start work: 1
+ get_data:asda
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 1
+ get_data:asda
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 2
+ get_data:asda
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 1
+ get_data:asda
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 1
+ get_data:asda
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 2
+ get_data:asda
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 1
+ get_data:asda
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 2
+ get_data:asda
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 1
+ get_data:asda
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 1
+ get_data:asda
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 2
+ get_data:asda
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 1
+ get_data:asda
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 1
+ get_data:asda
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 2
+ start work: 1
+ start work: 2
+ get_data:{"in":2}
+get_data:{"in":2}
+start work: 1
+ start work: 2
+ get_data:asdad
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 1
+ get_data:asdad
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 2
+ get_data:asdad
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+get_data:asdad
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 2
+ start work: 1
+ get_data:asdad
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 1
+ get_data:asdad
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 2
+ get_data:asdad
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 1
+ get_data:asdad
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 2
+ get_data:asdad
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 1
+ get_data:asdad
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 1
+ get_data:asdad
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 2
+ get_data:asdad
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 1
+ get_data:asdad
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+get_data:asdad
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 2
+ start work: 1
+ get_data:asdad
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 1
+ get_data:asdad
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 2
+ get_data:asdad
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 1
+ get_data:asdad
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 1
+ get_data:asdad
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 2
+ get_data:asdad
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 1
+ get_data:asdad
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 1
+ get_data:asdad
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 2
+ get_data:asdad
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 1
+ get_data:asdad
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 1
+ get_data:asdad
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 2
+ get_data:asdad
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 1
+ get_data:asdad
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 1
+ get_data:asdad
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 2
+ get_data:asdad
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 1
+ get_data:asdad
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 1
+ get_data:asdad
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 2
+ get_data:asdad
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 1
+ get_data:asdad
+Traceback (most recent call last):
+  File "./priv/hello.py", line 37, in <module>
+    main(sys.argv[1])
+  File "./priv/hello.py", line 22, in main
+    data = json.loads(line)
+  File "/usr/lib/python2.7/json/__init__.py", line 339, in loads
+    return _default_decoder.decode(s)
+  File "/usr/lib/python2.7/json/decoder.py", line 364, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/usr/lib/python2.7/json/decoder.py", line 382, in raw_decode
+    raise ValueError("No JSON object could be decoded")
+ValueError: No JSON object could be decoded
+start work: 2
  

@@ -9,13 +9,12 @@
          start_map_workers/2,
          stop_all_workers/1,
 
-
          call_worker/2,
          call_map_workers/2,
          call_workers/2,
          call_sync_workers/2,
          cast_all_workers/2,
-
+         set_status_worker/3,
          get_result_worker/2
          
         ]).
@@ -36,7 +35,7 @@
           limit=10, 
           mfa, 
           name,
-          workers_pids=[]
+          workers_pids=maps:new()
           
 }).
 
@@ -49,7 +48,7 @@ start_link(Name, Limit, MFA) ->
 
 init([Name, Limit, MFA]) ->
     Name = ets:new(Name, [set, public, named_table, 
-                          {keypos, #worker_stat.pid}]),
+                          {keypos, #worker_stat.ref}]),
 	{ok, #state{limit=Limit, mfa=MFA, name=Name}}.
 
 register_worker(Name, Pid) ->
@@ -96,16 +95,27 @@ call_map_workers(Name, Msg) ->
                                    Msg).
 	
 
-call_sync_workers(Name, Msg) ->
-    gen_server:call(Name, {call_workers, {sync_msg, Msg}}).
 
 call_workers(Name, Msg) ->
     gen_server:call(Name, {call_workers, {msg, Msg}}).
 
+call_sync_workers(Name, Msg) ->
+   gen_server:call(Name, {call_workers, {sync_msg, Msg}}).
+
+%% call_workers(Name, Msg, Acc) ->
+%%  case call_worker(Name, Msg) of
+%%    {ok, []} -> {ok, Acc};
+%%    {ok, R} -> call_workers(Name, Msg, [R|Acc])
+%% 
+%% end.
 
 
 cast_all_workers(Name, Msg) ->
     gen_server:cast(Name, {cast_all_workers, {msg, Msg}}).
+
+
+set_status_worker(Name, Pid, S) ->
+    gen_server:cast(Name, {set_status_worker, Pid, S}).
 
 
 get_result_worker(Name, Msg) ->
@@ -134,58 +144,53 @@ handle_call({start_worker, _}, _From, State) ->
 
 
 handle_call({stop_all_workers}, _From, #state{workers_pids=Pids}=State) ->
-    ?Debug(Pids),
+    ?Debug(maps:keys(Pids)),
         lists:foreach(fun(Pid) -> gen_server:call(Pid, stop) end, 
-                                   Pids),
+                                   maps:keys(Pids)),
 	        {reply, ok, State};
 
 
 handle_call({register, Pid}, _From, #state{workers_pids=Pids}=State) ->
     erlang:monitor(process, Pid),
 
-	    {reply, ok, State#state{workers_pids=[Pid|Pids] } };
+	    {reply, ok, State#state{workers_pids=maps:put(Pid, 0, Pids) } };
 
 
-handle_call({call_worker, Msg}, _From, #state{name=Name}=State) ->
+handle_call({call_worker, Msg}, _From, #state{workers_pids=Pids}=State) ->
     
-    Free=ets:select(Name, 
-                   ets:fun2ms(fun(N=#worker_stat{status=P}) 
-                                    when P=/=2 -> N 
-                              end)
-                  ),
+    Free=maps:filter(fun(_K, V) -> V=/=2 end ,Pids),
 
-      case Free of
+    ?Debug(Free),
+
+    case maps:keys(Free) of
           [] -> 
               {reply, {ok, []}, State};
+
           [P|_] -> 
-            R=gen_server:call(P#worker_stat.pid, Msg),
-            {reply, {ok, R}, State}
+            R=gen_server:call(P, Msg),
+
+              {reply, {ok, R}, State}
 
       end;
 
 
-
-handle_call({call_workers, Msg}, _From, #state{name=Name}=State) ->
+handle_call({call_workers, Msg}, _From, #state{workers_pids=Pids}=State) ->
     
-    Free=ets:select(Name, 
-                   ets:fun2ms(fun(N=#worker_stat{status=P}) 
-                                    when P=/=2 -> N 
-                              end)
-                  ),
+    Free=maps:filter(fun(_K, V) -> V=/=2 end ,Pids),
 
-        R=lists:map(fun(Pid) -> 
-                            ?Debug({call, Pid}),
-                             gen_server:call(Pid, Msg)
-                    end, [X#worker_stat.pid||X<-Free]),
-          ?Debug(R),
-          
-	        {reply, {ok, R}, State};
+    ?Debug(Free),
+
+        R=lists:map(fun(P) ->
+                        gen_server:call(P, Msg)
+                end
+                ,maps:keys(Free)),
+
+            {reply, {ok, R}, State};
+
 
 
 handle_call({get_result_worker, Msg}, _From, #state{name=Name}=State) ->
         
-
-    %% TODO need new res ets
     R = ets:select(Name, 
                    ets:fun2ms(fun(N=#worker_stat{ref=P}) 
                                     when P=:=Msg -> N 
@@ -200,12 +205,19 @@ handle_call(_Request, _From, State) ->
 
 
 
+
 handle_cast({cast_all_workers, Msg},  #state{workers_pids=Pids}=State) ->
     ?Debug(Pids),
         lists:foreach(fun(Pid) -> gen_server:cast(Pid, Msg) end,
-                                   Pids),
+                                   maps:keys(Pids)),
 
 	        {noreply, State};
+
+handle_cast({set_status_worker, Pid, S},
+            #state{workers_pids=Pids}=State) ->
+
+	{noreply, State#state{workers_pids=maps:update(Pid, S, Pids)}};
+
 
 
 handle_cast(_Msg, State) ->
@@ -217,7 +229,7 @@ handle_cast(_Msg, State) ->
 handle_info({'DOWN', _MonitorRef, process, Pid, _Info}, 
             #state{workers_pids=Pids, limit=Limit}=State) ->
 
-    	{noreply, State#state{workers_pids=lists:delete(Pid, Pids),
+    	{noreply, State#state{workers_pids=maps:remove(Pid, Pids),
                               limit=Limit+1}};
 
 
