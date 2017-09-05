@@ -28,6 +28,10 @@ start() ->
       fun() ->
         application:start(ppool),
         ppool:start_pool(my, 10, {port_worker, start_link, []}),
+        ppool:start_pool(my2, 10, {port_worker, start_link, []}),
+        ppool:start_pool(my3, 10, {port_worker, start_link, []}),
+
+
 
         % ppool_worker:start_all_workers(my, "python ./priv/hello.py 2 2"
         %                                    ">> ./logs/hello_err.log"),
@@ -40,6 +44,10 @@ start() ->
                   ],
 
         ppool_worker:start_map_workers(my, Workers),
+        ppool_worker:start_map_workers(my2, Workers),
+        ppool_worker:start_map_workers(my3, Workers),
+
+
 
 
 
@@ -60,11 +68,11 @@ call_sync_workers() ->
 
 
 sub_all() ->
-    ppool_worker:subscribe(my, my, ok, all),
+    ppool_worker:subscribe(my, my3, ok, all),
     ppool_worker:call_worker(my, "{\"in\":2}\n").
 
 sub_one() ->
-    ppool_worker:subscribe(my, my, ok, one),
+    ppool_worker:subscribe(my, my2, error, one),
     ppool_worker:call_worker(my, "{\"in\":2}\n").
 
 

@@ -18,7 +18,8 @@
          set_status_worker/3,
          get_result_worker/2,
 
-         subscribe/4
+         subscribe/4,
+         unsubscribe/2
          
         ]).
 
@@ -124,12 +125,13 @@ get_result_worker(Name, Msg) ->
 
 
 subscribe(Name, S, Filter, API) ->
-    gen_event:add_sup_handler(list_to_atom(atom_to_list(Name)++"_ev"), 
-                                           ppool_ev, [S, Filter, API]).
+    gen_server:cast(Name, {subscribe, S, Filter, API}).
 
+unsubscribe(Name, S) ->
+    gen_server:cast(Name, {unsubscribe, S}).
 
+   
 %% callbacks
-
 
 handle_call({start_worker, Cmd}, _From, #state{name=Name, 
                                                limit=Limit
@@ -223,6 +225,22 @@ handle_cast({set_status_worker, Pid, S},
             #state{workers_pids=Pids}=State) ->
 
 	{noreply, State#state{workers_pids=maps:update(Pid, S, Pids)}};
+
+
+
+
+handle_cast({subscribe, S, Filter, API}, #state{name=Name}=State) ->
+
+    gen_event:add_sup_handler(list_to_atom(atom_to_list(Name)++"_ev"), 
+                              {ppool_ev, S}, [S, Filter, API]),
+    	{noreply, State};
+
+handle_cast({unsubscribe, S}, #state{name=Name}=State) ->
+
+    gen_event:delete_handler(list_to_atom(atom_to_list(Name)++"_ev"), 
+                              {ppool_ev, S},[]),
+    	{noreply, State};
+
 
 
 
