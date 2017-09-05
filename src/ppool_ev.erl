@@ -3,7 +3,8 @@
 
 
 %% API.
--export([start_link/1
+-export([start_link/1,
+         test_filter/2
         
         ]).
 
@@ -38,7 +39,7 @@ init([Pid, Filter, API]) ->
 
 handle_event({msg, {F, _, Msg}=_M}, 
              #state{pid=Pid, filter=Filter, api=API}=State)
-      when F=:=Filter,  API=:=all ->
+      when F=:=Filter, API=:=all ->
 
      ?Debug({event_all, self(), Pid, Msg, Filter, F, API}),
 
@@ -49,7 +50,7 @@ handle_event({msg, {F, _, Msg}=_M},
 
 handle_event({msg, {F, _, Msg}=_M}, 
              #state{pid=Pid, filter=Filter, api=API}=State)
-      when F=:=Filter,  API=:=one ->
+      when F=:=Filter, API=:=one ->
 
      ?Debug({event_one, self(), Pid, Msg, Filter, F, API}),
 
@@ -83,3 +84,12 @@ code_change(_OldVsn, State, _Extra) ->
  
 terminate(_Reason, _State) ->
     ok.
+
+
+
+fun test_filter(F, S) ->
+    try <<F, _R2/binary>> = S of
+        _ -> true
+    catch
+        _ -> false
+    end.
