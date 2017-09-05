@@ -92,6 +92,20 @@ handle_cast({msg, Msg}, #state{master=N, ev=E, cmd=Cmd, port=Port}=State) ->
 
        end;
 
+handle_cast({stream_msg, Msg}, #state{master=N, ev=E, cmd=Cmd, port=Port}=State) ->
+
+    Ref = new_ets_msg(N, Cmd, Msg),
+
+       port_command(Port, Msg),
+ 
+       case process_stream_ets_msg(N, E, Port, Ref, Msg) of
+           {error, timeout} -> {stop, port_timeout, State};
+            _ -> {noreply, State}
+
+       end;
+
+
+
 handle_cast(_Msg, State) ->
 	{noreply, State}.
 
@@ -211,5 +225,24 @@ process_ets_msg(N, E, Port, Ref, Msg) ->
                  {error, timeout}
         end.
 
+
+process_stream_ets_msg(N, E, Port, Ref, Msg) ->
+
+        case collect_response(Port) of
+            {ok, Response} -> 
+                  gen_event:notify(E, {msg, {ok, Ref, Response}}),
+                    process_stream_ets_msg(N, E, Port, Ref, Msg),
+                    ok;
+
+            {error, Status, Err} ->
+                 gen_event:notify(E, {msg, {error, Ref, "error"}}),
+
+                {error, Status, Err};
+            {error, timeout} ->
+
+                  gen_event:notify(E, {msg, {error, Ref, "timeout"}}),
+
+                 {error, timeout}
+        end.
 
 

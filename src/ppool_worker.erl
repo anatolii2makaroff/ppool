@@ -14,6 +14,7 @@
          call_workers/2,
          call_sync_workers/2,
          cast_all_workers/2,
+         stream_all_workers/2,
 
          set_status_worker/3,
          get_result_worker/2,
@@ -114,6 +115,9 @@ call_sync_workers(Name, Msg) ->
 
 cast_all_workers(Name, Msg) ->
     gen_server:cast(Name, {cast_all_workers, {msg, Msg}}).
+
+stream_all_workers(Name, Msg) ->
+    gen_server:cast(Name, {cast_all_workers, {stream_msg, Msg}}).
 
 
 set_status_worker(Name, Pid, S) ->

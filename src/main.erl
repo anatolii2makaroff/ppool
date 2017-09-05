@@ -4,6 +4,7 @@
         ,call_sync_workers/0
         ,sub_all/0
         ,sub_one/0
+        ,stream/0
         ]).
 
 
@@ -38,29 +39,32 @@ start() ->
 
 
 
-        Workers = ["python ./priv/hello.py 1 2>> ./logs/hello_err.log",
-                   "python ./priv/hello.py 2 2>> ./logs/hello_err.log"
+        Workers = ["python ./priv/hello_stream.py 1 2>> ./logs/hello_err.log",
+                   "python ./priv/hello_stream.py 2 2>> ./logs/hello_err.log"
                    %%"nodejs ./priv/hello.js 2>> ./logs/hello_err_js.log"
                   ],
 
         ppool_worker:start_map_workers(my, Workers),
-        ppool_worker:start_map_workers(my2, Workers),
-        ppool_worker:start_map_workers(my3, Workers),
+        %ppool_worker:start_map_workers(my2, Workers),
+        %ppool_worker:start_map_workers(my3, Workers),
 
 
 
 
 
         
-        for(10, fun() -> 
-                        ppool_worker:call_workers(my, "{\"in\":2}\n")
-                end
-        ),
+        %for(10, fun() -> 
+        %                ppool_worker:call_workers(my, "{\"in\":2}\n")
+        %        end
+        %),
     
 
         ok
 
       end).
+
+stream() ->
+    ppool_worker:stream_all_workers(my, "{\"in\":2}\n"). 
 
 
 call_sync_workers() ->

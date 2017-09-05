@@ -55,8 +55,9 @@ handle_event({msg, {F, _, Msg}=_M},
 
 
          case ppool_worker:call_worker(Pid, Msg++"\n") of
-             {ok, []} -> error_logger:error_msg("no more subscribers ~p~n, [~p]",
-                                                [Pid, Msg]);
+             {ok, []} -> 
+                 error_logger:error_msg("no more subscribers ~p~n, [~p]",
+                                                            [Pid, Msg]);
              {ok, _R} -> ok
 
          end,
@@ -65,13 +66,10 @@ handle_event({msg, {F, _, Msg}=_M},
 
 
 
-
 handle_event(Event, State) ->
     ?Debug(Event),
       {ok, State}.
  
-
-
 
 handle_call(_, State) ->
     {ok, ok, State}.
