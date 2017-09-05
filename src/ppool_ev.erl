@@ -3,8 +3,7 @@
 
 
 %% API.
--export([start_link/1,
-         test_filter/2
+-export([start_link/1
         
         ]).
 
@@ -35,33 +34,55 @@ init([Pid, Filter, API]) ->
 	{ok, #state{pid=Pid, filter=Filter, api=API}}.
 
 
+%% all
 
-
-handle_event({msg, {F, _, Msg}=_M}, 
+handle_event({msg, {_,_,[Msg]}=_M}, 
              #state{pid=Pid, filter=Filter, api=API}=State)
-      when F=:=Filter, API=:=all ->
+      when Filter=/=no, API=:=all ->
 
-     ?Debug({event_all, self(), Pid, Msg, Filter, F, API}),
+    ?Debug({event_all, self(), Pid, Msg, Filter, API}),
 
-         ppool_worker:cast_all_workers(Pid, Msg++"\n"),
+     case binary:match(Msg, Filter) of
+         nomatch -> ok;
+               _ -> ppool_worker:cast_all_workers(Pid, [Msg]++"\n")
+     end,
     
       {ok, State};
 
 
-handle_event({msg, {F, _, Msg}=_M}, 
+handle_event({msg, {_,_,Msg}=_M}, 
              #state{pid=Pid, filter=Filter, api=API}=State)
-      when F=:=Filter, API=:=one ->
+      when API=:=all ->
 
-     ?Debug({event_one, self(), Pid, Msg, Filter, F, API}),
+    ?Debug({event_all, self(), Pid, Msg, Filter, API}),
+      ppool_worker:cast_all_workers(Pid, Msg++"\n"),
+    
+      {ok, State};
 
 
-         case ppool_worker:call_worker(Pid, Msg++"\n") of
-             {ok, []} -> 
-                 error_logger:error_msg("no more subscribers ~p~n, [~p]",
-                                                            [Pid, Msg]);
-             {ok, _R} -> ok
+%% one
 
-         end,
+handle_event({msg, {_,_,[Msg]}=_M}, 
+             #state{pid=Pid, filter=Filter, api=API}=State)
+      when Filter=/=no, API=:=one ->
+
+    ?Debug({event_one, self(), Pid, Msg, Filter, API}),
+
+     case binary:match(Msg, Filter) of
+         nomatch -> ok;
+               _ -> call_worker(Pid, [Msg]++"\n")
+     end,
+ 
+      {ok, State};
+
+
+handle_event({msg, {_,_,Msg}=_M}, 
+             #state{pid=Pid, filter=Filter, api=API}=State)
+      when API=:=one ->
+
+     ?Debug({event_one, self(), Pid, Msg, Filter, API}),
+
+         call_worker(Pid, Msg++"\n"),
     
       {ok, State};
 
@@ -86,10 +107,13 @@ terminate(_Reason, _State) ->
     ok.
 
 
+call_worker(Pid, Msg) ->
 
-fun test_filter(F, S) ->
-    try <<F, _R2/binary>> = S of
-        _ -> true
-    catch
-        _ -> false
-    end.
+         case ppool_worker:call_worker(Pid, Msg) of
+             {ok, []} -> 
+                 error_logger:error_msg("no more subscribers ~p~n, [~p]",
+                                                            [Pid, Msg]);
+             {ok, _R} -> ok
+
+         end.
+

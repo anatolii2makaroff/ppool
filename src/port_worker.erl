@@ -209,7 +209,7 @@ process_ets_msg(N, E, Port, Ref, Msg) ->
                                  {#worker_stat.result, Status},
                                  {#worker_stat.time_end, os:timestamp()}
                                 ]),
-                  gen_event:notify(E, {msg, {error, Ref, "error"}}),
+                  gen_event:notify(E, {msg, {error, Ref, <<"error">>}}),
 
 
 
@@ -220,7 +220,7 @@ process_ets_msg(N, E, Port, Ref, Msg) ->
                                  {#worker_stat.time_end, os:timestamp()}
                                 ]),
 
-                  gen_event:notify(E, {msg, {error, Ref, "timeout"}}),
+                  gen_event:notify(E, {msg, {error, Ref, <<"timeout">>}}),
 
                  {error, timeout}
         end.

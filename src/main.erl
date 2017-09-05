@@ -72,11 +72,11 @@ call_sync_workers() ->
 
 
 sub_all() ->
-    ppool_worker:subscribe(my, my3, ok, all),
+    ppool_worker:subscribe(my, my3, <<"ok">>, all),
     ppool_worker:call_worker(my, "{\"in\":2}\n").
 
 sub_one() ->
-    ppool_worker:subscribe(my, my2, error, one),
+    ppool_worker:subscribe(my, my2, <<"error">>, one),
     ppool_worker:call_worker(my, "{\"in\":2}\n").
 
 
