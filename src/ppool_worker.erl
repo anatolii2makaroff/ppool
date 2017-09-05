@@ -16,7 +16,9 @@
          cast_all_workers/2,
 
          set_status_worker/3,
-         get_result_worker/2
+         get_result_worker/2,
+
+         subscribe/4
          
         ]).
 
@@ -119,6 +121,11 @@ set_status_worker(Name, Pid, S) ->
 
 get_result_worker(Name, Msg) ->
     gen_server:call(Name, {get_result_worker, Msg}).
+
+
+subscribe(Name, S, Filter, API) ->
+    gen_event:add_sup_handler(list_to_atom(atom_to_list(Name)++"_ev"), 
+                                           ppool_ev, [S, Filter, API]).
 
 
 %% callbacks

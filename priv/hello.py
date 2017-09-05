@@ -30,7 +30,7 @@ def main(t):
         # raise Exception(exc)
 
 
-        sys.stdout.write("{}\n".format(data["in"]))
+        sys.stdout.write("{{\"in\":{0} }}\n".format(data["in"]))
         sys.stdout.flush()
 
 if __name__ == "__main__":

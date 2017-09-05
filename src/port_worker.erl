@@ -185,7 +185,7 @@ process_ets_msg(N, E, Port, Ref, Msg) ->
                                 ]),
 
                   ppool_worker:set_status_worker(N, self(), 1),
-                  gen_event:notify(E, {msg, Response}),
+                  gen_event:notify(E, {msg, {ok, Ref, Response}}),
 
                 {ok, Response};
 
@@ -195,6 +195,9 @@ process_ets_msg(N, E, Port, Ref, Msg) ->
                                  {#worker_stat.result, Status},
                                  {#worker_stat.time_end, os:timestamp()}
                                 ]),
+                  gen_event:notify(E, {msg, {error, Ref}}),
+
+
 
                 {error, Status, Err};
             {error, timeout} ->
@@ -203,7 +206,7 @@ process_ets_msg(N, E, Port, Ref, Msg) ->
                                  {#worker_stat.time_end, os:timestamp()}
                                 ]),
 
-
+                  gen_event:notify(E, {msg, {timeout, Ref}}),
 
                  {error, timeout}
         end.
