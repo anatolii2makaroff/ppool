@@ -31,6 +31,8 @@ start() ->
         ppool:start_pool(my, 10, {port_worker, start_link, []}),
         ppool:start_pool(my2, 10, {port_worker, start_link, []}),
         ppool:start_pool(my3, 10, {port_worker, start_link, []}),
+        ppool:start_pool(stream, 2, {port_worker, start_link, []}),
+
 
 
 
@@ -39,14 +41,14 @@ start() ->
 
 
 
-        Workers = ["python ./priv/hello_stream.py 1 2>> ./logs/hello_err.log",
-                   "python ./priv/hello_stream.py 2 2>> ./logs/hello_err.log"
+        Workers = ["python ./priv/hello.py 1 2>> ./logs/hello_err.log",
+                   "python ./priv/hello.py 2 2>> ./logs/hello_err.log"
                    %%"nodejs ./priv/hello.js 2>> ./logs/hello_err_js.log"
                   ],
 
         ppool_worker:start_map_workers(my, Workers),
-        %ppool_worker:start_map_workers(my2, Workers),
-        %ppool_worker:start_map_workers(my3, Workers),
+        ppool_worker:start_map_workers(my2, Workers),
+        ppool_worker:start_map_workers(my3, Workers),
 
 
 
@@ -64,7 +66,15 @@ start() ->
       end).
 
 stream() ->
-    ppool_worker:stream_all_workers(my, "{\"in\":2}\n"). 
+        Workers = ["python ./priv/hello_stream.py 1 2>> ./logs/hello_err.log",
+                   "python ./priv/hello_stream.py 2 2>> ./logs/hello_err.log"
+                   %%"nodejs ./priv/hello.js 2>> ./logs/hello_err_js.log"
+                  ],
+
+        ppool_worker:start_map_workers(stream, Workers),
+
+
+    ppool_worker:stream_all_workers(stream, "{\"in\":2}\n"). 
 
 
 call_sync_workers() ->
@@ -72,11 +82,16 @@ call_sync_workers() ->
 
 
 sub_all() ->
-    ppool_worker:subscribe(my, my3, <<"ok">>, all),
+    ppool_worker:subscribe(my, my3, <<"in\":2">>, all),
     ppool_worker:call_worker(my, "{\"in\":2}\n").
 
 sub_one() ->
-    ppool_worker:subscribe(my, my2, <<"error">>, one),
+    ppool_worker:subscribe(my, my2, no, one),
     ppool_worker:call_worker(my, "{\"in\":2}\n").
 
+
+
+
+
+ 
 

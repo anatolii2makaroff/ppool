@@ -40,10 +40,10 @@ init({N, Cmd}) ->
 
 
 
-handle_call({msg, Msg}, From, #state{master=N, ev=E, cmd=Cmd, port=Port}=State) ->
+handle_call({msg, R, Msg}, From, #state{master=N, ev=E, cmd=Cmd, port=Port}=State) ->
 
     ?Debug(Msg),
-    Ref = new_ets_msg(N, Cmd, Msg),
+    Ref = new_ets_msg(N, Cmd, R, Msg),
       gen_server:reply(From, Ref),
  
        case process_ets_msg(N, E, Port, Ref, Msg) of
@@ -51,10 +51,10 @@ handle_call({msg, Msg}, From, #state{master=N, ev=E, cmd=Cmd, port=Port}=State) 
             _ -> {noreply, State}
        end;
 
-handle_call({sync_msg, Msg}, _From, #state{master=N, ev=E,
+handle_call({sync_msg, R, Msg}, _From, #state{master=N, ev=E,
                                            cmd=Cmd, port=Port}=State) ->
  
-    Ref = new_ets_msg(N, Cmd, Msg),
+    Ref = new_ets_msg(N, Cmd, R, Msg),
 
         case process_ets_msg(N, E, Port, Ref, Msg) of
             {ok, Response} -> 
@@ -76,15 +76,15 @@ handle_call(_Request, _From, State) ->
 
 
 
-handle_cast({msg, restart}, State) ->
+handle_cast({msg, _, restart}, State) ->
     {stop, restart, State};
 
-handle_cast({msg, stop}, State) ->
+handle_cast({msg, _, stop}, State) ->
     {stop, normal, State};
 
-handle_cast({msg, Msg}, #state{master=N, ev=E, cmd=Cmd, port=Port}=State) ->
+handle_cast({msg, R, Msg}, #state{master=N, ev=E, cmd=Cmd, port=Port}=State) ->
 
-    Ref = new_ets_msg(N, Cmd, Msg),
+    Ref = new_ets_msg(N, Cmd, R, Msg),
  
        case process_ets_msg(N, E, Port, Ref, Msg) of
            {error, timeout} -> {stop, port_timeout, State};
@@ -92,9 +92,9 @@ handle_cast({msg, Msg}, #state{master=N, ev=E, cmd=Cmd, port=Port}=State) ->
 
        end;
 
-handle_cast({stream_msg, Msg}, #state{master=N, ev=E, cmd=Cmd, port=Port}=State) ->
+handle_cast({stream_msg, R, Msg}, #state{master=N, ev=E, cmd=Cmd, port=Port}=State) ->
 
-    Ref = new_ets_msg(N, Cmd, Msg),
+    Ref = new_ets_msg(N, Cmd, R, Msg),
 
        port_command(Port, Msg),
  
@@ -171,11 +171,14 @@ collect_response(Port, Lines, OldLine) ->
 
 
 
-new_ets_msg(N, Cmd, Msg) ->
-    Ref = make_ref(),
+new_ets_msg(N, Cmd, R, Msg) ->
+
     ?Debug({new_ets_msg, self()}),
 
-     true=ets:insert(N, #worker_stat{ref=Ref, pid=self(),cmd=Cmd,
+    Ref=make_ref(),
+
+     true=ets:insert(N, #worker_stat{ref=Ref, 
+                                     ref_from=R, pid=self(),cmd=Cmd,
                                      req=Msg, status=running,
                                      time_start=os:timestamp()}
                         ),
@@ -209,7 +212,7 @@ process_ets_msg(N, E, Port, Ref, Msg) ->
                                  {#worker_stat.result, Status},
                                  {#worker_stat.time_end, os:timestamp()}
                                 ]),
-                  gen_event:notify(E, {msg, {error, Ref, <<"error">>}}),
+                  gen_event:notify(E, {msg, {error, Ref, [<<"error">>]}}),
 
 
 
@@ -220,7 +223,7 @@ process_ets_msg(N, E, Port, Ref, Msg) ->
                                  {#worker_stat.time_end, os:timestamp()}
                                 ]),
 
-                  gen_event:notify(E, {msg, {error, Ref, <<"timeout">>}}),
+                  gen_event:notify(E, {msg, {error, Ref, [<<"timeout">>]}}),
 
                  {error, timeout}
         end.
@@ -235,12 +238,23 @@ process_stream_ets_msg(N, E, Port, Ref, Msg) ->
                     ok;
 
             {error, Status, Err} ->
-                 gen_event:notify(E, {msg, {error, Ref, "error"}}),
+                true=ets:update_element(N, Ref, [
+                                 {#worker_stat.status, error},
+                                 {#worker_stat.result, Status},
+                                 {#worker_stat.time_end, os:timestamp()}
+                                ]),
+ 
+                 gen_event:notify(E, {msg, {error, Ref, [<<"error">>]}}),
 
                 {error, Status, Err};
             {error, timeout} ->
 
-                  gen_event:notify(E, {msg, {error, Ref, "timeout"}}),
+                true=ets:update_element(N, Ref, [
+                                 {#worker_stat.status, timeout},
+                                 {#worker_stat.time_end, os:timestamp()}
+                                ]),
+
+                  gen_event:notify(E, {msg, {error, Ref, [<<"timeout">>]}}),
 
                  {error, timeout}
         end.

@@ -36,7 +36,7 @@ init([Pid, Filter, API]) ->
 
 %% all
 
-handle_event({msg, {_,_,[Msg]}=_M}, 
+handle_event({msg, {_,R,[Msg]}=_M}, 
              #state{pid=Pid, filter=Filter, api=API}=State)
       when Filter=/=no, API=:=all ->
 
@@ -44,25 +44,25 @@ handle_event({msg, {_,_,[Msg]}=_M},
 
      case binary:match(Msg, Filter) of
          nomatch -> ok;
-               _ -> ppool_worker:cast_all_workers(Pid, [Msg]++"\n")
+               _ -> ppool_worker:cast_all_workers(Pid, R, [Msg]++"\n")
      end,
     
       {ok, State};
 
 
-handle_event({msg, {_,_,Msg}=_M}, 
+handle_event({msg, {_,R,[Msg]}=_M}, 
              #state{pid=Pid, filter=Filter, api=API}=State)
       when API=:=all ->
 
     ?Debug({event_all, self(), Pid, Msg, Filter, API}),
-      ppool_worker:cast_all_workers(Pid, Msg++"\n"),
+      ppool_worker:cast_all_workers(Pid, R, [Msg]++"\n"),
     
       {ok, State};
 
 
 %% one
 
-handle_event({msg, {_,_,[Msg]}=_M}, 
+handle_event({msg, {_,R,[Msg]}=_M}, 
              #state{pid=Pid, filter=Filter, api=API}=State)
       when Filter=/=no, API=:=one ->
 
@@ -70,19 +70,19 @@ handle_event({msg, {_,_,[Msg]}=_M},
 
      case binary:match(Msg, Filter) of
          nomatch -> ok;
-               _ -> call_worker(Pid, [Msg]++"\n")
+               _ -> call_worker(Pid, R, [Msg]++"\n")
      end,
  
       {ok, State};
 
 
-handle_event({msg, {_,_,Msg}=_M}, 
+handle_event({msg, {_,R,[Msg]}=_M}, 
              #state{pid=Pid, filter=Filter, api=API}=State)
       when API=:=one ->
 
      ?Debug({event_one, self(), Pid, Msg, Filter, API}),
 
-         call_worker(Pid, Msg++"\n"),
+         call_worker(Pid, R, [Msg]++"\n"),
     
       {ok, State};
 
@@ -107,13 +107,13 @@ terminate(_Reason, _State) ->
     ok.
 
 
-call_worker(Pid, Msg) ->
+call_worker(Pid, R, Msg) ->
 
-         case ppool_worker:call_worker(Pid, Msg) of
+         case ppool_worker:call_worker(Pid, R, Msg) of
              {ok, []} -> 
                  error_logger:error_msg("no more subscribers ~p~n, [~p]",
-                                                            [Pid, Msg]);
-             {ok, _R} -> ok
+                                                            [{Pid,R}, Msg]);
+             {ok, _Res} -> ok
 
          end.
 

@@ -10,10 +10,14 @@
          stop_all_workers/1,
 
          call_worker/2,
+         call_worker/3,
+
          call_map_workers/2,
          call_workers/2,
          call_sync_workers/2,
+
          cast_all_workers/2,
+         cast_all_workers/3,
          stream_all_workers/2,
 
          set_status_worker/3,
@@ -92,18 +96,22 @@ stop_all_workers(Name) ->
 %% API
 
 call_worker(Name, Msg) ->
-    gen_server:call(Name, {call_worker, {msg, Msg}}).
+    ?Debug(Msg),
+    gen_server:call(Name, {call_worker, {msg, no, Msg}}).
+
+call_worker(Name, Ref, Msg) ->
+    gen_server:call(Name, {call_worker, {msg, Ref, Msg}}).
 
 
 call_map_workers(Name, Msg) ->
-    lists:map(fun(M) -> call_worker(Name, M) end, 
+    lists:map(fun(M) -> call_worker(Name, no, M) end, 
                                    Msg).
 
 call_workers(Name, Msg) ->
-    gen_server:call(Name, {call_workers, {msg, Msg}}).
+    gen_server:call(Name, {call_workers, {msg, no, Msg}}).
 
 call_sync_workers(Name, Msg) ->
-   gen_server:call(Name, {call_workers, {sync_msg, Msg}}).
+   gen_server:call(Name, {call_workers, {sync_msg, no, Msg}}).
 
 %% call_workers(Name, Msg, Acc) ->
 %%  case call_worker(Name, Msg) of
@@ -114,10 +122,16 @@ call_sync_workers(Name, Msg) ->
 
 
 cast_all_workers(Name, Msg) ->
-    gen_server:cast(Name, {cast_all_workers, {msg, Msg}}).
+    gen_server:cast(Name, {cast_all_workers, {msg, no, Msg}}).
+
+
+cast_all_workers(Name, Ref, Msg) ->
+    gen_server:cast(Name, {cast_all_workers, {msg, Ref, Msg}}).
+
 
 stream_all_workers(Name, Msg) ->
-    gen_server:cast(Name, {cast_all_workers, {stream_msg, Msg}}).
+    gen_server:cast(Name, {cast_all_workers,
+                           {stream_msg, no, Msg}}).
 
 
 set_status_worker(Name, Pid, S) ->
