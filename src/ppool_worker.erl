@@ -58,6 +58,10 @@ start_link(Name, Limit, MFA) ->
 init([Name, Limit, MFA]) ->
     Name = ets:new(Name, [set, public, named_table, 
                           {keypos, #worker_stat.ref}]),
+
+    pg2:create(Name),
+     pg2:join(Name, self()),
+
 	{ok, #state{limit=Limit, mfa=MFA, name=Name}}.
 
 register_worker(Name, Pid) ->

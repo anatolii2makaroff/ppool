@@ -8,3 +8,7 @@ include erlang.mk
 
 run:
 	make && erl -config ppool -boot start_sasl -pa ./ebin -s main
+
+run_node:
+	make && erl -sname ${NODE} -setcookie '123' -config ppool -boot start_sasl -pa ./ebin -s main
+
