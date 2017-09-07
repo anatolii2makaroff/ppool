@@ -175,7 +175,7 @@ new_ets_msg(N, Cmd, R, Msg) ->
 
     ?Debug({new_ets_msg, self()}),
 
-    Ref=make_ref(),
+    Ref={node(), erlang:timestamp()},
 
      true=ets:insert(N, #worker_stat{ref=Ref, 
                                      ref_from=R, pid=self(),cmd=Cmd,

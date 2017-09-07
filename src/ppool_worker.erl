@@ -220,6 +220,8 @@ handle_call({call_workers, Msg}, _From, #state{workers_pids=Pids}=State) ->
 
 
 handle_call({get_result_worker, Msg}, _From, #state{name=Name}=State) ->
+
+    ?Debug({Name, Msg}),
         
     R = ets:select(Name, 
                    ets:fun2ms(fun(N=#worker_stat{ref=P}) 
