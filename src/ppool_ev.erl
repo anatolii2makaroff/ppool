@@ -27,10 +27,18 @@
 
 
 start_link(Name) ->
-	gen_event:start_link({local, list_to_atom(atom_to_list(Name)++"_ev")}).
+
+    EvName=list_to_atom(atom_to_list(Name)++"_ev"),
+	{ok,Pid}=gen_event:start_link({local, EvName}),
+
+     pg2:create(EvName),
+      pg2:join(EvName, Pid),
+
+     {ok,Pid}.
 
 
 init([Pid, Filter, API]) ->
+
 	{ok, #state{pid=Pid, filter=Filter, api=API}}.
 
 
