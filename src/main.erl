@@ -25,8 +25,7 @@ for(0, _) ->
 
 
 start() ->
-    spawn(
-      fun() ->
+        application:start(node_watch),
         application:start(ppool),
         ppool:start_pool(my, 10, {port_worker, start_link, []}),
         ppool:start_pool(my2, 10, {port_worker, start_link, []}),
@@ -61,9 +60,8 @@ start() ->
         %),
     
 
-        ok
+        ok.
 
-      end).
 
 stream() ->
         Workers = ["python ./priv/hello_stream.py 1 2>> ./logs/hello_err.log",
