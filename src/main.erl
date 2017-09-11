@@ -2,6 +2,7 @@
 -module(main).
 -export([start/0
         ,call_sync_workers/0
+        ,call_worker/0
         ,sub_all/0
         ,sub_one/0
         ,stream/0
@@ -77,6 +78,11 @@ stream() ->
 
 call_sync_workers() ->
     ppool_worker:call_sync_workers(my, "{\"in\":2}\n").
+
+
+call_worker() ->
+    ppool_worker:call_worker(my, "{\"in\":2}\n").
+
 
 
 sub_all() ->

@@ -291,7 +291,8 @@ handle_info(clean_ets, #state{name=Name}=State) ->
         
     R = ets:select(Name, 
                    ets:fun2ms(fun(N=#worker_stat{time_end=P}) 
-                                    when P < {M, S-5*60, Mc}
+                                    when P=/=undefined 
+                                         andalso P<{M, S-5*60, Mc}
                                          -> N 
                               end)
                   ),
