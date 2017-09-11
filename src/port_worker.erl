@@ -115,7 +115,7 @@ handle_info(timeout, #state{master=M, cmd=Cmd}=State) ->
 
     ?Debug({open_port, Cmd}),
       Port = open_port({spawn, Cmd},
-                           [{line, 4096}, 
+                           [{line, 256}, 
                               exit_status, binary]),
     
        ?Debug({registering, self()}),

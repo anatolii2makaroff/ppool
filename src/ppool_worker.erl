@@ -43,7 +43,7 @@
 -define(INTERVAL, 5*60).
 
 -record(state, {
-          limit=10, 
+          limit, 
           mfa, 
           name,
           workers_pids=maps:new()
