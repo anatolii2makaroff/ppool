@@ -39,10 +39,15 @@ start() ->
         % ppool_worker:start_all_workers(my, "python ./priv/hello.py 2 2"
         %                                    ">> ./logs/hello_err.log"),
 
+        % Cmd = "sudo docker run --rm -i -u python -w /home/python/ -v /tmp/:/tmp/ pyhello:0.1 /usr/bin/python hello.py 2 2>>/tmp/hello.log",
+
+        Cmd = "python ./priv/hello.py 2 2>>/tmp/hello.log",
 
 
-        Workers = ["python ./priv/hello.py 1 2>> ./logs/hello_err.log",
-                   "python ./priv/hello.py 2 2>> ./logs/hello_err.log"
+
+
+        Workers = [Cmd,
+                   Cmd
                    %%"nodejs ./priv/hello.js 2>> ./logs/hello_err_js.log"
                   ],
 

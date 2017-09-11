@@ -1,0 +1,4 @@
+sudo docker build -t pyhello:0.1
+
+sudo docker run --rm -i -u python -w /home/python/ -v /tmp/:/tmp/ pyhello:0.1 /usr/bin/python hello.py 2 2>>/tmp/hello.log
+
