@@ -7,6 +7,7 @@
         ,start_map_workers/0
         ,call_sync_workers/0
         ,call_worker/0
+        ,stream/1
         ,sub_all/0
         ,sub_one/0
         ]).
@@ -48,7 +49,6 @@ start_map_workers() ->
     ppool_worker:start_map_workers(nodejs, Cmds).
 
 
-
 call_sync_workers() ->
     ppool_worker:call_sync_workers(python, "hello python\n").
 
@@ -58,13 +58,16 @@ call_worker() ->
 
 
 
+stream(M) ->
+    ppool_worker:stream_all_workers(python_stream, M++"\n").
+
+
 sub_all() ->
-    ppool_worker:subscribe(my, my3, <<"in\":2">>, all),
-    ppool_worker:call_worker(my, "{\"in\":2}\n").
+    ppool_worker:subscribe(python_stream, nodejs, <<"start">>, all).
+
 
 sub_one() ->
-    ppool_worker:subscribe(my, my2, no, one),
-    ppool_worker:call_worker(my, "{\"in\":2}\n").
+    ppool_worker:subscribe(python_stream, python, no, one).
 
 
 

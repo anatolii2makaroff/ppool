@@ -290,9 +290,11 @@ handle_info(clean_ets, #state{name=Name}=State) ->
     {M, S, Mc} = erlang:timestamp(),
         
     R = ets:select(Name, 
-                   ets:fun2ms(fun(N=#worker_stat{time_end=P}) 
+                   ets:fun2ms(fun(N=#worker_stat{time_end=P, status=St}) 
                                     when P=/=undefined 
+                                         andalso St=/=running
                                          andalso P<{M, S-5*60, Mc}
+                                         
                                          -> N 
                               end)
                   ),
