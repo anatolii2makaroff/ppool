@@ -3,7 +3,7 @@
 
 %% API.
 -export([start_link/0]).
--export([start_pool/3, stop_pool/1]).
+-export([start_pool/2, stop_pool/2]).
 
 %% gen_server.
 -export([init/1]).
@@ -25,15 +25,20 @@ start_link() ->
 %% gen_server.
 
 init([]) ->
+
+    pg2:create(?MODULE),
+     pg2:join(?MODULE, self()),
+
 	{ok, #state{}}.
 
 
-start_pool(Name, Limit, {M, F, _}) ->
-    gen_server:call(?MODULE, {start_pool, {Name, Limit, {M, F, [Name]}} }).
+start_pool(N, {Name, Limit, {M, F, _}}) ->
+    gen_server:call(N, {start_pool, {Name, Limit, {M, F, [Name]}} }).
 
 
-stop_pool(Name) ->
-    gen_server:call(?MODULE, {stop_pool, Name}).
+stop_pool(N, Name) ->
+    gen_server:call(N, {stop_pool, Name}).
+
 
 
 handle_call({start_pool, {Name, Limit, MFA}}, _From, State) ->
