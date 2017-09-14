@@ -8,6 +8,8 @@
          start_all_workers/2,
          start_map_workers/2,
          stop_all_workers/1,
+         stop_all_workers/2,
+
 
          call_worker/2,
          call_worker/3,
@@ -23,7 +25,7 @@
          set_status_worker/3,
          get_result_worker/2,
 
-         subscribe/4,
+         subscribe/2,
          unsubscribe/2
          
         ]).
@@ -97,8 +99,12 @@ start_map_workers(_Name, []) ->
     ok.
 
 
+
 stop_all_workers(Name) ->
     gen_server:call(Name, {stop_all_workers}).
+stop_all_workers(Name, _) ->
+    gen_server:call(Name, {stop_all_workers}).
+
 
 
 %% API
@@ -150,7 +156,7 @@ get_result_worker(Name, Msg) ->
     gen_server:call(Name, {get_result_worker, Msg}).
 
 
-subscribe(Name, S, Filter, API) ->
+subscribe(Name, {S, Filter, API}) ->
     gen_server:cast(Name, {subscribe, S, Filter, API}).
 
 unsubscribe(Name, S) ->
