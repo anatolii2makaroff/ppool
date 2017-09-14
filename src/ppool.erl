@@ -48,9 +48,20 @@ handle_call({start_pool, {Name, Limit, MFA}}, _From, State) ->
 
 
 handle_call({stop_pool, Name}, _From, State) ->
-    P = ppool_sup:stop_pool(Name),
 
-	{reply, P, State};
+     P = ppool_sup:stop_pool(Name),
+
+      case pg2:get_members(Name) of
+
+          [] ->
+                pg2:delete(Name),
+                pg2:delete(list_to_atom(atom_to_list(Name)++"_ev"));
+
+           _ -> ok
+
+      end,
+
+	  {reply, P, State};
 
 
 handle_call(_Request, _From, State) ->
