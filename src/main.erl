@@ -10,6 +10,9 @@
         ,stream/1
         ,sub_all/0
         ,sub_one/0
+
+        ,start_distrib/1
+        ,call_distrib/1
         ]).
 
 
@@ -69,6 +72,26 @@ sub_all() ->
 
 sub_one() ->
     ppool_worker:subscribe(python_stream, python, no, one).
+
+
+%% distribute
+%%
+
+
+start_distrib(T) ->
+    node_scheduler:call(T, fun ppool:start_pool/2, ppool, 
+                        {test2, 10, {port_worker, start_link, []}} ),
+
+    node_scheduler:call(T, fun ppool_worker:start_all_workers/2, test2, 
+                         cmd("hellopy:0.1.0", 
+                             "python hello.py 1", 
+                             "hello.log")
+                       ).
+
+
+call_distrib(T) ->
+    node_scheduler:call(T, fun ppool_worker:call_workers/2, 
+                        test2, "asdasda\n" ).
 
 
 
