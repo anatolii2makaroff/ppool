@@ -53,6 +53,8 @@ def main(t):
 
         if n > _l:
 
+
+
             log("*********** {}".format(t))
             send(NodeInfo)
             log("message send: {}".format(NodeInfo))
