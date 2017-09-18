@@ -23,7 +23,7 @@ def send(m):
 #  log  -  logging anything
 
 
-def main(t):
+def main(node, t):
     """
         t - time interval in secs
     """
@@ -35,7 +35,7 @@ def main(t):
 
         log("tick..")
 
-        resp = get_system_stat()
+        resp = get_system_stat(node)
         send(resp)
 
         log("message send: {}".format(resp))
@@ -43,24 +43,26 @@ def main(t):
         time.sleep(int(t))
 
 
-def get_system_stat():
+def get_system_stat(node):
     mem = ps.virtual_memory()
     disk = ps.disk_usage("/")
 
-    stat = '{{"tag":"system_info","cpu_count": {},"cpu_percent": {},\
+    stat = '{{"tag":"system_info", "node": "{}", "cpu_count": {},"cpu_percent": {},\
               "ram_count": {},"ram_percent": {},"disk_count": {},\
-              "disk_percent": {}, "net_count": {}\
-              }}'.format(ps.cpu_count(),
-                         ps.cpu_percent(),
-                         mem[0]/(1024*1024),
-                         mem[2],
-                         disk[0]/(1024*1024),
-                         disk[3],
-                         len(ps.net_connections(kind="all"))
-                         )
+              "disk_percent": {}, "net_percent": {}\
+              }}'.format(
+                  node,
+                  ps.cpu_count(),
+                  ps.cpu_percent(),
+                  mem[0]/(1024*1024),
+                  mem[2],
+                  disk[0]/(1024*1024),
+                  disk[3],
+                  len(ps.net_connections(kind="all"))
+                  )
 
     return stat
 
 
 if __name__ == "__main__":
-    main(sys.argv[1])
+    main(sys.argv[1], sys.argv[2])
