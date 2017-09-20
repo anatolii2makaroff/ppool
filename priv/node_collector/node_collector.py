@@ -40,20 +40,9 @@ def main(t):
 
         data = json.loads(line)
 
-        c = NodeInfo.get(data["node"], None)
-        if c is None:
-            NodeInfo[data["node"]] = data
+        NodeInfo[data["node"]] = data
 
-        else:
-
-            c = {k: v for k, v in data.items() if k}
-            for k, v in NodeInfo[data["node"]].items():
-                if k.find("_percent") >= 0:
-                    NodeInfo[data["node"]][k] = (v + c[k])/n
-
-        if n > _l:
-
-
+        if n == _l:
 
             log("*********** {}".format(t))
             send(NodeInfo)

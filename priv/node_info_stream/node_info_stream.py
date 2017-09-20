@@ -63,7 +63,7 @@ def get_system_stat(node):
 
     stat = '{{"tag":"system_info", "node": "{}", "cpu_count": {},"cpu_percent": {},\
               "ram_count": {},"ram_percent": {},"disk_count": {},\
-              "disk_percent": {}, "net_percent": {}, "ppool":{}\
+              "disk_percent": {}, "net_count": {}, "ppool":{}\
               }}'.format(
                   node,
                   ps.cpu_count(),
