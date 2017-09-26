@@ -7,6 +7,7 @@ import time
 import psutil as ps
 import json
 
+
 # API
 
 
@@ -36,19 +37,23 @@ def main(node, t):
 
         log("tick..")
 
-        resp = get_system_stat(node)
+        # nodes
+        resp = get_node_stat(node)
         send(resp)
 
-        log("message send: {}".format(resp))
+        # ppols
+        for i in get_ppool_stat(node):
+            send(i)
+
+        # log("message send: {}".format(resp))
 
         time.sleep(int(t))
 
 
-def get_system_stat(node):
-    mem = ps.virtual_memory()
-    disk = ps.disk_usage("/")
+def get_ppool_stat(node):
 
     ppool = {}
+    stats = []
     for proc in ps.process_iter():
         pinfo = proc.as_dict(attrs=["pid", "name", "cmdline"])
 
@@ -61,22 +66,51 @@ def get_system_stat(node):
                                                pp + p.cpu_percent(),
                                                mp + p.memory_percent()]
 
-    stat = '{{"tag":"system_info", "node": "{}", "cpu_count": {},"cpu_percent": {},\
-              "ram_count": {},"ram_percent": {},"disk_count": {},\
-              "disk_percent": {}, "net_count": {}, "ppool":{}\
-              }}'.format(
+    _trace = '{{"tag":"ppool_{}", "values":{}, "labels":{} }}'
+
+    for k, v in ppool.items():
+
+        ppool_stat = '{{"tag":"ppool_stat", "node": "{}", "name": "{}", \
+                       "count":{}, "cpu_percent": {}, "ram_percent": {}, "_trace":{}\
+                        }}'.format(
+                            node,
+                            k,
+                            v[0],
+                            v[1],
+                            v[2],
+                            _trace.format(k, [v[1], v[2]],
+                                          json.dumps(["cpu", "ram"]))
+                        )
+
+        stats.append(ppool_stat)
+
+    return stats
+
+
+def get_node_stat(node):
+    mem = ps.virtual_memory()
+    disk = ps.disk_usage("/")
+    cpu_p = ps.cpu_percent()
+
+    _trace = '{{"tag":"node_{}", "values":{}, "labels":{} }}'
+
+    node_stat = '{{"tag":"node_stat", "node": "{}", "cpu_count": {},"cpu_percent": {},\
+                   "ram_count": {},"ram_percent": {},"disk_count": {},\
+                   "disk_percent": {}, "net_count": {}, "_trace":{}\
+                   }}'.format(
                   node,
                   ps.cpu_count(),
-                  ps.cpu_percent(),
+                  cpu_p,
                   mem[0]/(1024*1024),
                   mem[2],
                   disk[0]/(1024*1024),
                   disk[3],
                   len(ps.net_connections(kind="all")),
-                  json.dumps(ppool)
+                  _trace.format(node, [cpu_p, mem[2], disk[3]],
+                                      json.dumps(["cpu", "ram", "disk"]))
                   )
 
-    return stat
+    return node_stat
 
 
 if __name__ == "__main__":
