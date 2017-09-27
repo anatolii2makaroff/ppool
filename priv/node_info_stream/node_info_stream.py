@@ -78,8 +78,8 @@ def get_ppool_stat(node):
                             v[0],
                             v[1],
                             v[2],
-                            _trace.format(k, [v[1], v[2]],
-                                          json.dumps(["cpu", "ram"]))
+                            _trace.format(k, [v[1], v[2], (v[1]+ v[2])/2],
+                                          json.dumps(["cpu", "ram", "mid"]))
                         )
 
         stats.append(ppool_stat)

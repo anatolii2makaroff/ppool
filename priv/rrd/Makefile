@@ -1,7 +1,7 @@
 
 NAME=rrd
 VERSION=0.1.0
-CMD=/usr/bin/python rrd.py
+CMD=/usr/bin/python rrd.py /tmp/
 
 clean:
 	sudo docker rmi -f $(NAME):$(VERSION) 

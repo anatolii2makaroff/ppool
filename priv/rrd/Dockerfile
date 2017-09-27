@@ -2,5 +2,5 @@
 FROM python:2.7
 
 RUN useradd drop
-RUN pip install psutil
+RUN apt-get -y install rrdtool
 COPY ./rrd.py /home/drop/
