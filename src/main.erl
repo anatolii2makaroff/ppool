@@ -21,12 +21,13 @@ start() ->
     application:start(ppool),
     application:start(node_scheduler),
  
-    ppool:start_pool(ppool, {python, 10, {port_worker, start_link, []} }),
-    ppool:start_pool(ppool, {nodejs, 10, {port_worker, start_link, []} }),
-    ppool:start_pool(ppool, {python_stream, 2, 
+    ppool:start_pool(ppool, {python, 10, 30000, {port_worker, start_link, []} }),
+    ppool:start_pool(ppool, {nodejs, 10, 30000, {port_worker, start_link, []} }),
+    ppool:start_pool(ppool, {python_stream, 2, 30000,
                             {port_worker, start_link, []} }),
 
-
+    ppool:start_pool(ppool, {w2, 10, 30000, {worker, start_link, []} }),
+ 
         ok.
 
 

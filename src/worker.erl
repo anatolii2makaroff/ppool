@@ -1,8 +1,8 @@
--module(port_worker).
+-module(worker).
 -behaviour(gen_server).
 
 %% API.
--export([start_link/3]).
+-export([start_link/2]).
 
 %% gen_server.
 -export([init/1]).
@@ -19,49 +19,44 @@
           master,
           ev,
           port,
-          cmd,
-          timeout
+          cmd
 }).
 
 %% API.
 
-start_link(N, Cmd, T) ->
+start_link(N, Cmd) ->
  
-	gen_server:start_link(?MODULE, {N, Cmd, T}, []).
+	gen_server:start_link(?MODULE, {N, Cmd}, []).
 
 %% gen_server.
 
-init({N, Cmd, T}) ->
-    ?Debug({N, Cmd, T, self()}),
+init({N, Cmd}) ->
+    ?Debug({N, Cmd,  self()}),
       process_flag(trap_exit, true),
 
 	    {ok, #state{master=N, 
                     ev=list_to_atom(atom_to_list(N)++"_ev"),
-                    cmd=Cmd,
-                    timeout=T
-                   }, 0}.
+                    cmd=Cmd}, 0}.
 
 
 
-handle_call({msg, R, Msg}, From, #state{master=N, ev=E, cmd=Cmd, port=Port,
-                                       timeout=T}=State) ->
+handle_call({msg, R, Msg}, From, #state{master=N, ev=E, cmd=Cmd, port=Port}=State) ->
 
     ?Debug(Msg),
     Ref = new_ets_msg(N, Cmd, R, Msg),
       gen_server:reply(From, Ref),
  
-       case process_ets_msg(N, E, Port, Ref, Msg, T) of
+       case process_ets_msg(N, E, Port, Ref, Msg) of
            {error, timeout} -> {stop, port_timeout, State};
             _ -> {noreply, State}
        end;
 
 handle_call({sync_msg, R, Msg}, _From, #state{master=N, ev=E,
-                                              cmd=Cmd, port=Port,
-                                              timeout=T}=State) ->
+                                           cmd=Cmd, port=Port}=State) ->
  
     Ref = new_ets_msg(N, Cmd, R, Msg),
 
-        case process_ets_msg(N, E, Port, Ref, Msg, T) of
+        case process_ets_msg(N, E, Port, Ref, Msg) of
             {ok, Response} -> 
                 {reply, {ok, Response}, State};
             {error, Status, Err} ->
@@ -87,25 +82,23 @@ handle_cast({msg, _, restart}, State) ->
 handle_cast({msg, _, stop}, State) ->
     {stop, normal, State};
 
-handle_cast({msg, R, Msg}, #state{master=N, ev=E, cmd=Cmd, port=Port, 
-                                  timeout=T}=State) ->
+handle_cast({msg, R, Msg}, #state{master=N, ev=E, cmd=Cmd, port=Port}=State) ->
 
     Ref = new_ets_msg(N, Cmd, R, Msg),
  
-       case process_ets_msg(N, E, Port, Ref, Msg, T) of
+       case process_ets_msg(N, E, Port, Ref, Msg) of
            {error, timeout} -> {stop, port_timeout, State};
             _ -> {noreply, State}
 
        end;
 
-handle_cast({stream_msg, R, Msg}, #state{master=N, ev=E, cmd=Cmd, port=Port, 
-                                        timeout=T}=State) ->
+handle_cast({stream_msg, R, Msg}, #state{master=N, ev=E, cmd=Cmd, port=Port}=State) ->
 
     Ref = new_ets_msg(N, Cmd, R, Msg),
 
-       port_command(Port, Msg),
+     Port!Msg,
  
-       case process_stream_ets_msg(N, E, Port, Ref, Msg, T) of
+       case process_stream_ets_msg(N, E, Port, Ref, Msg) of
            {error, timeout} -> {stop, port_timeout, State};
             _ -> {noreply, State}
 
@@ -121,9 +114,10 @@ handle_cast(_Msg, State) ->
 handle_info(timeout, #state{master=M, cmd=Cmd}=State) ->
 
     ?Debug({open_port, Cmd}),
-      Port = open_port({spawn, Cmd},
-                           [{line, 256}, 
-                              exit_status, binary]),
+    Pid = self(),
+     {Md, F} = Cmd,
+
+      Port = spawn_link(fun() -> Md:F(Pid) end),
     
        ?Debug({registering, self()}),
         ppool_worker:register_worker(M, self()),
@@ -144,8 +138,10 @@ handle_info(_Info, State) ->
 terminate({port_terminated, _Reason}, _State) ->
     ok;
 
+
 terminate(_Reason, #state{port=Port}=_State) ->
-    port_close(Port);
+    exit(Port, kill);
+
 
 terminate(_Reason, _State) ->
 	ok.
@@ -156,23 +152,18 @@ code_change(_OldVsn, State, _Extra) ->
 
 
 
-collect_response(Port, T) ->
-    collect_response(Port, T, [], <<>>).
-
-collect_response(Port, T, Lines, OldLine) ->
+collect_response(Port) ->
    receive
         {Port, {data, Data}} ->
-            case Data of
-                {eol, Line} ->
-                    {ok, [<<OldLine/binary,Line/binary>> | Lines]};
-                {noeol, Line} ->
-                    collect_response(Port, T, Lines, <<OldLine/binary,Line/binary>>)
-            end;
-        {Port, {exit_status, Status}} ->
-            {error, Status, Lines}
+            {ok, Data};
+
+         Err ->
+            error_logger:error_msg("worker call ~p~n",[Err]),
+           
+            {error, 1, Err}
 
     after
-         T ->
+         600000 ->
             {error, timeout}
     end.
 
@@ -196,11 +187,11 @@ new_ets_msg(N, Cmd, R, Msg) ->
      Ref.
 
 
-process_ets_msg(N, E, Port, Ref, Msg, T) ->
+process_ets_msg(N, E, Port, Ref, Msg) ->
 
-     port_command(Port, Msg),
+      Port!Msg,
 
-        case collect_response(Port, T) of
+        case collect_response(Port) of
             {ok, Response} -> 
                 true=ets:update_element(N, Ref, [
                                                {#worker_stat.status, ok},
@@ -236,12 +227,12 @@ process_ets_msg(N, E, Port, Ref, Msg, T) ->
         end.
 
 
-process_stream_ets_msg(N, E, Port, Ref, Msg, T) ->
+process_stream_ets_msg(N, E, Port, Ref, Msg) ->
 
-        case collect_response(Port, T) of
+        case collect_response(Port) of
             {ok, Response} -> 
                   gen_event:notify(E, {msg, {ok, Ref, Response}}),
-                    process_stream_ets_msg(N, E, Port, Ref, Msg, T),
+                    process_stream_ets_msg(N, E, Port, Ref, Msg),
                     ok;
 
             {error, Status, Err} ->
