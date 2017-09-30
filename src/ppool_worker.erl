@@ -2,7 +2,7 @@
 -behaviour(gen_server).
 
 %% API.
--export([start_link/4,
+-export([start_link/3,
          start_worker/2,
          register_worker/2,
          start_all_workers/2,
@@ -48,7 +48,6 @@
           limit, 
           mfa, 
           name,
-          timeout,
           workers_pids=maps:new()
           
 }).
@@ -56,11 +55,11 @@
 
 %% init
 
-start_link(Name, Limit, T, MFA) ->
-	gen_server:start_link({local, Name}, ?MODULE, [Name, Limit, T, MFA], []).
+start_link(Name, Limit, MFA) ->
+	gen_server:start_link({local, Name}, ?MODULE, [Name, Limit, MFA], []).
 
 
-init([Name, Limit, T, MFA]) ->
+init([Name, Limit, MFA]) ->
     Name = ets:new(Name, [set, public, named_table, 
                           {keypos, #worker_stat.ref}]),
 
@@ -69,7 +68,7 @@ init([Name, Limit, T, MFA]) ->
 
      erlang:send_after(?INTERVAL, self(), clean_ets),
 
-	{ok, #state{limit=Limit, timeout=T, mfa=MFA, name=Name}}.
+	{ok, #state{limit=Limit, mfa=MFA, name=Name}}.
 
 register_worker(Name, Pid) ->
     gen_server:call(Name, {register, Pid}).
@@ -167,16 +166,14 @@ unsubscribe(Name, S) ->
 %% callbacks
 
 handle_call({start_worker, Cmd}, _From, #state{name=Name, 
-                                               limit=Limit,
-                                               timeout=T
-                                         }=State ) 
+                                               limit=Limit}=State ) 
   when Limit > 0 ->
 
     NewLimit = Limit - 1,
 
          {ok, Pid} = supervisor:start_child(
                        list_to_atom(atom_to_list(Name)++"_sup"),
-                       [Cmd, T]),
+                       [Cmd]),
 
                {reply, Pid, State#state{limit=NewLimit} };
  

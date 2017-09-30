@@ -21,34 +21,34 @@ start() ->
     application:start(ppool),
     application:start(node_scheduler),
  
-    ppool:start_pool(ppool, {python, 10, 30000, {port_worker, start_link, []} }),
-    ppool:start_pool(ppool, {nodejs, 10, 30000, {port_worker, start_link, []} }),
-    ppool:start_pool(ppool, {python_stream, 2, 30000,
+    ppool:start_pool(ppool, {python, 10, {port_worker, start_link, []} }),
+    ppool:start_pool(ppool, {nodejs, 10, {port_worker, start_link, []} }),
+    ppool:start_pool(ppool, {python_stream, 2, 
                             {port_worker, start_link, []} }),
 
-    ppool:start_pool(ppool, {w2, 10, 30000, {worker, start_link, []} }),
+    ppool:start_pool(ppool, {w2, 10, {worker, start_link, []} }),
  
         ok.
 
 
 start_all_workers() ->
-    ppool_worker:start_all_workers(python, cmd("hellopy:0.1.0",
+    ppool_worker:start_all_workers(python, {cmd("hellopy:0.1.0",
                                                "python hello.py 1",
-                                               "hello.log")).
+                                               "hello.log"), 10000}).
 
 
 start_stream_workers() ->
-    ppool_worker:start_all_workers(python_stream, cmd("hellopy:0.1.0",
+    ppool_worker:start_all_workers(python_stream, {cmd("hellopy:0.1.0",
                                                "python hello_stream.py 1",
-                                               "hello_stream.log")).
+                                               "hello_stream.log"), 10000}).
 
 
 
 start_map_workers() ->
 
-    Cmds=[cmd("hellojs:0.1.0","nodejs hello.js", "hellojs.log")
-         ,cmd("hellojs:0.1.0","nodejs hello.js", "hellojs.log")
-         ,cmd("hellojs:0.1.0","nodejs hello.js", "hellojs.log")
+    Cmds=[{cmd("hellojs:0.1.0","nodejs hello.js", "hellojs.log"), 10000}
+         ,{cmd("hellojs:0.1.0","nodejs hello.js", "hellojs.log"), 10000}
+         ,{cmd("hellojs:0.1.0","nodejs hello.js", "hellojs.log"), 10000}
          ],
 
     ppool_worker:start_map_workers(nodejs, Cmds).

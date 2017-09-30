@@ -2,7 +2,7 @@
 -behaviour(gen_server).
 
 %% API.
--export([start_link/3]).
+-export([start_link/2]).
 
 %% gen_server.
 -export([init/1]).
@@ -25,19 +25,21 @@
 
 %% API.
 
-start_link(N, Cmd, T) ->
+start_link(N, Cmd) ->
  
-	gen_server:start_link(?MODULE, {N, Cmd, T}, []).
+	gen_server:start_link(?MODULE, {N, Cmd}, []).
 
 %% gen_server.
 
-init({N, Cmd, T}) ->
-    ?Debug({N, Cmd, T, self()}),
+init({N, Cmd}) ->
+    ?Debug({N, Cmd, self()}),
+    {C, T} = Cmd,
+
       process_flag(trap_exit, true),
 
 	    {ok, #state{master=N, 
                     ev=list_to_atom(atom_to_list(N)++"_ev"),
-                    cmd=Cmd,
+                    cmd=C,
                     timeout=T
                    }, 0}.
 
