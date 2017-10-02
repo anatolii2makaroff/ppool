@@ -176,7 +176,6 @@ collect_response(Port, T) ->
 
          Err ->
             error_logger:error_msg("worker call ~p~n",[Err]),
-           
             {error, 1, Err}
 
     after
