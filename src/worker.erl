@@ -52,6 +52,8 @@ handle_call({msg, R, Msg}, From, #state{master=N, ev=E, cmd=Cmd, timeout=T,
  
        case process_ets_msg(N, E, Port, Ref, Msg, T) of
            {error, timeout} -> {stop, port_timeout, State};
+            {error, 1, _} -> {stop, error, State};
+
             _ -> {noreply, State}
        end;
 
@@ -64,8 +66,10 @@ handle_call({sync_msg, R, Msg}, _From, #state{master=N, ev=E,
         case process_ets_msg(N, E, Port, Ref, Msg, T) of
             {ok, Response} -> 
                 {reply, {ok, Response}, State};
-            {error, Status, Err} ->
-                {reply, {error, Status, Err}, State};
+
+            {error, 1, _} ->
+                {stop, error, State};
+
             {error, timeout} ->
                  {stop, port_timeout, State}
         end;
@@ -94,6 +98,9 @@ handle_cast({msg, R, Msg}, #state{master=N, ev=E, cmd=Cmd,
  
        case process_ets_msg(N, E, Port, Ref, Msg, T) of
            {error, timeout} -> {stop, port_timeout, State};
+            {error, 1, _} -> {stop, error, State};
+
+
             _ -> {noreply, State}
 
        end;
@@ -107,6 +114,9 @@ handle_cast({stream_msg, R, Msg}, #state{master=N, ev=E, cmd=Cmd,
  
        case process_stream_ets_msg(N, E, Port, Ref, Msg, T) of
            {error, timeout} -> {stop, port_timeout, State};
+            {error, 1, _} -> {stop, error, State};
+
+
             _ -> {noreply, State}
 
        end;

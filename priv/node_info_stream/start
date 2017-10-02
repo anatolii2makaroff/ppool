@@ -1,0 +1,3 @@
+#!/bin/bash
+
+exec /usr/bin/python node_info_stream.py $1

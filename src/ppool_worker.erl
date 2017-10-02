@@ -264,8 +264,16 @@ handle_cast({set_status_worker, Pid, S},
 
 handle_cast({subscribe, S, Filter, API}, #state{name=Name}=State) ->
 
-    gen_event:add_sup_handler(list_to_atom(atom_to_list(Name)++"_ev"), 
-                              {ppool_ev, S}, [S, Filter, API]),
+
+    Ev = list_to_atom(atom_to_list(Name)++"_ev"),
+
+    case lists:member({ppool_ev, S}, gen_event:which_handlers(Ev)) of
+        false ->
+                gen_event:add_sup_handler(Ev, {ppool_ev, S}, 
+                                          [S, Filter, API]);
+        true -> ok
+    end,
+
     	{noreply, State};
 
 handle_cast({unsubscribe, S}, #state{name=Name}=State) ->

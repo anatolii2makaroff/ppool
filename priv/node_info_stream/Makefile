@@ -1,7 +1,7 @@
 
 NAME=node_info_stream
 VERSION=0.1.0
-CMD=/usr/bin/python node_info_stream.py node1 1
+CMD=start 
 
 clean:
 	sudo docker rmi -f $(NAME):$(VERSION) 

@@ -46,7 +46,7 @@ init([Pid, Filter, API]) ->
 
 handle_event({msg, {_,R,[Msg]}=_M}, 
              #state{pid=Pid, filter=Filter, api=API}=State)
-      when Filter=/=no, API=:=all ->
+      when Filter=/=<<"no">>, API=:=all ->
 
     ?Debug({event_all, self(), Pid, Msg, Filter, API}),
 
@@ -72,7 +72,7 @@ handle_event({msg, {_,R,[Msg]}=_M},
 
 handle_event({msg, {_,R,[Msg]}=_M}, 
              #state{pid=Pid, filter=Filter, api=API}=State)
-      when Filter=/=no, API=:=one ->
+      when Filter=/=<<"no">>, API=:=one ->
 
     ?Debug({event_one, self(), Pid, Msg, Filter, API}),
 
