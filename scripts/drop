@@ -1,5 +1,31 @@
 #!/bin/sh
 
+banner() {
+
+    echo "                    ___           ___           ___   "
+    echo "     _____         /\  \         /\  \         /\  \  "
+    echo "    /::\  \       /::\  \       /::\  \       /::\  \ "
+    echo "   /:/\:\  \     /:/\:\__\     /:/\:\  \     /:/\:\__\ "
+    echo "  /:/  \:\__\   /:/ /:/  /    /:/  \:\  \   /:/ /:/  / "
+    echo " /:/__/ \:|__| /:/_/:/__/___ /:/__/ \:\__\ /:/_/:/  /  "
+    echo " \:\  \ /:/  / \:\/:::::/  / \:\  \ /:/  / \:\/:/  /   "
+    echo "  \:\  /:/  /   \::/~~/~~~~   \:\  /:/  /   \::/__/    "
+    echo "   \:\/:/  /     \:\~~\        \:\/:/  /     \:\  \    "
+    echo "    \::/  /       \:\__\        \::/  /       \:\__\   "
+    echo "     \/__/         \/__/         \/__/         \/__/   "
+    echo " "
+    echo " "
+    echo " "
+    echo "     Distribued Reliable Operations Platform           "
+    echo " "
+    echo " "
+    echo " "
+
+
+
+}
+
+
 
 realpath() {
     local path=$1
@@ -16,50 +42,141 @@ realpath() {
 
 DROP_HOME="$(realpath "../")"
 HOSTNAME=`env hostname -f`
+
 DROP_NAME=drop@${HOSTNAME}
-DROP_COOKIE=123
-
-DROP_EBIN_ROOT="${DROP_HOME}/ebin "\
-               "${DROP_HOME}/apps/node_watch/ebin "\
-               "${DROP_HOME}/apps/node_scheduler/ebin "
-
+DROP_COOKIE=mesh1
 DROP_LOG_DIR=/tmp
 DROP_VAR_DIR=/var/lib/drop/
-
-ERL_CRASH_DUMP="${DROP_LOG_DIR}/erl_crash.dump"
-
 ERL_MAX_ETS_TABLES=50000
 DROP_IO_THREAD_POOL_SIZE=128
+ERL_MAX_PROC=1048576
+ERL_MAX_PORTS=65536
+ERL_MAX_ATOMS=5000000
+ERL_DBUFFER_SIZE=1024
+DROP_LOGGER_MF_BYTES=10485760
+DROP_LOGGER_MF_FILES=10
+HEART_BEAT_TIMEOUT=30
+HEART_COMMAND="${DROP_HOME}/scripts/drop"
 
+
+DROP_EBIN_ROOT="${DROP_HOME}/ebin ${DROP_HOME}/apps/*/ebin "
+ERL_CRASH_DUMP="${DROP_LOG_DIR}/erl_crash.dump"
 NOTIFY_SOCKET=
 
 
-if [ ! -d ${DROP_LOG_DIR} ]; then
-        mkdir -p "${DROP_LOG_DIR}"
-fi
-if [ ! -d ${DROP_VAR_DIR} ]; then
-        mkdir -p "${DROP_VAR_DIR}"
+help() {
+
+    banner
+
+    echo "start - start drop"
+    echo "stop  - stop drop"
+    echo "remsh - remote shell"
+
+}
+
+
+remsh() {
+
+    exec erl \
+        -setcookie ${DROP_COOKIE} \
+        -remsh ${DROP_NAME} \
+        -hidden \
+        -connect_all false \
+        -sname remsh
+}
+
+
+
+setenv() {
+    echo "setenv.."
+
+    # sysctl -w fs.file-max 200000
+
+    # fs.file-max
+    # net.ipv4.ip_local_port_range
+    # net.ipv4.tcp_tw_reuse
+    # net.ipv4.tcp_fin_timeout
+    # net.core.somaxconn
+    # net.ipv4.tcp_max_syn_backlog
+    # net.ipv4.tcp_keepalive_*
+    # net.ipv4.conf.default.rp_filter
+
+
+
+}
+
+
+stop() {
+
+     erl \
+        -noshell \
+        -hidden \
+        -connect_all false \
+        -sname temp_control \
+        -setcookie ${DROP_COOKIE} \
+        -eval "rpc:call('${DROP_NAME}', init, stop, [])" -s init stop
+
+}
+
+
+
+start() {
+
+    banner
+    setenv
+
+
+    if [ ! -d ${DROP_LOG_DIR} ]; then
+            mkdir -p "${DROP_LOG_DIR}"
+    fi
+    if [ ! -d ${DROP_VAR_DIR} ]; then
+            mkdir -p "${DROP_VAR_DIR}"
+    fi
+
+    cd ${DROP_HOME}
+
+    exec erl \
+        -name ${DROP_NAME} \
+        -setcookie ${DROP_COOKIE} \
+        +K true \
+        +A ${DROP_IO_THREAD_POOL_SIZE} \
+        +W w \
+        +P ${ERL_MAX_PROC} \
+        +Q ${ERL_MAX_PORTS} \
+        +t ${ERL_MAX_ATOMS} \
+        +e ${ERL_MAX_ETS_TABLES} \
+        +stbt s \
+        +scl true \
+        +zdbbl ${ERL_DBUFFER_SIZE} \
+        -boot start_sasl \
+        -sasl errlog_type error \
+        -sasl sasl_error_logger false \
+        -sasl error_logger_mf_dir \"${DROP_LOG_DIR}\" \
+        -sasl error_logger_mf_maxbytes ${DROP_LOGGER_MF_BYTES} \
+        -sasl error_logger_mf_maxfiles ${DROP_LOGGER_MF_FILES} \
+        -kernel start_pg2 true \
+        -pa ${DROP_EBIN_ROOT} \
+        -noinput \
+        -env DROP_HOME ${DROP_HOME} \
+        -s main
+
+        #-heart \
+        #-env HEART_BEAT_TIMEOUT ${HEART_BEAT_TIMEOUT} \
+        #-env HEART_COMMAND ${HEART_COMMAND} \
+ 
+}
+
+if [ $# -eq 0 ]
+  then
+      help
+  else
+      if [ $1 = "start" ]; then
+          start
+      elif [ $1 = "stop" ]; then
+          stop
+      elif [ $1 = "remsh" ]; then
+          remsh
+      fi
 fi
 
-exec erl \
-	-name ${DROP_NAME} \
-	-setcookie ${DROP_COOKIE} \
-    +K true \
-    +A ${DROP_IO_THREAD_POOL_SIZE} \
-    +W w \
-    +P 1048576 \
-    +Q 65536 \
-    +t 5000000 \
-    +stbt db \
-    +zdbbl 1024 \
-	-boot start_sasl \
-	-sasl errlog_type error \
-	-sasl sasl_error_logger false \
-	-sasl error_logger_mf_dir \"${DROP_LOG_DIR}\" \
-	-sasl error_logger_mf_maxbytes 10485760 \
-	-sasl error_logger_mf_maxfiles 10 \
-	-kernel start_pg2 true \
-	-pa ${DROP_EBIN_ROOT} \
-    -noinput \
-   	-s main
 
