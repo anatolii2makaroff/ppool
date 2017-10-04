@@ -1,0 +1,16 @@
+
+[Unit]
+Description=Distributed Reliable Operations Platform
+
+[Service]
+Type=simple
+
+User=drop
+Group=drop
+
+ExecStart=/opt/drop start
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+Alias=drop.service

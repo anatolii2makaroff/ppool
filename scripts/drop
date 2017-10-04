@@ -27,20 +27,8 @@ banner() {
 
 
 
-realpath() {
-    local path=$1
 
-    if [ -d "$path" ]; then
-        cd "$path" && pwd
-    elif [ -f "$path" ]; then
-        cd "$(dirname "$path")" && echo $(pwd)/$(basename "$path")
-    else
-        echo "$path"
-    fi
-}
-
-
-DROP_HOME="$(realpath "../")"
+DROP_HOME="$(dirname $(realpath $0))/../"
 HOSTNAME=`env hostname -f`
 
 DROP_NAME=drop@${HOSTNAME}
@@ -52,7 +40,7 @@ DROP_IO_THREAD_POOL_SIZE=128
 ERL_MAX_PROC=1048576
 ERL_MAX_PORTS=65536
 ERL_MAX_ATOMS=5000000
-ERL_DBUFFER_SIZE=1024
+ERL_DBUFFER_SIZE=32000
 DROP_LOGGER_MF_BYTES=10485760
 DROP_LOGGER_MF_FILES=10
 HEART_BEAT_TIMEOUT=30
@@ -90,20 +78,40 @@ remsh() {
 setenv() {
     echo "setenv.."
 
-    # sysctl -w fs.file-max 200000
+    ulimit -n 1000000
 
-    # fs.file-max
-    # net.ipv4.ip_local_port_range
-    # net.ipv4.tcp_tw_reuse
-    # net.ipv4.tcp_fin_timeout
-    # net.core.somaxconn
-    # net.ipv4.tcp_max_syn_backlog
-    # net.ipv4.tcp_keepalive_*
-    # net.ipv4.conf.default.rp_filter
+    sysctl -w vm.swappiness=10
+    sysctl -w vm.vfs_cache_pressure=10000
+    # sysctl -w vm.dirty_ratio=1
+    # sysctl -w vm.dirty_background_ratio=1
+    # sysctl -w vm.dirty_writeback_centisecs=250
+    # sysctl -w vm.dirty_expire_centisecs=3000
+    # sysctl -w kernel.panic=10
+    sysctl -w fs.file-max=1000000
+    sysctl -w net.core.netdev_max_backlog=10000
+    sysctl -w net.core.somaxconn=262144
+    sysctl -w net.ipv4.tcp_syncookies=1
+    sysctl -w net.ipv4.tcp_max_syn_backlog=262144
+    sysctl -w net.ipv4.tcp_max_tw_buckets=720000
+    sysctl -w net.ipv4.tcp_tw_recycle=1
+    sysctl -w net.ipv4.tcp_timestamps=1
+    sysctl -w net.ipv4.tcp_tw_reuse=1
+    sysctl -w net.ipv4.tcp_fin_timeout=30
+    sysctl -w net.ipv4.tcp_keepalive_time=1800
+    sysctl -w net.ipv4.tcp_keepalive_probes=7
+    sysctl -w net.ipv4.tcp_keepalive_intvl=30
+    sysctl -w net.core.wmem_max=33554432
+    sysctl -w net.core.rmem_max=33554432
+    sysctl -w net.core.rmem_default=8388608
+    sysctl -w net.core.wmem_default=4194394
+    sysctl -w net.ipv4.tcp_rmem="4096 8388608 16777216"
+    sysctl -w net.ipv4.tcp_wmem="4096 4194394 16777216"
 
-
+    sysctl -p
 
 }
+
+
 
 
 stop() {
@@ -123,7 +131,7 @@ stop() {
 start() {
 
     banner
-    setenv
+    # setenv
 
 
     if [ ! -d ${DROP_LOG_DIR} ]; then
@@ -135,7 +143,7 @@ start() {
 
     cd ${DROP_HOME}
 
-    exec erl \
+    erl \
         -name ${DROP_NAME} \
         -setcookie ${DROP_COOKIE} \
         +K true \
