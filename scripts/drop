@@ -116,7 +116,7 @@ setenv() {
 
 stop() {
 
-     erl \
+    exec erl \
         -noshell \
         -hidden \
         -connect_all false \
@@ -143,7 +143,7 @@ start() {
 
     cd ${DROP_HOME}
 
-    erl \
+    exec erl \
         -name ${DROP_NAME} \
         -setcookie ${DROP_COOKIE} \
         +K true \
