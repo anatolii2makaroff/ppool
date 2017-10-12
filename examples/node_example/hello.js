@@ -14,7 +14,7 @@ var rl = readline.createInterface({
 //API
 
 function log(m){
-    console.error( Date.now()+": "+m)
+    console.error( Date.now()+": "+ m + "\n")
 }
 
 function send(m){

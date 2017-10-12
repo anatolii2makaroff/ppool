@@ -14,6 +14,6 @@ init([]) ->
               brutal_kill,
               worker,
              [node_watch]
-     }],
+            }],
             
 	{ok, {{one_for_one, 1, 5}, Procs}}.

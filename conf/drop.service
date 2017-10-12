@@ -5,8 +5,8 @@ Description=Distributed Reliable Operations Platform
 [Service]
 Type=simple
 
-User=drop
-Group=drop
+User=root
+Group=root
 
 ExecStart=/opt/drop start
 Restart=on-failure

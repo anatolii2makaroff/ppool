@@ -43,8 +43,9 @@ handle_cast(_Msg, State) ->
 
 
 
-
 handle_info(timeout, State) ->
+
+    %% Systems pools
 
     ppool:start_pool(ppool, {node_info_stream, 1, 
                             {port_worker, start_link, []} }),
@@ -52,37 +53,39 @@ handle_info(timeout, State) ->
     ppool:start_pool(ppool, {node_collector, 1, 
                             {port_worker, start_link, []} }),
 
-    ppool:start_pool(ppool, {node_api, 3, 
+    ppool:start_pool(ppool, {node_api, ?NODE_API_WORKERS, 
                             {worker, start_link, []} }),
 
 
+    %% System info stream worker
 
-    ppool_worker:start_worker(node_info_stream,                                   
-               {lists:concat(["python ",                                           
-                              os:getenv("DROP_HOME"),
-                              "/priv/node_info_stream/node_info_stream.py ",      
-                              node(),
-                              " 1",
-                              " 2>>/tmp/node_info_stream.log"                              
-                             ]), 60000}                                                  
-                                                                                  
-    ),  
+    ppool_worker:start_worker(node_info_stream,         
+               {lists:concat([os:getenv("DROP_HOME"),
+                              "/priv/node_info_stream/node_info_stream ",
+                              node(), " ",
+                              ?NODE_INFO_INTERVAL,
+                              " 2>>",
+                              os:getenv("DROP_LOG_DIR"),
+                              "/node_info_stream.log"
+                             ]), ?NODE_INFO_TIMEOUT}
+    ),
+
+    %% Collect info from all nodes node_info_stream 
 
     ppool_worker:start_worker(node_collector, 
-                              {cmd("node_collector:0.1.0",
-                                       "python node_collector.py 10",
-                                       "node_collector.log"), 60000}
+                              {cmd("node_collector",
+                                   "node_collector",
+                                   "node_collector.log"
+                                  ), ?NODE_CLTR_TIMEOUT}
     ),
 
     ppool_worker:start_all_workers(node_api, 
-                              {{node_scheduler, api}, 60000}
+                              {{node_scheduler, api}, ?NODE_API_TIMEOUT}
     ),
-
 
      try_start(node_info_stream),
 
 	  {noreply, State};
-
 
 
 
@@ -97,12 +100,11 @@ code_change(_OldVsn, State, _Extra) ->
 
 
 
-
-
-cmd(Img, Cmd, L) ->
-   R = lists:concat(["sudo docker run --rm -i -u drop -w /home/drop/"
-                     " -v /tmp/:/tmp/ ", Img, " ", Cmd, 
-                     " 2>>/tmp/", L]),
+cmd(Img, Cmd, Log) ->
+   R = lists:concat(["docker run --rm -i -u drop -w /home/drop/"
+                     " -v ", os:getenv("DROP_VAR_DIR"), ":/tmp ", 
+                     Img, " ", Cmd, 
+                     " 2>>", os:getenv("DROP_LOG_DIR"), "/", Log]),
    R.
 
 
@@ -115,6 +117,7 @@ try_start(N) ->
          _ -> ok
 
      end.
+
 
 call(Type, F, Name, Cmd) ->
 
@@ -175,7 +178,6 @@ api(F) ->
                             erlang:binary_to_atom(Name, latin1)
                              ),
                     F!{self(), {data, {response, F, Res}}};
-
 
 
 
