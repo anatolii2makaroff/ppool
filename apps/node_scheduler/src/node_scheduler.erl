@@ -73,7 +73,7 @@ handle_info(timeout, State) ->
     %% Collect info from all nodes node_info_stream 
 
     ppool_worker:start_worker(node_collector, 
-                              {cmd("node_collector",
+                              {cmd("node_collector:"?NODE_CLTR_VER,
                                    "node_collector",
                                    "node_collector.log"
                                   ), ?NODE_CLTR_TIMEOUT}

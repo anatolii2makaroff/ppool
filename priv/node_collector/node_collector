@@ -1,5 +1,7 @@
+#!/usr/bin/python
+
 #
-# Python actor example
+# Collector node worker
 #
 
 import sys
@@ -23,12 +25,11 @@ def send(m):
 #  send - send message to world
 #  log  -  logging anything
 
+
 NodeInfo = {}
 
 
-def main(t):
-    n = 1
-    _l = int(t)
+def main():
 
     while 1:
         line = sys.stdin.readline()
@@ -42,18 +43,9 @@ def main(t):
 
         NodeInfo[data["node"]] = data
 
-        if n == _l:
-
-            log("*********** {}".format(t))
-            send(NodeInfo)
-            log("message send: {}".format(NodeInfo))
-            n = 1
-
-        else:
-
-            log("tick {}".format(n))
-            n += 1
+        send(NodeInfo)
+        log("message send: {}".format(NodeInfo))
 
 
 if __name__ == "__main__":
-    main(sys.argv[1])
+    main()

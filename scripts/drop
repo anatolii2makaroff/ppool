@@ -162,6 +162,8 @@ start() {
         -kernel start_pg2 true \
         -pa ${DROP_EBIN_ROOT} \
         -env DROP_HOME ${DROP_HOME} \
+        -env DROP_VAR_DIR ${DROP_VAR_DIR} \
+        -env DROP_LOG_DIR ${DROP_LOG_DIR} \
         -s main
 
         #-noinput

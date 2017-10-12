@@ -1,5 +1,7 @@
+#!/usr/bin/python
+
 #
-# Python actor
+# RRD worker
 #
 
 import sys

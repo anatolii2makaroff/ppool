@@ -1,7 +1,7 @@
 
 NAME=node_collector
 VERSION=0.1.0
-CMD=/usr/bin/python node_collector.py 10
+CMD=./node_collector
 
 clean:
 	sudo docker rmi -f $(NAME):$(VERSION) 
