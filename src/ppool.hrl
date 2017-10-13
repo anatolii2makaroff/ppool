@@ -7,7 +7,6 @@
 -endif.
 
 
-
 -record(worker_stat, {
           ref,
           ref_from,

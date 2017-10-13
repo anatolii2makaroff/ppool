@@ -7,6 +7,8 @@
 import sys
 import time
 import json
+import os
+import sqlite3
 
 # API
 
@@ -29,7 +31,86 @@ def send(m):
 NodeInfo = {}
 
 
-def main():
+def check_table(cur):
+
+    cur.execute("""CREATE TABLE IF NOT EXISTS
+                                node_list(node text,
+                                          active integer,
+                                          date date_time,
+                                          msg text
+                );""")
+
+    cur.execute("""CREATE TABLE IF NOT EXISTS
+                                node_stat(node text,
+                                          date date_time,
+                                          cpu_count integer,
+                                          cpu_percent real,
+                                          ram_count integer,
+                                          ram_percent real,
+                                          disk_count integer,
+                                          disk_percent real,
+                                          net_count integer
+                );""")
+
+    cur.execute("""CREATE TABLE IF NOT EXISTS
+                                ppool_stat(node text,
+                                           name text,
+                                           date date_time,
+                                           count integer,
+                                           cpu_percent real,
+                                           ram_percent real
+                );""")
+
+
+def insert_node_info(cur, args):
+
+    """
+     node_watch::%Node::nodedown::%Info
+    """
+
+    print(args)
+    cur.execute("""INSERT INTO node_list(node, active, date, msg)
+                   VALUES ('{node}', {active}, CURRENT_TIMESTAMP,
+                           '{msg}')""".format(node=args[1],
+                                              active=(lambda x: x != "nodedown" and 1 or 0)(args[2]),
+                                              msg=args[3]))
+
+
+def insert_node_stat(cur, data):
+
+    cur.execute("""INSERT INTO node_stat(node, date, cpu_count, cpu_percent,
+                                         ram_count, ram_percent, disk_count,
+                                         disk_percent, net_count)
+                   VALUES ('{0}', CURRENT_TIMESTAMP, {1}, {2}, {3}, {4}, {5}, {6},
+                           {7})""".format(data["node"], data["cpu_count"],
+                                          data["cpu_percent"], data["ram_count"],
+                                          data["ram_percent"], data["disk_count"],
+                                          data["disk_percent"], data["net_count"])
+                )
+
+
+def insert_ppool_stat(cur, data):
+
+    cur.execute("""INSERT INTO ppool_stat(node, name, date, count,
+                                         cpu_percent, ram_percent)
+                   VALUES ('{0}', '{1}', CURRENT_TIMESTAMP,
+                           {2}, {3}, {4})""".format(data["node"], data["name"],
+                                                    data["count"], data["cpu_percent"],
+                                                    data["ram_percent"])
+                )
+
+
+def main(p):
+
+    if not os.path.exists(p):
+        os.makedirs(p)
+
+    #  create dbs
+    conn = sqlite3.connect(p + '/node_collector.db')
+    cur = conn.cursor()
+
+    check_table(cur)
+    conn.commit()
 
     while 1:
         line = sys.stdin.readline()
@@ -39,13 +120,23 @@ def main():
         log("start working..")
         log("get message: " + line)
 
-        data = json.loads(line)
+        if line.startswith("node_watch::"):
 
-        NodeInfo[data["node"]] = data
+            args = line.split("::")
+            insert_node_info(cur, args)
 
-        send(NodeInfo)
-        log("message send: {}".format(NodeInfo))
+        else:
+
+            data = json.loads(line)
+
+            if data["tag"] == "node_stat":
+                insert_node_stat(cur, data)
+            elif data["tag"] == "ppool_stat":
+                insert_ppool_stat(cur, data)
+
+        conn.commit()
+        send("ok")
 
 
 if __name__ == "__main__":
-    main()
+    main(sys.argv[1])

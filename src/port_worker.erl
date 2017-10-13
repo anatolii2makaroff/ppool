@@ -105,7 +105,7 @@ handle_cast({stream_msg, R, Msg}, #state{master=N, ev=E, cmd=Cmd, port=Port,
 
     Ref = new_ets_msg(N, Cmd, R, Msg),
 
-       port_command(Port, Msg),
+      %%  port_command(Port, Msg),
  
        case process_stream_ets_msg(N, E, Port, Ref, Msg, T) of
            {error, timeout} -> {stop, port_timeout, State};

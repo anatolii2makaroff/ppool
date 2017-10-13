@@ -43,6 +43,9 @@ _COLORS = ["#FF1100", "#87dd7d", "#5978ea"]
 
 def main(p):
 
+    if not os.path.exists(p):
+        os.makedirs(p)
+
     while 1:
         line = sys.stdin.readline()
         if not line:
@@ -66,6 +69,8 @@ def update(path, data):
         return
 
     name = "drop--" + data.pop("tag").replace(":", "-")
+    f_file = path + name
+
     p = []
     df = []
     line = []
@@ -75,18 +80,18 @@ def update(path, data):
     i = 0
     for x in labels:
         p.append("DS:{}:GAUGE:{}:U:U".format(x, _INTERVAL*2))
-        df.append("DEF:{1}={0}.rrd:{1}:AVERAGE".format(name, x))
+        df.append("DEF:{1}={0}.rrd:{1}:AVERAGE".format(f_file, x))
         line.append("LINE2:{0}{2}:{1}".format(x, x, _COLORS[i]))
         i += 1
 
-    if not os.path.isfile(path + name + ".rrd"):
-        sp.call(_CREATE.format(name).split(" ") + p + _RRA)
+    if not os.path.isfile(f_file):
+        sp.call(_CREATE.format(f_file).split(" ") + p + _RRA)
 
-    sp.call(_UPDATE.format(name).split(" ") +
+    sp.call(_UPDATE.format(f_file).split(" ") +
             [":".join([str(x) for x in labels])] +
             ["N:"+":".join([str(x) for x in values])])
 
-    sp.call(_IMG.format(name, name).split(" ") + df + line)
+    sp.call(_IMG.format(f_file, name).split(" ") + df + line)
 
 
 if __name__ == "__main__":

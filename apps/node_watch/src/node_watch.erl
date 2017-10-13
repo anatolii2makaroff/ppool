@@ -58,13 +58,12 @@ handle_info({nodedown, Node, InfoList}, State)->
 
     error_logger:error_msg("node ~p is down: ~p~n",[Node, InfoList]),
 
-        Msg = erlang:list_to_bitstring(["node_watch::", 
-                                         Node, "::", 
-                                         nodedown, "::", 
-                                         InfoList, "\n"]),
+        Msg=erlang:list_to_bitstring(["node_watch::", 
+                                       Node, "::", 
+                                       nodedown, "::", 
+                                       InfoList, "\n"]),
 
-
-        node_scheduler:call(all,
+        node_scheduler:call(node(),
                             fun(N, C) -> 
                                     ppool_worker:call_worker(N, C)
                             end,
@@ -80,13 +79,12 @@ handle_info({nodeup, Node, _InfoList}, State) ->
     error_logger:warning_msg("node ~p is up~n",[Node]),
 
 
-        Msg = erlang:list_to_bitstring(["node_watch::", 
-                                         Node, "::", 
-                                         nodeup, "::", 
-                                         _InfoList, "\n"]),
+        Msg=erlang:list_to_bitstring(["node_watch::", 
+                                       Node, "::", 
+                                       nodeup, "::", 
+                                       _InfoList, "\n"]),
 
-
-        node_scheduler:call(all,
+        node_scheduler:call(node(),
                             fun(N, C) -> 
                                     ppool_worker:call_worker(N, C)
                             end,

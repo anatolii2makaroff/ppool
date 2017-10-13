@@ -53,6 +53,9 @@ handle_info(timeout, State) ->
     ppool:start_pool(ppool, {node_collector, 1, 
                             {port_worker, start_link, []} }),
 
+    ppool:start_pool(ppool, {rrd, ?NODE_RRD_WORKERS, 
+                            {port_worker, start_link, []} }),
+
     ppool:start_pool(ppool, {node_api, ?NODE_API_WORKERS, 
                             {worker, start_link, []} }),
 
@@ -74,16 +77,23 @@ handle_info(timeout, State) ->
 
     ppool_worker:start_worker(node_collector, 
                               {cmd("node_collector:"?NODE_CLTR_VER,
-                                   "node_collector",
+                                   "./node_collector",
                                    "node_collector.log"
                                   ), ?NODE_CLTR_TIMEOUT}
+    ),
+
+    ppool_worker:start_all_workers(rrd, 
+                              {cmd("rrd:"?NODE_RRD_VER,
+                                   "./rrd /tmp/rrd ",
+                                   "rrd.log"
+                                  ), ?NODE_RRD_TIMEOUT}
     ),
 
     ppool_worker:start_all_workers(node_api, 
                               {{node_scheduler, api}, ?NODE_API_TIMEOUT}
     ),
 
-     try_start(node_info_stream),
+     %% try_start(node_info_stream),
 
 	  {noreply, State};
 
@@ -108,15 +118,15 @@ cmd(Img, Cmd, Log) ->
    R.
 
 
-try_start(N) ->
-     case ppool_worker:call_worker(N, "start\n") of
-         {ok, []} -> 
-             timer:sleep(1000),
-             try_start(N);
-
-         _ -> ok
-
-     end.
+%% try_start(N) ->
+%%      case ppool_worker:stream_all_workers(N, "start\n") of
+%%          {ok, []} -> 
+%%              timer:sleep(1000),
+%%              try_start(N);
+%% 
+%%         _ -> ok
+%% 
+%%      end.
 
 
 call(Type, F, Name, Cmd) ->
@@ -224,9 +234,8 @@ api(F) ->
                    [Img, Cmd, Log, Tm] = A,
 
                    Res = call(erlang:binary_to_atom(Tp, latin1),
-                            fun(N, {I, C, L, T}) -> ppool_worker:start_all_workers(N, 
-                                             {cmd(I, C, L), T})
- 
+                            fun(N, {I, C, L, T}) -> 
+                                    ppool_worker:start_all_workers(N, {cmd(I, C, L), T})
                             end,
                             erlang:binary_to_atom(Name, latin1),
                             {

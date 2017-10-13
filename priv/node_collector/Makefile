@@ -1,7 +1,7 @@
 
 NAME=node_collector
 VERSION=0.1.0
-CMD=./node_collector
+CMD=./node_collector /tmp/
 
 clean:
 	sudo docker rmi -f $(NAME):$(VERSION) 
