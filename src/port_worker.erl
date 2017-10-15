@@ -130,6 +130,12 @@ handle_info(timeout, #state{master=M, cmd=Cmd}=State) ->
        ?Debug({registering, self()}),
         ppool_worker:register_worker(M, self()),
 
+        %% if stream type do start
+        case string:find(Cmd, "_stream") of
+            nomatch -> ok;
+            _ -> ppool_worker:stream_all_workers(M, "start\n")
+        end,
+
 	  {noreply, State#state{port=Port}};
 
 

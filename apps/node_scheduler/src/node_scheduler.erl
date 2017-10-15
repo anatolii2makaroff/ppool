@@ -5,7 +5,8 @@
 -export([start_link/0,
          call/4,
          cmd/3,
-         api/1
+         api/1,
+         try_start/1
          
         ]).
 
@@ -61,7 +62,7 @@ handle_info(timeout, State) ->
 
     %% link ppools
     
-    ppool_worker:subscribe(node_info_stream, {node_collector, <<"no">>, one}),
+    ppool_worker:subscribe(node_info_stream, {node_collector, <<"tag">>, one}),
     ppool_worker:subscribe(node_collector, {rrd, <<"_trace">>, one}),
 
     %% System info stream worker
@@ -97,7 +98,7 @@ handle_info(timeout, State) ->
                               {{node_scheduler, api}, ?NODE_API_TIMEOUT}
     ),
 
-     try_start(node_info_stream),
+     % try_start(node_info_stream),
 
 	  {noreply, State};
 
@@ -123,7 +124,7 @@ cmd(Img, Cmd, Log) ->
 
 
 try_start(N) ->
-     case ppool_worker:stream_all_workers(N, "start\n") of
+     case N() of
           {ok, []} -> 
              timer:sleep(1000),
              try_start(N);
