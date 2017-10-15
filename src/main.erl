@@ -12,7 +12,6 @@ start() ->
     application:start(node_scheduler),
     application:start(node_watch),
  
- 
        ok.
 
 stop() ->

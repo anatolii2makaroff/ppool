@@ -47,10 +47,10 @@ handle_info(timeout, State) ->
 
     %% Systems pools
 
-    ppool:start_pool(ppool, {node_info_stream, 1, 
+    ppool:start_pool(ppool, {node_info_stream, ?NODE_INFO_WORKERS, 
                             {port_worker, start_link, []} }),
 
-    ppool:start_pool(ppool, {node_collector, 1, 
+    ppool:start_pool(ppool, {node_collector, ?NODE_CLTR_WORKERS, 
                             {port_worker, start_link, []} }),
 
     ppool:start_pool(ppool, {rrd, ?NODE_RRD_WORKERS, 
@@ -59,6 +59,10 @@ handle_info(timeout, State) ->
     ppool:start_pool(ppool, {node_api, ?NODE_API_WORKERS, 
                             {worker, start_link, []} }),
 
+    %% link ppools
+    
+    ppool_worker:subscribe(node_info_stream, {node_collector, <<"no">>, one}),
+    ppool_worker:subscribe(node_collector, {rrd, <<"_trace">>, one}),
 
     %% System info stream worker
 
@@ -75,9 +79,9 @@ handle_info(timeout, State) ->
 
     %% Collect info from all nodes node_info_stream 
 
-    ppool_worker:start_worker(node_collector, 
+    ppool_worker:start_all_workers(node_collector, 
                               {cmd("node_collector:"?NODE_CLTR_VER,
-                                   "./node_collector",
+                                   "./node_collector /tmp/db ",
                                    "node_collector.log"
                                   ), ?NODE_CLTR_TIMEOUT}
     ),
@@ -93,7 +97,7 @@ handle_info(timeout, State) ->
                               {{node_scheduler, api}, ?NODE_API_TIMEOUT}
     ),
 
-     %% try_start(node_info_stream),
+     try_start(node_info_stream),
 
 	  {noreply, State};
 
@@ -118,15 +122,15 @@ cmd(Img, Cmd, Log) ->
    R.
 
 
-%% try_start(N) ->
-%%      case ppool_worker:stream_all_workers(N, "start\n") of
-%%          {ok, []} -> 
-%%              timer:sleep(1000),
-%%              try_start(N);
-%% 
-%%         _ -> ok
-%% 
-%%      end.
+try_start(N) ->
+     case ppool_worker:stream_all_workers(N, "start\n") of
+          {ok, []} -> 
+             timer:sleep(1000),
+             try_start(N);
+
+        _ -> ok
+
+     end.
 
 
 call(Type, F, Name, Cmd) ->

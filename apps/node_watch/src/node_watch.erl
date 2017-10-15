@@ -15,6 +15,7 @@
 -record(state, {
 }).
 
+-define(TIMEOUT, 5000).
 
 %% API.
 
@@ -28,8 +29,7 @@ init([]) ->
 
     net_kernel:monitor_nodes(true, [nodedown_reason]),
 
-    erlang:send_after(os:getenv("ERL_PING_NODE_TIMEOUT"), 
-                      self(), ping_nodes),
+    erlang:send_after(?TIMEOUT, self(), ping_nodes),
 
 	{ok, #state{}}.
 
@@ -47,8 +47,7 @@ handle_info(ping_nodes, State) ->
 
     net_adm:world(),
 
-    erlang:send_after(os:getenv("ERL_PING_NODE_TIMEOUT"), 
-                      self(), ping_nodes),
+    erlang:send_after(?TIMEOUT, self(), ping_nodes),
 
 	{noreply, State};
 

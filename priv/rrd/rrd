@@ -60,7 +60,7 @@ def main(p):
         except Exception as e:
             log(e)
 
-        send("pong")
+        send("ok")
 
 
 def update(path, data):
@@ -69,7 +69,7 @@ def update(path, data):
         return
 
     name = "drop--" + data.pop("tag").replace(":", "-")
-    f_file = path + name
+    f_file = path + "/" + name
 
     p = []
     df = []
@@ -84,7 +84,7 @@ def update(path, data):
         line.append("LINE2:{0}{2}:{1}".format(x, x, _COLORS[i]))
         i += 1
 
-    if not os.path.isfile(f_file):
+    if not os.path.isfile(f_file + ".rrd"):
         sp.call(_CREATE.format(f_file).split(" ") + p + _RRA)
 
     sp.call(_UPDATE.format(f_file).split(" ") +

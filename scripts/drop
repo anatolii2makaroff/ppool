@@ -43,7 +43,6 @@ DROP_LOGGER_MF_BYTES=10485760
 DROP_LOGGER_MF_FILES=10
 HEART_BEAT_TIMEOUT=30
 HEART_COMMAND="${DROP_HOME}/scripts/drop"
-ERL_PING_NODE_TIMEOUT=5000
 
 DROP_EBIN_ROOT="${DROP_HOME}/ebin ${DROP_HOME}/apps/*/ebin "
 ERL_CRASH_DUMP="${DROP_LOG_DIR}/erl_crash.dump"
@@ -136,6 +135,7 @@ start() {
     fi
     if [ ! -d ${DROP_VAR_DIR} ]; then
             mkdir -p "${DROP_VAR_DIR}"
+            chmod -R a+rw ${DROP_VAR_DIR}
     fi
 
     cd ${DROP_HOME}

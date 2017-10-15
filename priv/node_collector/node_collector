@@ -122,10 +122,14 @@ def main(p):
 
         if line.startswith("node_watch::"):
 
+            # simple line format
+
             args = line.split("::")
             insert_node_info(cur, args)
 
         else:
+
+            # json
 
             data = json.loads(line)
 
@@ -134,8 +138,9 @@ def main(p):
             elif data["tag"] == "ppool_stat":
                 insert_ppool_stat(cur, data)
 
+            send(json.dumps(data))
+
         conn.commit()
-        send("ok")
 
 
 if __name__ == "__main__":
