@@ -28,9 +28,6 @@ def send(m):
 #  log  -  logging anything
 
 
-NodeInfo = {}
-
-
 def check_table(cur):
 
     cur.execute("""CREATE TABLE IF NOT EXISTS
@@ -68,10 +65,10 @@ def insert_node_info(cur, args):
      node_watch::%Node::nodedown::%Info
     """
 
-    print(args)
-    cur.execute("""INSERT INTO node_list(node, active, date, msg)
+    cur.execute("""DELETE FROM node_list WHERE node = '{node}';
+                   INSERT INTO node_list(node, active, date, msg)
                    VALUES ('{node}', {active}, CURRENT_TIMESTAMP,
-                           '{msg}')""".format(node=args[1],
+                           '{msg}');""".format(node=args[1],
                                               active=(lambda x: x != "nodedown" and 1 or 0)(args[2]),
                                               msg=args[3]))
 
@@ -100,7 +97,12 @@ def insert_ppool_stat(cur, data):
                 )
 
 
-def main(p):
+def clear_last_rows(cur, t):
+    cur.execute("DELETE FROM node_stat WHERE date < DATETIME('NOW', '-{} minutes');".format(t))
+    cur.execute("DELETE FROM ppool_stat WHERE date < DATETIME('NOW', '-{} minutes');".format(t))
+
+
+def main(p, cnt, t):
 
     if not os.path.exists(p):
         os.makedirs(p)
@@ -112,6 +114,8 @@ def main(p):
     check_table(cur)
     conn.commit()
 
+    n = cnt
+
     while 1:
 
         line = sys.stdin.readline()
@@ -121,7 +125,7 @@ def main(p):
         log("start working..")
         log("get message: " + line)
 
-        if line.startswith("node_watch::"):
+        if line.startswith("tag:node_watch::"):
 
             # simple line format
 
@@ -141,8 +145,13 @@ def main(p):
 
             send(json.dumps(data))
 
+        # clear last rows
+        n -= 1
+        if n == 0:
+            clear_last_rows(cur, t)
+            n = cnt
+
         conn.commit()
 
-
 if __name__ == "__main__":
-    main(sys.argv[1])
+    main(sys.argv[1], int(sys.argv[2]), sys.argv[3])

@@ -6,7 +6,8 @@
          call/4,
          cmd/3,
          api/1,
-         try_start/1
+         try_start/1,
+         restart/0
          
         ]).
 
@@ -28,7 +29,7 @@
 
 -spec start_link() -> {ok, pid()}.
 start_link() ->
-	gen_server:start_link(?MODULE, [], []).
+	gen_server:start_link({local, ?MODULE}, ?MODULE, [], []).
 
 
 %% gen_server.
@@ -36,8 +37,25 @@ start_link() ->
 init([]) ->
 	{ok, #state{}, 0}.
 
+
+restart() ->
+    gen_server:call(?MODULE, restart).
+
+
+handle_call(restart, _From, State) ->
+
+    ppool:stop_pool(ppool, node_info_stream),
+    ppool:stop_pool(ppool, node_collector),
+    ppool:stop_pool(ppool, rrd),
+    ppool:stop_pool(ppool, node_api),
+
+	{reply, ok, State, 0};
+
+
 handle_call(_Request, _From, State) ->
 	{reply, ignored, State}.
+
+
 
 handle_cast(_Msg, State) ->
 	{noreply, State}.
@@ -82,7 +100,7 @@ handle_info(timeout, State) ->
 
     ppool_worker:start_all_workers(node_collector, 
                               {cmd("node_collector:"?NODE_CLTR_VER,
-                                   "./node_collector /tmp/db ",
+                                   "./node_collector /tmp/db 10 5 ",
                                    "node_collector.log"
                                   ), ?NODE_CLTR_TIMEOUT}
     ),
