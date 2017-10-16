@@ -113,6 +113,7 @@ def main(p):
     conn.commit()
 
     while 1:
+
         line = sys.stdin.readline()
         if not line:
             break

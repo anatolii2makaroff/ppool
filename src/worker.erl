@@ -255,8 +255,7 @@ process_stream_ets_msg(N, E, Port, Ref, Msg, T) ->
         case collect_response(Port, T) of
             {ok, Response} -> 
                   gen_event:notify(E, {msg, {ok, Ref, Response}}),
-                    process_stream_ets_msg(N, E, Port, Ref, Msg, T),
-                    ok;
+                    process_stream_ets_msg(N, E, Port, Ref, Msg, T);
 
             {error, Status, Err} ->
                 true=ets:update_element(N, Ref, [

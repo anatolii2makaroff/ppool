@@ -135,9 +135,9 @@ start() {
     fi
     if [ ! -d ${DROP_VAR_DIR} ]; then
             mkdir -p "${DROP_VAR_DIR}"
-            chmod -R a+rw ${DROP_VAR_DIR}
     fi
 
+    chmod -R a+rw ${DROP_VAR_DIR}
     cd ${DROP_HOME}
 
     exec erl \
