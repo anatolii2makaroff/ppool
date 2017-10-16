@@ -29,7 +29,10 @@ banner() {
 DROP_HOME="$(dirname $(realpath $0))/../"
 HOSTNAME=`env hostname -f`
 
-DROP_NAME=drop@${HOSTNAME}
+# DROP_NAME=drop@${HOSTNAME}
+DROP_NAME=drop@127.0.0.1
+
+
 DROP_COOKIE=mesh1
 DROP_LOG_DIR=/tmp
 DROP_VAR_DIR=/var/lib/drop

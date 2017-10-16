@@ -65,8 +65,7 @@ def insert_node_info(cur, args):
      node_watch::%Node::nodedown::%Info
     """
 
-    cur.execute("""DELETE FROM node_list WHERE node = '{node}';
-                   INSERT INTO node_list(node, active, date, msg)
+    cur.execute("""INSERT INTO node_list(node, active, date, msg)
                    VALUES ('{node}', {active}, CURRENT_TIMESTAMP,
                            '{msg}');""".format(node=args[1],
                                               active=(lambda x: x != "nodedown" and 1 or 0)(args[2]),
@@ -100,6 +99,8 @@ def insert_ppool_stat(cur, data):
 def clear_last_rows(cur, t):
     cur.execute("DELETE FROM node_stat WHERE date < DATETIME('NOW', '-{} minutes');".format(t))
     cur.execute("DELETE FROM ppool_stat WHERE date < DATETIME('NOW', '-{} minutes');".format(t))
+    cur.execute("DELETE FROM node_list WHERE date < DATETIME('NOW', '-{} minutes');".format(t))
+
 
 
 def main(p, cnt, t):
@@ -132,6 +133,10 @@ def main(p, cnt, t):
             args = line.split("::")
             insert_node_info(cur, args)
 
+            conn.commit()
+
+            send("ok")
+
         else:
 
             # json
@@ -143,6 +148,8 @@ def main(p, cnt, t):
             elif data["tag"] == "ppool_stat":
                 insert_ppool_stat(cur, data)
 
+            conn.commit()
+
             send(json.dumps(data))
 
         # clear last rows
@@ -151,7 +158,6 @@ def main(p, cnt, t):
             clear_last_rows(cur, t)
             n = cnt
 
-        conn.commit()
 
 if __name__ == "__main__":
     main(sys.argv[1], int(sys.argv[2]), sys.argv[3])
