@@ -35,7 +35,10 @@ def check_table(cur):
                                           active integer,
                                           date date_time,
                                           msg text
-                );""")
+                );
+                CREATE INDEX IF NOT EXISTS idx_node_list ON node_list(node);
+
+                """)
 
     cur.execute("""CREATE TABLE IF NOT EXISTS
                                 node_stat(node text,
@@ -47,7 +50,10 @@ def check_table(cur):
                                           disk_count integer,
                                           disk_percent real,
                                           net_count integer
-                );""")
+                );
+                CREATE INDEX IF NOT EXISTS idx_node_stat ON node_stat(node);
+
+                """)
 
     cur.execute("""CREATE TABLE IF NOT EXISTS
                                 ppool_stat(node text,
@@ -56,7 +62,9 @@ def check_table(cur):
                                            count integer,
                                            cpu_percent real,
                                            ram_percent real
-                );""")
+                );
+                CREATE INDEX IF NOT EXISTS idx_ppool_stat ON ppool_stat(node, name);
+                """)
 
 
 def insert_node_info(cur, args):
@@ -99,7 +107,7 @@ def insert_ppool_stat(cur, data):
 def clear_last_rows(cur, t):
     cur.execute("DELETE FROM node_stat WHERE date < DATETIME('NOW', '-{} minutes');".format(t))
     cur.execute("DELETE FROM ppool_stat WHERE date < DATETIME('NOW', '-{} minutes');".format(t))
-    cur.execute("DELETE FROM node_list WHERE date < DATETIME('NOW', '-{} minutes');".format(t))
+    cur.execute("DELETE FROM node_list WHERE date < DATETIME('NOW', '-3600 minutes');".format(t))
 
 
 
