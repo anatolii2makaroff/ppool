@@ -155,7 +155,10 @@ def main(p, cnt, t):
         # clear last rows
         n -= 1
         if n == 0:
+            log("clear tables..")
             clear_last_rows(cur, t)
+            conn.commit()
+
             n = cnt
 
 

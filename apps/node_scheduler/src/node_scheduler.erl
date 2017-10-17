@@ -100,7 +100,7 @@ handle_info(timeout, State) ->
 
     ppool_worker:start_all_workers(node_collector, 
                               {cmd("node_collector:"?NODE_CLTR_VER,
-                                   "./node_collector /tmp/db 10 5 ",
+                                   "./node_collector /tmp/db 20 5 ",
                                    "node_collector.log"
                                   ), ?NODE_CLTR_TIMEOUT}
     ),

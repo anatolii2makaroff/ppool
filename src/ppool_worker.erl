@@ -13,6 +13,8 @@
 
          call_worker/2,
          call_worker/3,
+         cast_worker/2,
+         cast_worker/3,
 
          call_map_workers/2,
          call_workers/2,
@@ -110,11 +112,20 @@ stop_all_workers(Name, _) ->
 %% API
 
 call_worker(Name, Msg) ->
-    ?Debug(Msg),
+    %% ?Debug(Msg),
     gen_server:call(Name, {call_worker, {msg, no, Msg}}).
 
 call_worker(Name, Ref, Msg) ->
     gen_server:call(Name, {call_worker, {msg, Ref, Msg}}).
+
+
+cast_worker(Name, Msg) ->
+    %% ?Debug(Msg),
+    gen_server:cast(Name, {cast_worker, {msg, no, Msg}}).
+
+cast_worker(Name, Ref, Msg) ->
+    gen_server:cast(Name, {cast_worker, {msg, Ref, Msg}}).
+
 
 
 call_map_workers(Name, Msg) ->
@@ -245,6 +256,14 @@ handle_call(_Request, _From, State) ->
 	{reply, ignored, State}.
 
 
+handle_cast({cast_worker, Msg},  #state{workers_pids=Pids}=State) ->
+    [Pid|_] = maps:keys(Pids),
+
+    ?Debug({cast_worker, Pid}),
+
+        gen_server:cast(Pid, Msg),
+	        {noreply, State};
+
 
 
 handle_cast({cast_all_workers, Msg},  #state{workers_pids=Pids}=State) ->
@@ -317,7 +336,6 @@ handle_info(clean_ets, #state{name=Name}=State) ->
     erlang:send_after(?INTERVAL, self(), clean_ets),
 
     {noreply, State};
-
 
 
 
