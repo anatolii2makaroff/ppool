@@ -116,7 +116,7 @@ terminate(_Reason, _State) ->
 
 call_worker(Pid, R, Msg) ->
 
-         case ppool_worker:call_worker(Pid, R, Msg) of
+         case ppool_worker:call_cast_worker(Pid, R, Msg) of
              {ok, []} -> 
                  error_logger:error_msg("no more subscribers ~p~n, [~p]",
                                                             [{Pid,R}, Msg]),

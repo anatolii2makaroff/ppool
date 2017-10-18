@@ -13,6 +13,8 @@
 
          call_worker/2,
          call_worker/3,
+         call_cast_worker/3,
+
          cast_worker/2,
          cast_worker/3,
 
@@ -119,6 +121,10 @@ call_worker(Name, Ref, Msg) ->
     gen_server:call(Name, {call_worker, {msg, Ref, Msg}}).
 
 
+call_cast_worker(Name, Ref, Msg) ->
+    gen_server:call(Name, {call_cast_worker, {msg, Ref, Msg}}).
+
+
 cast_worker(Name, Msg) ->
     %% ?Debug(Msg),
     gen_server:cast(Name, {cast_worker, {dmsg, no, Msg}}).
@@ -222,6 +228,25 @@ handle_call({call_worker, Msg}, _From, #state{workers_pids=Pids}=State) ->
               {reply, {ok, R}, State}
 
       end;
+
+
+handle_call({call_cast_worker, Msg}, _From, #state{workers_pids=Pids}=State) ->
+    
+    Free=maps:filter(fun(_K, V) -> V=/=2 end ,Pids),
+
+    ?Debug(Free),
+
+    case maps:keys(Free) of
+          [] -> 
+              {reply, {ok, []}, State};
+
+          [P|_] -> 
+            R=gen_server:cast(P, Msg),
+
+              {reply, {ok, R}, State}
+
+      end;
+
 
 
 handle_call({call_workers, Msg}, _From, #state{workers_pids=Pids}=State) ->
