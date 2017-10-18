@@ -105,6 +105,40 @@ handle_cast({msg, R, Msg}, #state{master=N, ev=E, cmd=Cmd,
 
        end;
 
+
+
+handle_cast({dmsg, R, Msg}, #state{master=N}=State) ->
+
+   ?Debug1({start_distrib_dmsg, R, Msg}),
+    ?Debug1({pg_group, pg2:get_members(N)}),
+
+    Ms=whereis(N),
+
+    case pg2:get_members(N) of
+        
+        [Ms] -> %% local 
+           ?Debug1({local, self()}),
+            gen_server:cast(self(), {msg, R, Msg});
+
+        Arr ->
+           ?Debug1({remote, Arr}),
+ 
+            %% TODO rotate nodes
+            [NewP|_] = [X||X<-Arr, X=/=Ms],
+
+              ?Debug1({remote_choise_to, NewP}),
+ 
+
+              ppool_worker:call_worker(NewP, R, Msg)
+
+    end,
+     ?Debug1({noreply_send, self()}),
+ 
+        {noreply, State};
+
+
+
+
 handle_cast({stream_msg, R, Msg}, #state{master=N, ev=E, cmd=Cmd, 
                                          timeout=T, port=Port}=State) ->
 
