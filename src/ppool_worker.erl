@@ -121,10 +121,10 @@ call_worker(Name, Ref, Msg) ->
 
 cast_worker(Name, Msg) ->
     %% ?Debug(Msg),
-    gen_server:cast(Name, {cast_worker, {msg, no, Msg}}).
+    gen_server:cast(Name, {cast_worker, {dmsg, no, Msg}}).
 
 cast_worker(Name, Ref, Msg) ->
-    gen_server:cast(Name, {cast_worker, {msg, Ref, Msg}}).
+    gen_server:cast(Name, {cast_worker, {dmsg, Ref, Msg}}).
 
 
 
@@ -257,9 +257,14 @@ handle_call(_Request, _From, State) ->
 
 
 handle_cast({cast_worker, Msg},  #state{workers_pids=Pids}=State) ->
-    [Pid|_] = maps:keys(Pids),
 
-    ?Debug({cast_worker, Pid}),
+   %% get random pid
+   List=maps:keys(Pids),
+    Index = rand:uniform(length(List)),
+
+     Pid=lists:nth(Index, List),
+
+     ?Debug1({cast_worker_dmsg, Pid}),
 
         gen_server:cast(Pid, Msg),
 	        {noreply, State};

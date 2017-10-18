@@ -7,6 +7,14 @@
 -endif.
 
 
+-ifdef(debug1).
+    -define(Debug1(M), io:format("~p~n", [M])).
+-else.
+    -define(Debug1(M), void).
+-endif.
+
+
+
 -record(worker_stat, {
           ref,
           ref_from,
