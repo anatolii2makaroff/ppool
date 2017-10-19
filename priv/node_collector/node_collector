@@ -69,22 +69,22 @@ def check_table(cur):
                 """)
 
 
-def insert_node_info(cur, args):
+def insert_node_info(args):
 
     """
      node_watch::%Node::nodedown::%Info
     """
 
-    cur.execute("""INSERT INTO node_list(node, active, date, msg)
+    return """INSERT INTO node_list(node, active, date, msg)
                    VALUES ('{node}', {active}, CURRENT_TIMESTAMP,
                            '{msg}');""".format(node=args[1],
-                                              active=(lambda x: x != "nodedown" and 1 or 0)(args[2]),
-                                              msg=args[3]))
+                                               active=(lambda x: x != "nodedown" and 1 or 0)(args[2]),
+                                               msg=args[3])
 
 
-def insert_node_stat(cur, data):
+def insert_node_stat(data):
 
-    cur.execute("""INSERT INTO node_stat(node, date, cpu_count, cpu_percent,
+    return """INSERT INTO node_stat(node, date, cpu_count, cpu_percent,
                                          ram_count, ram_percent, disk_count,
                                          disk_percent, net_count)
                    VALUES ('{0}', CURRENT_TIMESTAMP, {1}, {2}, {3}, {4}, {5}, {6},
@@ -92,24 +92,26 @@ def insert_node_stat(cur, data):
                                           data["cpu_percent"], data["ram_count"],
                                           data["ram_percent"], data["disk_count"],
                                           data["disk_percent"], data["net_count"])
-                )
 
 
-def insert_ppool_stat(cur, data):
+def insert_ppool_stat(data):
 
-    cur.execute("""INSERT INTO ppool_stat(node, name, date, count,
+    return """INSERT INTO ppool_stat(node, name, date, count,
                                          cpu_percent, ram_percent)
                    VALUES ('{0}', '{1}', CURRENT_TIMESTAMP,
                            {2}, {3}, {4})""".format(data["node"], data["name"],
                                                     data["count"], data["cpu_percent"],
                                                     data["ram_percent"])
-                )
 
 
 def clear_last_rows(cur, t):
     cur.execute("DELETE FROM node_stat WHERE date < DATETIME('NOW', '-{} minutes');".format(t))
     cur.execute("DELETE FROM ppool_stat WHERE date < DATETIME('NOW', '-{} minutes');".format(t))
-    cur.execute("DELETE FROM node_list WHERE date < DATETIME('NOW', '-3600 minutes');".format(t))
+    cur.execute("DELETE FROM node_list WHERE date < DATETIME('NOW', '-{} minutes');".format(t*10))
+
+
+def connect(p):
+    return sqlite3.connect(p + '/node_collector.db')
 
 
 def main(p, cnt, t):
@@ -118,13 +120,16 @@ def main(p, cnt, t):
         os.makedirs(p)
 
     #  create dbs
-    conn = sqlite3.connect(p + '/node_collector.db')
+    conn = connect(p)
     cur = conn.cursor()
 
     check_table(cur)
     conn.commit()
+    conn.close()
 
     n = cnt
+    tb = time.time()
+    data_list = []
 
     while 1:
 
@@ -140,9 +145,7 @@ def main(p, cnt, t):
             # simple line format
 
             args = line.split("::")
-            insert_node_info(cur, args)
-
-            conn.commit()
+            data_list.append(insert_node_info(args))
 
             send("ok")
 
@@ -153,23 +156,34 @@ def main(p, cnt, t):
             data = json.loads(line)
 
             if data["tag"] == "node_stat":
-                insert_node_stat(cur, data)
-            elif data["tag"] == "ppool_stat":
-                insert_ppool_stat(cur, data)
+                data_list.append(insert_node_stat(data))
 
-            conn.commit()
+            elif data["tag"] == "ppool_stat":
+                data_list.append(insert_ppool_stat(data))
 
             send(json.dumps(data))
 
         # clear last rows
         n -= 1
-        if n == 0:
-            log("clear tables..")
+        if n == 0 or time.time() - tb > t:
+            log("flush tables..")
+
+            conn = connect(p)
+            cur = conn.cursor()
+
+            for i in data_list:
+                cur.execute(i)
+            conn.commit()
+
             clear_last_rows(cur, t)
             conn.commit()
 
+            conn.close()
+
+            tb = time.time()
             n = cnt
+            data_list = []
 
 
 if __name__ == "__main__":
-    main(sys.argv[1], int(sys.argv[2]), sys.argv[3])
+    main(sys.argv[1], int(sys.argv[2]), int(sys.argv[3]))

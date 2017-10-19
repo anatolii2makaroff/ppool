@@ -62,7 +62,7 @@ handle_info({nodedown, Node, InfoList}, State)->
         Msg=erlang:list_to_bitstring(["tag:node_watch::", 
                                        erlang:atom_to_list(Node), "::", 
                                        "nodedown::", 
-                                       erlang:atom_to_list(I)]),
+                                       erlang:atom_to_list(I), "\n"]),
 
         node_scheduler:call(node(),
                             fun(N, C) -> 
@@ -83,7 +83,7 @@ handle_info({nodeup, Node, _InfoList}, State) ->
         Msg=erlang:list_to_bitstring(["tag:node_watch::", 
                                        erlang:atom_to_list(Node), "::", 
                                        "nodeup::", 
-                                       "nodeup.."]),
+                                       "nodeup..", "\n"]),
 
         node_scheduler:call(node(),
                             fun(N, C) -> 

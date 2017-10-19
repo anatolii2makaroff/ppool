@@ -78,7 +78,7 @@ handle_event({msg, {_,R,[Msg]}=_M},
 
      case binary:match(Msg, Filter) of
          nomatch -> ok;
-               _ -> call_worker(Pid, R, [Msg]++"\n")
+               _ -> ppool_worker:cast_worker(Pid, R, [Msg]++"\n")
      end,
  
       {ok, State};
@@ -90,9 +90,40 @@ handle_event({msg, {_,R,[Msg]}=_M},
 
      ?Debug({event_one, self(), Pid, Msg, API}),
 
+         ppool_worker:cast_worker(Pid, R, [Msg]++"\n"),
+    
+      {ok, State};
+
+
+
+
+%% done
+
+handle_event({msg, {_,R,[Msg]}=_M}, 
+             #state{pid=Pid, filter=Filter, api=API}=State)
+      when Filter=/=<<"no">>, API=:=done ->
+
+    ?Debug({event_one, self(), Pid, Msg, Filter, API}),
+
+     case binary:match(Msg, Filter) of
+         nomatch -> ok;
+               _ -> call_worker(Pid, R, [Msg]++"\n")
+     end,
+ 
+      {ok, State};
+
+
+handle_event({msg, {_,R,[Msg]}=_M}, 
+             #state{pid=Pid, api=API}=State)
+      when API=:=done ->
+
+     ?Debug({event_one, self(), Pid, Msg, API}),
+
          call_worker(Pid, R, [Msg]++"\n"),
     
       {ok, State};
+
+
 
 
 handle_event(Event, State) ->
@@ -121,7 +152,7 @@ call_worker(Pid, R, Msg) ->
                  error_logger:error_msg("no more subscribers ~p~n, [~p]",
                                                             [{Pid,R}, Msg]),
 
-                  ppool_worker:cast_worker(Pid, R, Msg);
+                  ppool_worker:dcast_worker(Pid, R, Msg);
 
              {ok, _Res} -> ok
 

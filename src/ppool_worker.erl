@@ -17,6 +17,7 @@
 
          cast_worker/2,
          cast_worker/3,
+         dcast_worker/3,
 
          call_map_workers/2,
          call_workers/2,
@@ -127,9 +128,13 @@ call_cast_worker(Name, Ref, Msg) ->
 
 cast_worker(Name, Msg) ->
     %% ?Debug(Msg),
-    gen_server:cast(Name, {cast_worker, {dmsg, no, Msg}}).
+    gen_server:cast(Name, {cast_worker, {msg, no, Msg}}).
 
 cast_worker(Name, Ref, Msg) ->
+    gen_server:cast(Name, {cast_worker, {msg, Ref, Msg}}).
+
+
+dcast_worker(Name, Ref, Msg) ->
     gen_server:cast(Name, {cast_worker, {dmsg, Ref, Msg}}).
 
 
@@ -289,7 +294,7 @@ handle_cast({cast_worker, Msg},  #state{workers_pids=Pids}=State) ->
 
      Pid=lists:nth(Index, List),
 
-     ?Debug1({cast_worker_dmsg, Pid}),
+     ?Debug({cast_worker_random, Pid}),
 
         gen_server:cast(Pid, Msg),
 	        {noreply, State};

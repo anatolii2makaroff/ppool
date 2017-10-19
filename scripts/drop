@@ -29,9 +29,14 @@ banner() {
 DROP_HOME="$(dirname $(realpath $0))/../"
 HOSTNAME=`env hostname -f`
 
-# DROP_NAME=drop@${HOSTNAME}
-DROP_NAME=drop1@127.0.0.1
+if [ "x" = "x$NODE_NAME" ] 
+then
+    DROP_NAME=drop@${HOSTNAME}
+else
+    DROP_NAME=$NODE_NAME@${HOSTNAME}
+fi
 
+echo "DROP_NAME: "$DROP_NAME 
 
 DROP_COOKIE=mesh1
 DROP_LOG_DIR=/tmp

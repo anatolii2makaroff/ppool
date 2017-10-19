@@ -123,7 +123,7 @@ handle_cast({dmsg, R, Msg}, #state{master=N}=State) ->
               ?Debug1({remote_choise_to, NewP}),
  
 
-              ppool_worker:call_worker(NewP, R, Msg)
+              ppool_worker:cast_worker(NewP, R, Msg)
 
     end,
      ?Debug1({noreply_send, self()}),

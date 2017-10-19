@@ -98,12 +98,16 @@ handle_info(timeout, State) ->
 
     %% Collect info from all nodes node_info_stream 
 
-    ppool_worker:start_all_workers(node_collector, 
+    %% master 
+    ppool_worker:start_worker(node_collector, 
                               {cmd("node_collector:"?NODE_CLTR_VER,
-                                   "./node_collector /tmp/db 20 5 ",
+                                   "./node_collector /tmp/db 100 5 ",
                                    "node_collector.log"
                                   ), ?NODE_CLTR_TIMEOUT}
     ),
+
+
+    %% rrd
 
     ppool_worker:start_all_workers(rrd, 
                               {cmd("rrd:"?NODE_RRD_VER,
@@ -111,6 +115,9 @@ handle_info(timeout, State) ->
                                    "rrd.log"
                                   ), ?NODE_RRD_TIMEOUT}
     ),
+
+
+    %% api
 
     ppool_worker:start_all_workers(node_api, 
                               {{node_scheduler, api}, ?NODE_API_TIMEOUT}
