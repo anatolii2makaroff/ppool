@@ -107,7 +107,8 @@ def insert_ppool_stat(data):
 def clear_last_rows(cur, t):
     cur.execute("DELETE FROM node_stat WHERE date < DATETIME('NOW', '-{} minutes');".format(t))
     cur.execute("DELETE FROM ppool_stat WHERE date < DATETIME('NOW', '-{} minutes');".format(t))
-    cur.execute("DELETE FROM node_list WHERE date < DATETIME('NOW', '-{} minutes');".format(t*10))
+    cur.execute("""DELETE FROM node_list WHERE date NOT IN
+                 ( SELECT date FROM node_list ORDER BY date DESC LIMIT {});""".format(t*3))
 
 
 def connect(p):
