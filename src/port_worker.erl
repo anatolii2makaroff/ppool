@@ -89,6 +89,8 @@ handle_cast({msg, _, restart}, State) ->
 handle_cast({msg, _, stop}, State) ->
     {stop, normal, State};
 
+
+
 handle_cast({msg, R, Msg}, #state{master=N, ev=E, cmd=Cmd, port=Port, 
                                   timeout=T}=State) ->
 
@@ -99,6 +101,24 @@ handle_cast({msg, R, Msg}, #state{master=N, ev=E, cmd=Cmd, port=Port,
             _ -> {noreply, State}
 
        end;
+
+
+
+handle_cast({dmsga, R, Msg}, #state{master=N}=State) ->
+
+   ?Debug1({start_distrib_dmsga, R, Msg}),
+    ?Debug1({pg_group_a, pg2:get_members(N)}),
+
+    case pg2:get_members(N) of
+        Arr ->
+           ?Debug1({remote_a, Arr}),
+            [ppool_worker:cast_worker(X, R, Msg)||X<-Arr]
+
+    end,
+     ?Debug1({noreply_send, self()}),
+ 
+        {noreply, State};
+
 
 
 handle_cast({dmsg, R, Msg}, #state{master=N}=State) ->

@@ -18,6 +18,7 @@
          cast_worker/2,
          cast_worker/3,
          dcast_worker/3,
+         dacast_worker/3,
 
          call_map_workers/2,
          call_workers/2,
@@ -136,6 +137,9 @@ cast_worker(Name, Ref, Msg) ->
 
 dcast_worker(Name, Ref, Msg) ->
     gen_server:cast(Name, {cast_worker, {dmsg, Ref, Msg}}).
+
+dacast_worker(Name, Ref, Msg) ->
+    gen_server:cast(Name, {cast_worker, {dmsga, Ref, Msg}}).
 
 
 

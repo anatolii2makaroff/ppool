@@ -124,6 +124,32 @@ handle_event({msg, {_,R,[Msg]}=_M},
       {ok, State};
 
 
+%% dall
+
+handle_event({msg, {_,R,[Msg]}=_M}, 
+             #state{pid=Pid, filter=Filter, api=API}=State)
+      when Filter=/=<<"no">>, API=:=dall ->
+
+    ?Debug({event_dall, self(), Pid, Msg, Filter, API}),
+
+     case binary:match(Msg, Filter) of
+         nomatch -> ok;
+               _ -> ppool_worker:dacast_worker(Pid, R, [Msg]++"\n")
+     end,
+ 
+      {ok, State};
+
+
+handle_event({msg, {_,R,[Msg]}=_M}, 
+             #state{pid=Pid, api=API}=State)
+      when API=:=dall ->
+
+     ?Debug({event_dall, self(), Pid, Msg, API}),
+
+         ppool_worker:dacast_worker(Pid, R, [Msg]++"\n"),
+    
+      {ok, State};
+
 
 
 handle_event(Event, State) ->
