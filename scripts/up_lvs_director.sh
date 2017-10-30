@@ -12,7 +12,6 @@
                                                                                 
  iptables -F                                                                    
  
-
  ipvsadm -C                                                                               
  ipvsadm -A -t ${VIP}:80 -s rr                                                  
  ipvsadm -a -t ${VIP}:80 -r 10.128.35.70:80 -g                                  
