@@ -14,6 +14,7 @@
 -endif.
 
 
+-define(ERROR_TIMEOUT, 500).
 
 -record(worker_stat, {
           ref,

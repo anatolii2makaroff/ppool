@@ -6,6 +6,7 @@
          call/4,
          cmd/3,
          api/1,
+         node_info_internal_stream/1,
          try_start/1,
          restart/0
          
@@ -45,6 +46,8 @@ restart() ->
 handle_call(restart, _From, State) ->
 
     ppool:stop_pool(ppool, node_info_stream),
+    ppool:stop_pool(ppool, node_info_internal_stream),
+ 
     ppool:stop_pool(ppool, node_collector),
     ppool:stop_pool(ppool, rrd),
     ppool:stop_pool(ppool, node_api),
@@ -78,9 +81,16 @@ handle_info(timeout, State) ->
     ppool:start_pool(ppool, {node_api, ?NODE_API_WORKERS, 
                             {worker, start_link, []} }),
 
+    ppool:start_pool(ppool, {node_info_internal_stream, ?NODE_INFO_IN_WORKERS, 
+                            {worker, start_link, []} }),
+
+
+
     %% link ppools
     
     ppool_worker:subscribe(node_info_stream, {node_collector, <<"tag">>, dall}),
+    %% ppool_worker:subscribe(node_info_internal_stream, {node_collector, <<"no">>, dall}),
+
     ppool_worker:subscribe(node_collector, {rrd, <<"_trace">>, one}),
 
     %% System info stream worker
@@ -123,6 +133,11 @@ handle_info(timeout, State) ->
                               {{node_scheduler, api}, ?NODE_API_TIMEOUT}
     ),
 
+    ppool_worker:start_all_workers(node_info_internal_stream, 
+                              {{node_scheduler, node_info_internal_stream}, ?NODE_INFO_IN_TIMEOUT}
+    ),
+
+
      % try_start(node_info_stream),
 
 	  {noreply, State};
@@ -161,7 +176,7 @@ try_start(N) ->
 
 call(Type, F, Name, Cmd) ->
 
-    ?Debug({?MODULE, Type, F, Name, Cmd}),
+    ?Debug2({?MODULE, Type, F, Name, Cmd}),
 
     case Type of
 
@@ -181,13 +196,56 @@ call(Type, F, Name, Cmd) ->
     end.
 
 
+
+
+%%
+%%
+%% INFO stream worker 
+%% tick every X secs
+%%  
+%%
+
+node_info_loop(F) ->
+
+    %% ppools error & timeout
+    
+
+
+
+    Msg = <<"system::node1::node_collector::1::0\n">>,
+    
+
+
+     ?Debug2(Msg),
+
+    F!{self(), {data, [Msg]}},
+     timer:sleep(?NODE_INFO_IN_TICK),
+      node_info_loop(F).
+
+
+node_info_internal_stream(F) ->
+    receive
+        _ -> 
+          ?Debug2({start_node_in_worker, F}), 
+            node_info_loop(F)
+    end.
+
+
+
+%%
+%%
+%%
+%% API worker
+%%
+%%
+
 api(F) ->
     receive
 
         R ->
             [_|[Tp|[Fn|[Name|A]]]] = binary:split(R, <<"::">>, [global]),
 
-           ?Debug({Tp, Fn, Name, A}),
+           ?Debug2({Tp, Fn, Name, A}),
 
            case erlang:binary_to_atom(Fn, latin1) of
 
@@ -265,7 +323,9 @@ api(F) ->
 
                    Res = call(erlang:binary_to_atom(Tp, latin1),
                             fun(N, {I, C, L, T}) -> 
-                                    ppool_worker:start_all_workers(N, {cmd(I, C, L), T})
+                                    ppool_worker:start_all_workers(N, 
+                                                                   {cmd(I, C, L), 
+                                                                    T})
                             end,
                             erlang:binary_to_atom(Name, latin1),
                             {

@@ -41,6 +41,17 @@ def check_table(cur):
                 """)
 
     cur.execute("""CREATE TABLE IF NOT EXISTS
+                                ppool_list(node text,
+                                           name text,
+                                           date date_time,
+                                           error integer,
+                                           timeout integer
+                )
+                """)
+    cur.execute("""CREATE INDEX IF NOT EXISTS idx_ppool_list ON ppool_list(node, name)
+                """)
+
+    cur.execute("""CREATE TABLE IF NOT EXISTS
                                 node_stat(node text,
                                           date date_time,
                                           cpu_count integer,
@@ -82,6 +93,19 @@ def insert_node_info(args):
                                                msg=args[3])
 
 
+def insert_ppool_info(args):
+
+    """
+    system::%Node::%Ppool_name::error::timeout
+    """
+    print(args)
+
+    return """INSERT INTO ppool_list(node, name, date, error, timeout)
+                   VALUES ('{node}', '{name}', CURRENT_TIMESTAMP,
+                           {error}, {timeout} );""".format(node=args[1], name=args[2],
+                                                           error=args[3], timeout=args[4])
+
+
 def insert_node_stat(data):
 
     return """INSERT INTO node_stat(node, date, cpu_count, cpu_percent,
@@ -107,6 +131,7 @@ def insert_ppool_stat(data):
 def clear_last_rows(cur, t):
     cur.execute("DELETE FROM node_stat WHERE date < DATETIME('NOW', '-{} minutes');".format(t))
     cur.execute("DELETE FROM ppool_stat WHERE date < DATETIME('NOW', '-{} minutes');".format(t))
+    cur.execute("DELETE FROM ppool_list WHERE date < DATETIME('NOW', '-{} minutes');".format(t))
     cur.execute("""DELETE FROM node_list WHERE date NOT IN
                  ( SELECT date FROM node_list ORDER BY date DESC LIMIT {});""".format(t*3))
 
@@ -147,6 +172,15 @@ def main(p, cnt, t):
 
             args = line.split("::")
             data_list.append(insert_node_info(args))
+
+            send("ok")
+
+        elif line.startswith("system::"):
+
+            # system msg
+
+            args = line.split("::")
+            data_list.append(insert_ppool_info(args))
 
             send("ok")
 

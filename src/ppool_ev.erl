@@ -153,7 +153,7 @@ handle_event({msg, {_,R,[Msg]}=_M},
 
 
 handle_event(Event, State) ->
-     error_logger:info_msg(Event),
+     error_logger:info_msg({no_match_type,Event}),
       {ok, State}.
  
 

@@ -279,18 +279,28 @@ process_ets_msg(N, E, Port, Ref, Msg, T) ->
                                  {#worker_stat.result, Status},
                                  {#worker_stat.time_end, os:timestamp()}
                                 ]),
-                  gen_event:notify(E, {msg, {error, Ref, [<<"error">>]}}),
 
+                 Msg=erlang:list_to_binary(["system::error::", 
+                      atom_to_list(node()),"::",
+                      atom_to_list(N)]),
 
+                  gen_event:notify(E, {msg, {error, Ref, Msg}}),
+                   timer:sleep(?ERROR_TIMEOUT),
 
                 {error, Status, Err};
+
             {error, timeout} ->
                 true=ets:update_element(N, Ref, [
                                  {#worker_stat.status, timeout},
                                  {#worker_stat.time_end, os:timestamp()}
                                 ]),
 
-                  gen_event:notify(E, {msg, {error, Ref, [<<"timeout">>]}}),
+                 Msg=erlang:list_to_binary(["system::timeout::", 
+                      atom_to_list(node()),"::",
+                      atom_to_list(N)]),
+
+                  gen_event:notify(E, {msg, {error, Ref, [Msg]}}),
+                    timer:sleep(?ERROR_TIMEOUT),
 
                  {error, timeout}
         end.
@@ -309,10 +319,17 @@ process_stream_ets_msg(N, E, Port, Ref, Msg, T) ->
                                  {#worker_stat.result, Status},
                                  {#worker_stat.time_end, os:timestamp()}
                                 ]),
+
+                 Msg=erlang:list_to_binary(["system::error::", 
+                      atom_to_list(node()),"::",
+                      atom_to_list(N)]),
  
-                 gen_event:notify(E, {msg, {error, Ref, [<<"error">>]}}),
+                 gen_event:notify(E, {msg, {error, Ref, Msg}}),
+
+                  timer:sleep(?ERROR_TIMEOUT),
 
                 {error, Status, Err};
+
             {error, timeout} ->
 
                 true=ets:update_element(N, Ref, [
@@ -320,7 +337,13 @@ process_stream_ets_msg(N, E, Port, Ref, Msg, T) ->
                                  {#worker_stat.time_end, os:timestamp()}
                                 ]),
 
-                  gen_event:notify(E, {msg, {error, Ref, [<<"timeout">>]}}),
+                 Msg=erlang:list_to_binary(["system::timeout::", 
+                      atom_to_list(node()),"::",
+                      atom_to_list(N)]),
+
+                  gen_event:notify(E, {msg, {error, Ref, Msg}}),
+
+                    timer:sleep(?ERROR_TIMEOUT),
 
                  {error, timeout}
         end.
