@@ -24,7 +24,10 @@
 }).
 
 
+-include_lib("stdlib/include/ms_transform.hrl").
+
 -include("node_scheduler.hrl").
+-include("../../src/ppool.hrl").
 
 %% API.
 
@@ -89,7 +92,7 @@ handle_info(timeout, State) ->
     %% link ppools
     
     ppool_worker:subscribe(node_info_stream, {node_collector, <<"tag">>, dall}),
-    %% ppool_worker:subscribe(node_info_internal_stream, {node_collector, <<"no">>, dall}),
+    ppool_worker:subscribe(node_info_internal_stream, {node_collector, <<"no">>, dall}),
 
     ppool_worker:subscribe(node_collector, {rrd, <<"_trace">>, one}),
 
@@ -205,21 +208,67 @@ call(Type, F, Name, Cmd) ->
 %%  
 %%
 
+
+
+average([]) ->
+    0;
+
+average(X) ->
+        lists:sum(X) / length(X).
+
+
+
+get_worker_info(N) ->
+
+
+  R=ets:select(N,
+                ets:fun2ms(fun(X)
+                                -> X 
+                            end)
+              ),
+  
+   Err=length([X||X <- R, X#worker_stat.status =:=error]),
+    Touts=length([X||X <- R, X#worker_stat.status =:=timeout]),
+      Run=length([X||X <- R, X#worker_stat.status =:=running]),
+       Cnt=length([X||X <- R, X#worker_stat.status =:=ok]),
+ 
+      Elaps=average([timer:now_diff(X#worker_stat.time_end, 
+                                    X#worker_stat.time_start)
+                     ||X <- R, X#worker_stat.time_end=/=undefined]),
+
+       ["system::", 
+        atom_to_list(node()), "::",
+        atom_to_list(N), "::",
+        integer_to_list(Err), "::",
+        integer_to_list(Touts), "::",
+        integer_to_list(Run), "::",
+        integer_to_list(Cnt), "::",
+        lists:flatten(io_lib:format("~p", [Elaps]))
+       ].
+
+
+
 node_info_loop(F) ->
 
-    %% ppools error & timeout
-    
+  %% ppools error & timeout
+  %%
+   
+  List=[X||X<-pg2:which_groups(), 
+            string:find(atom_to_list(X), "_ev")=:=nomatch,
+            X=/=ppool
+       ],
 
+   lists:foreach(fun(M)->
+                      Msg=list_to_binary(get_worker_info(M)),
+                       ?Debug2(Msg),
+                        
+                        F!{self(), {data, [Msg]}}
+                 end,
+                 List
 
+   ),
 
-    Msg = <<"system::node1::node_collector::1::0\n">>,
-    
-
-
-     ?Debug2(Msg),
-
-    F!{self(), {data, [Msg]}},
-     timer:sleep(?NODE_INFO_IN_TICK),
+    timer:sleep(?NODE_INFO_IN_TICK),
       node_info_loop(F).
 
 

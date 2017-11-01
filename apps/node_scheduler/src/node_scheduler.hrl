@@ -1,5 +1,5 @@
 
--ifdef(debug).
+-ifdef(debug2).
     -define(Debug2(M), io:format("~p~n", [M])).
 -else.
     -define(Debug2(M), void).
