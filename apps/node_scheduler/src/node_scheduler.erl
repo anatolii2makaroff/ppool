@@ -91,7 +91,7 @@ handle_info(timeout, State) ->
 
     %% link ppools
     
-    ppool_worker:subscribe(node_info_stream, {node_collector, <<"tag">>, dall}),
+    ppool_worker:subscribe(node_info_stream, {node_collector, <<"no">>, dall}),
     ppool_worker:subscribe(node_info_internal_stream, {node_collector, <<"no">>, dall}),
 
     ppool_worker:subscribe(node_collector, {rrd, <<"_trace">>, one}),

@@ -280,11 +280,11 @@ process_ets_msg(N, E, Port, Ref, Msg, T) ->
                                  {#worker_stat.time_end, os:timestamp()}
                                 ]),
 
-                 Msg=erlang:list_to_binary(["system::error::", 
+                 Msg2=erlang:list_to_binary(["system::error::", 
                       atom_to_list(node()),"::",
                       atom_to_list(N)]),
 
-                  gen_event:notify(E, {msg, {error, Ref, Msg}}),
+                  gen_event:notify(E, {msg, {error, Ref, [Msg2]}}),
                    timer:sleep(?ERROR_TIMEOUT),
 
                 {error, Status, Err};
@@ -295,11 +295,11 @@ process_ets_msg(N, E, Port, Ref, Msg, T) ->
                                  {#worker_stat.time_end, os:timestamp()}
                                 ]),
 
-                 Msg=erlang:list_to_binary(["system::timeout::", 
+                 Msg2=erlang:list_to_binary(["system::timeout::", 
                       atom_to_list(node()),"::",
                       atom_to_list(N)]),
 
-                  gen_event:notify(E, {msg, {error, Ref, [Msg]}}),
+                  gen_event:notify(E, {msg, {error, Ref, [Msg2]}}),
                     timer:sleep(?ERROR_TIMEOUT),
 
                  {error, timeout}
@@ -320,11 +320,11 @@ process_stream_ets_msg(N, E, Port, Ref, Msg, T) ->
                                  {#worker_stat.time_end, os:timestamp()}
                                 ]),
 
-                 Msg=erlang:list_to_binary(["system::error::", 
+                 Msg2=erlang:list_to_binary(["system::error::", 
                       atom_to_list(node()),"::",
                       atom_to_list(N)]),
  
-                 gen_event:notify(E, {msg, {error, Ref, Msg}}),
+                 gen_event:notify(E, {msg, {error, Ref, [Msg2]}}),
 
                   timer:sleep(?ERROR_TIMEOUT),
 
@@ -337,11 +337,11 @@ process_stream_ets_msg(N, E, Port, Ref, Msg, T) ->
                                  {#worker_stat.time_end, os:timestamp()}
                                 ]),
 
-                 Msg=erlang:list_to_binary(["system::timeout::", 
+                 Msg2=erlang:list_to_binary(["system::timeout::", 
                       atom_to_list(node()),"::",
                       atom_to_list(N)]),
 
-                  gen_event:notify(E, {msg, {error, Ref, Msg}}),
+                  gen_event:notify(E, {msg, {error, Ref, [Msg2]}}),
 
                     timer:sleep(?ERROR_TIMEOUT),
 

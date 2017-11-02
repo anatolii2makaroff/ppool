@@ -16,7 +16,6 @@
          terminate/2
         ]).
  
-
 -include("ppool.hrl").
 
 -record(state, {
@@ -78,7 +77,7 @@ handle_event({msg, {_,R,[Msg]}=_M},
 
      case binary:match(Msg, Filter) of
          nomatch -> ok;
-               _ -> ppool_worker:cast_worker(Pid, R, [Msg]++"\n")
+               _ -> call_worker0(Pid, R, [Msg]++"\n")
      end,
  
       {ok, State};
@@ -90,7 +89,7 @@ handle_event({msg, {_,R,[Msg]}=_M},
 
      ?Debug({event_one, self(), Pid, Msg, API}),
 
-         ppool_worker:cast_worker(Pid, R, [Msg]++"\n"),
+        call_worker0(Pid, R, [Msg]++"\n"),
     
       {ok, State};
 
@@ -171,12 +170,41 @@ terminate(_Reason, _State) ->
     ok.
 
 
+
+call_worker0(Pid, R, Msg) ->
+
+         case ppool_worker:call_cast_worker(Pid, R, Msg) of
+             {ok, []} -> 
+                 error_logger:error_msg("no more subscribers ~p~n, [~p]",
+                                                            [{Pid,R}, Msg]),
+
+                %% notify system 
+                 Msg2=erlang:list_to_binary(["system::warning::nomore::", 
+                      atom_to_list(node()),"::",
+                      atom_to_list(Pid), "\n"]),
+                 ppool_worker:cast_worker(?NO_MORE_PPOOL, Msg2),
+                %%%%%%
+
+                  ppool_worker:cast_worker(Pid, R, Msg);
+
+             {ok, _Res} -> ok
+
+         end.
+
+
 call_worker(Pid, R, Msg) ->
 
          case ppool_worker:call_cast_worker(Pid, R, Msg) of
              {ok, []} -> 
                  error_logger:error_msg("no more subscribers ~p~n, [~p]",
                                                             [{Pid,R}, Msg]),
+
+                %% notify system 
+                 Msg2=erlang:list_to_binary(["system::warning::nomore", 
+                      atom_to_list(node()),"::",
+                      atom_to_list(Pid)]),
+                 ppool_worker:cast_worker(?NO_MORE_PPOOL, Msg2),
+                %%%%%%
 
                   ppool_worker:dcast_worker(Pid, R, Msg);
 

@@ -48,7 +48,8 @@ def check_table(cur):
                                            timeout integer,
                                            running integer,
                                            ok integer,
-                                           elapsed REAL
+                                           elapsed REAL,
+                                           nomore integer
                 )
                 """)
     cur.execute("""CREATE INDEX IF NOT EXISTS idx_ppool_list ON ppool_list(node, name)
@@ -99,16 +100,22 @@ def insert_node_info(args):
 def insert_ppool_info(args):
 
     """
+    system::warning::nomore::node::ppoool
     system::drop1@127.0.0.1::rrd::0::0::0::18::156771.11111111112
     """
 
-    return """INSERT INTO ppool_list(node, name, date, error, timeout, running, ok, elapsed)
+    if args[1] == "warning" and args[2] == "nomore":
+        args = [0, args[3], args[4].strip(), 0, 0, 0, 0, 0, 1]
+    else:
+        args.append(0)
+
+    return """INSERT INTO ppool_list(node, name, date, error, timeout, running, ok, elapsed, nomore)
                    VALUES ('{node}', '{name}', CURRENT_TIMESTAMP,
                            {error}, {timeout}, {running},
-                           {ok}, {elapsed});""".format(node=args[1], name=args[2],
+                           {ok}, {elapsed}, {nomore});""".format(node=args[1], name=args[2],
                                                        error=args[3], timeout=args[4],
                                                        running=args[5], ok=args[6],
-                                                       elapsed=args[7])
+                                                       elapsed=args[7], nomore=args[8])
 
 
 def insert_node_stat(data):

@@ -15,6 +15,8 @@
 
 
 -define(ERROR_TIMEOUT, 500).
+-define(NO_MORE_PPOOL, node_collector).
+
 
 -record(worker_stat, {
           ref,
