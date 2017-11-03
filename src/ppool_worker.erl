@@ -32,7 +32,9 @@
          get_result_worker/2,
 
          subscribe/2,
-         unsubscribe/2
+         unsubscribe/2,
+
+         change_limit/2
          
         ]).
 
@@ -188,6 +190,11 @@ subscribe(Name, {S, Filter, API}) ->
 unsubscribe(Name, S) ->
     gen_server:cast(Name, {unsubscribe, S}).
 
+
+change_limit(Name, N) ->
+   gen_server:cast(Name, {change_limit, N}).
+
+
    
 %% callbacks
 
@@ -340,6 +347,30 @@ handle_cast({unsubscribe, S}, #state{name=Name}=State) ->
                               {ppool_ev, S},[]),
     	{noreply, State};
 
+
+
+handle_cast({change_limit, 0}, State) ->
+    {noreply, State};
+
+
+
+handle_cast({change_limit, N}, #state{limit=Limit, workers_pids=Pids
+                                     }=State) ->
+
+    case Limit - N > 0 of
+        true -> 
+            %send stop 
+            lists:foreach(fun(Pid) -> 
+                                  gen_server:cast(Pid, {msg, no, stop}) 
+                          end,
+                          lists:sublist(maps:keys(Pids), 0, Limit-N)
+                         );
+
+        false -> ok
+
+    end,
+
+      {noreply, State};
 
 
 
