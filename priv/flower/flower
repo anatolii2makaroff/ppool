@@ -1,0 +1,81 @@
+#!/usr/bin/python
+
+#
+# Flow creater worker
+#
+
+import sys
+import time
+import json
+import os
+
+# API
+
+
+def log(m):
+    sys.stderr.write("{}: {}\n".format(time.time(), m))
+
+
+def send(m):
+    sys.stdout.write("{}\n".format(m))
+    sys.stdout.flush()
+
+
+# Process - actor
+#  line - recieve message from world
+#  send - send message to world
+#  log  -  logging anything
+
+
+def get_command(p, args):
+
+    # system::ping_pong::start
+
+    with open(p + args[1] + ".json") as f:
+        d = json.loads(f.read())
+
+        if args[2] == "start":
+            _start = d["start_scene"]
+        else:
+            _start = args[2]
+
+        _d = []
+        for x in d["scenes"]:
+            if x["name"] == _start:
+                _d = x["cook"]
+                break
+
+        return [x[1] for x in sorted([(x["num"], x["cmd"]) for x in _d])]
+
+
+def main(p):
+
+    if not os.path.exists(p):
+        os.makedirs(p)
+
+    while 1:
+
+        line = sys.stdin.readline()
+        if not line:
+            break
+
+        log("start working..")
+        log("get message: " + line)
+
+        if line.startswith("system::"):
+
+            # system msg
+
+            args = line.strip().split("::")
+
+            # get stat by tick
+            if args[1] in ["error", "timeout"]:
+                send("ok")
+
+            else:
+                for x in get_command(p, args):
+                    send(x)
+
+
+if __name__ == "__main__":
+    main(sys.argv[1])

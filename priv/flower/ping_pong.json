@@ -1,0 +1,44 @@
+{
+    "name": "ping_pong",
+    "active": 1,
+    "date": "07.10.2017",
+    "entry_ppool": "ping",
+    "start_scene": "default",
+    "scenes":[
+        {
+            "name" : "default",
+            "cook": [
+                {"num":1,
+                 "cmd":"system::all::start_pool::ping::2"
+                },
+                {"num":2,
+                 "cmd":"system::all::start_pool::pong::2"
+                },
+                {"num":3,
+                 "cmd":"system::all::start_all_workers::ping::ping:0.1.0::./ping 1 ::ping.log::10000"
+                },
+                {"num":4,
+                 "cmd":"system::all::start_all_workers::pong::pong:0.1.0::./pong ::ping.log::10000"
+                },
+                {"num":5,
+                 "cmd":"system::all::subscribe::ping::pong::no::all"
+                }
+ 
+            ]
+
+        },
+        {
+            "name" : "stop",
+            "cook": [
+                {"num":1,
+                 "cmd":"system::all::stop_pool::ping::2"
+                },
+                {"num":2,
+                 "cmd":"system::all::stop_pool::pong::2"
+                }
+            ]
+
+        }
+    ]
+
+}

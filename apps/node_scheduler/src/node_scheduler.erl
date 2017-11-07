@@ -87,6 +87,9 @@ handle_info(timeout, State) ->
     ppool:start_pool(ppool, {node_info_internal_stream, ?NODE_INFO_IN_WORKERS, 
                             {worker, start_link, []} }),
 
+    ppool:start_pool(ppool, {flower, ?FLOWER_WORKERS, 
+                            {port_worker, start_link, []} }),
+
 
 
     %% link ppools
@@ -95,6 +98,8 @@ handle_info(timeout, State) ->
     ppool_worker:subscribe(node_info_internal_stream, {node_collector, <<"no">>, dall}),
 
     ppool_worker:subscribe(node_collector, {rrd, <<"_trace">>, one}),
+
+    ppool_worker:subscribe(flower, {node_api, <<"system::">>, one}),
 
     %% System info stream worker
 
@@ -140,8 +145,17 @@ handle_info(timeout, State) ->
                               {{node_scheduler, node_info_internal_stream}, ?NODE_INFO_IN_TIMEOUT}
     ),
 
+    %% flower
 
-     % try_start(node_info_stream),
+    ppool_worker:start_all_workers(flower, 
+                              {cmd("flower:"?FLOWER_VER,
+                                   "./flower /tmp/scene/ ",
+                                   "flower.log"
+                                  ), ?FLOWER_TIMEOUT}
+    ),
+
+     % try_start(flower),
+
 
 	  {noreply, State};
 
@@ -291,7 +305,7 @@ node_info_internal_stream(F) ->
 api(F) ->
     receive
 
-        R ->
+        [R] ->
             [_|[Tp|[Fn|[Name|A]]]] = binary:split(R, <<"::">>, [global]),
 
            ?Debug2({Tp, Fn, Name, A}),
