@@ -10,3 +10,6 @@ deps:
     psutil
   docker
   
+
+start:
+  service docker start
