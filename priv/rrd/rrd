@@ -41,6 +41,10 @@ _RRA = ["RRA:AVERAGE:0.3:2:600"]
 _COLORS = ["#FF1100", "#87dd7d", "#5978ea"]
 
 
+data_list = []
+tb = time.time()
+
+
 def main(p):
 
     if not os.path.exists(p):
@@ -55,12 +59,19 @@ def main(p):
         log("get message: " + line)
 
         data = json.loads(line)
-        try:
-            update(p, data.get("_trace"))
-        except Exception as e:
-            log(e)
+
+        data_list.append(data)
 
         send("ok")
+
+        if time.time() - tb > _INTERVAL:
+            log("flush data...")
+
+            for i in data_list:
+                try:
+                    update(p, i.get("_trace"))
+                except Exception as e:
+                    log(e)
 
 
 def update(path, data):

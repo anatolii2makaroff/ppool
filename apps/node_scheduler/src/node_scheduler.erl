@@ -100,6 +100,8 @@ handle_info(timeout, State) ->
     ppool_worker:subscribe(node_collector, {rrd, <<"_trace">>, one}),
 
     ppool_worker:subscribe(flower, {node_api, <<"system::">>, one}),
+    ppool_worker:subscribe(node_api, {flower, <<"ok">>, one}),
+
 
     %% System info stream worker
 
@@ -197,6 +199,9 @@ call(Type, F, Name, Cmd) ->
 
     case Type of
 
+        local ->
+            [F(P, Cmd)||P <- [X || X<-pg2:get_members(Name), node(X)=:=node()]];
+
         near ->
             [F(P, Cmd)||P <- [pg2:get_closest_pid(Name)]];
 
@@ -273,11 +278,18 @@ node_info_loop(F) ->
        ],
 
    lists:foreach(fun(M)->
-                      Msg=list_to_binary(get_worker_info(M)),
-                       ?Debug2(Msg),
+
+                      try get_worker_info(M) of
+                        Msg -> 
+                            Msg2=list_to_binary(Msg),
+                             ?Debug2(Msg2),
                         
-                        F!{self(), {data, [Msg]}}
-                 end,
+                                F!{self(), {data, [Msg2]}}
+ 
+                      catch
+                        _:_ -> ok
+                      end  
+                end,
                  List
 
    ),
@@ -305,7 +317,10 @@ node_info_internal_stream(F) ->
 api(F) ->
     receive
 
-        [R] ->
+        [<<"ok">>, _] ->
+            ok;
+
+        [R, _] ->
             [_|[Tp|[Fn|[Name|A]]]] = binary:split(R, <<"::">>, [global]),
 
            ?Debug2({Tp, Fn, Name, A}),
@@ -316,7 +331,7 @@ api(F) ->
 
                    [Cnt|_] = A,
 
-                    Res = call(erlang:binary_to_atom(Tp, latin1),
+                    _Res = call(erlang:binary_to_atom(Tp, latin1),
                             fun(N, {Nm, C}) -> 
                                     ppool:start_pool(N, 
                                                      {Nm, C, 
@@ -329,24 +344,23 @@ api(F) ->
                              erlang:binary_to_integer(Cnt)}
                               ),
 
-                     F!{self(), {data, {response, F, Res}}};
+                     F!{self(), {data, [<<"ok">>]}};
 
                stop_pool ->
                    
-                   Res = call(erlang:binary_to_atom(Tp, latin1),
+                    _Res = call(erlang:binary_to_atom(Tp, latin1),
                             fun(N, C) -> ppool:stop_pool(N, C) end,
                             ppool,
                             erlang:binary_to_atom(Name, latin1)
                              ),
-                    F!{self(), {data, {response, F, Res}}};
 
-
+                     F!{self(), {data, [<<"ok">>]} };
 
                start_worker ->
 
                    [Img, Cmd, Log, Tm] = A,
 
-                   Res = call(erlang:binary_to_atom(Tp, latin1),
+                   _Res = call(erlang:binary_to_atom(Tp, latin1),
                             fun(N, {I, C, L, T}) -> ppool_worker:start_worker(N, 
                                              {cmd(I, C, L), T})
  
@@ -360,13 +374,13 @@ api(F) ->
                             }
                              ),
 
-                    F!{self(), {data, {response, F, Res}}};
+                       F!{self(), {data, [<<"ok">>]}};
 
 
                stop_workers ->
 
 
-                   Res = call(erlang:binary_to_atom(Tp, latin1),
+                   _Res = call(erlang:binary_to_atom(Tp, latin1),
                             fun(N, _C) -> ppool_worker:cast_all_workers(N, 
                                                     stop)
  
@@ -375,8 +389,8 @@ api(F) ->
                             false
                              ),
 
-                    F!{self(), {data, {response, F, Res}}};
 
+                       F!{self(), {data, [<<"ok">>]}};
 
 
                start_all_workers ->
@@ -384,7 +398,7 @@ api(F) ->
 
                    [Img, Cmd, Log, Tm] = A,
 
-                   Res = call(erlang:binary_to_atom(Tp, latin1),
+                   _Res = call(erlang:binary_to_atom(Tp, latin1),
                             fun(N, {I, C, L, T}) -> 
                                     ppool_worker:start_all_workers(N, 
                                                                    {cmd(I, C, L), 
@@ -399,14 +413,15 @@ api(F) ->
                             }
                              ),
 
-                    F!{self(), {data, {response, F, Res}}};
+                       F!{self(), {data, [<<"ok">>]}};
+
 
 
                call_worker ->
 
                    [Args|_] = A,
 
-                   Res = call(erlang:binary_to_atom(Tp, latin1),
+                   _Res = call(erlang:binary_to_atom(Tp, latin1),
                             fun(N, C) -> 
                                     ppool_worker:call_worker(N, C)
  
@@ -415,14 +430,15 @@ api(F) ->
                             [Args] ++ "\n"
                              ),
 
-                    F!{self(), {data, {response, F, Res}}};
+
+                    F!{self(), {data, [<<"ok">>]}};
 
 
                call_workers ->
 
                    [Args|_] = A,
 
-                   Res = call(erlang:binary_to_atom(Tp, latin1),
+                   _Res = call(erlang:binary_to_atom(Tp, latin1),
                             fun(N, C) -> 
                                     ppool_worker:call_workers(N, C)
  
@@ -430,14 +446,15 @@ api(F) ->
                             erlang:binary_to_atom(Name, latin1),
                             [Args] ++ "\n"
                              ),
+                
+                   F!{self(), {data, [<<"ok">>]}};
 
-                    F!{self(), {data, {response, F, Res}}};
 
                cast_all_workers ->
 
                    [Args|_] = A,
 
-                   Res = call(erlang:binary_to_atom(Tp, latin1),
+                   _Res = call(erlang:binary_to_atom(Tp, latin1),
                             fun(N, C) -> 
                                     ppool_worker:cast_all_workers(N, C)
  
@@ -446,15 +463,15 @@ api(F) ->
                             [Args] ++ "\n"
                              ),
 
-                    F!{self(), {data, {response, F, Res}}};
 
+                     F!{self(), {data, [<<"ok">>]}};
 
  
                stream_all_workers ->
 
                    [Args|_] = A,
 
-                   Res = call(erlang:binary_to_atom(Tp, latin1),
+                   _Res = call(erlang:binary_to_atom(Tp, latin1),
                             fun(N, C) -> 
                                     ppool_worker:stream_all_workers(N, C)
  
@@ -463,15 +480,14 @@ api(F) ->
                             [Args] ++ "\n"
                              ),
 
-                    F!{self(), {data, {response, F, Res}}};
-
+                     F!{self(), {data, [<<"ok">>]}};
 
 
                subscribe ->
 
                    [To, Fl, Api] = A,
 
-                   Res = call(erlang:binary_to_atom(Tp, latin1),
+                   _Res = call(erlang:binary_to_atom(Tp, latin1),
                             fun(N, C) -> 
                                     ppool_worker:subscribe(N, C)
  
@@ -483,14 +499,15 @@ api(F) ->
                               }
                              ),
 
-                    F!{self(), {data, {response, F, Res}}};
+
+                     F!{self(), {data, [<<"ok">>]}};
 
 
                unsubscribe ->
 
                    [To] = A,
 
-                   Res = call(erlang:binary_to_atom(Tp, latin1),
+                   _Res = call(erlang:binary_to_atom(Tp, latin1),
                             fun(N, C) -> 
                                     ppool_worker:unsubscribe(N, C)
  
@@ -500,9 +517,10 @@ api(F) ->
                              }
                              ),
 
-                    F!{self(), {data, {response, F, Res}}}
 
- 
+                      F!{self(), {data, [<<"ok">>]}}
+
+
            end,
 
             

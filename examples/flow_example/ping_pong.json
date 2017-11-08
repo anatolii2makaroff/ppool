@@ -15,13 +15,16 @@
                  "cmd":"system::all::start_pool::pong::2"
                 },
                 {"num":3,
-                 "cmd":"system::all::start_all_workers::ping::ping:0.1.0::./ping 1 ::ping.log::10000"
+                 "cmd":"system::all::start_all_workers::ping::ping:0.1.0::/usr/bin/python ping.py 1 ./ping 1 ::ping.log::10000"
                 },
                 {"num":4,
-                 "cmd":"system::all::start_all_workers::pong::pong:0.1.0::./pong ::ping.log::10000"
+                 "cmd":"system::all::start_all_workers::pong::pong:0.1.0::/usr/bin/nodejs ./pong.js ::pong.log::10000"
                 },
                 {"num":5,
                  "cmd":"system::all::subscribe::ping::pong::no::all"
+                },
+                {"num":6,
+                 "cmd":"system::all::subscribe::pong::ping::no::all"
                 }
  
             ]
@@ -31,11 +34,12 @@
             "name" : "stop",
             "cook": [
                 {"num":1,
-                 "cmd":"system::all::stop_pool::ping::2"
+                 "cmd":"system::all::stop_pool::ping"
                 },
                 {"num":2,
-                 "cmd":"system::all::stop_pool::pong::2"
+                 "cmd":"system::all::stop_pool::pong"
                 }
+
             ]
 
         }

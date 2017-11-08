@@ -1,5 +1,4 @@
 #!/usr/bin/python
-
 #
 # Flow creater worker
 #
@@ -55,11 +54,13 @@ def main(p):
 
     while 1:
 
+        log("start working..")
+        send("ok")
+
         line = sys.stdin.readline()
         if not line:
             break
 
-        log("start working..")
         log("get message: " + line)
 
         if line.startswith("system::"):
@@ -74,7 +75,14 @@ def main(p):
 
             else:
                 for x in get_command(p, args):
+
+                    log("send to api: " + x)
+
                     send(x)
+
+                    # get respone
+                    line = sys.stdin.readline()
+                    log("response from api: " + line)
 
 
 if __name__ == "__main__":
