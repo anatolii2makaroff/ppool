@@ -15,5 +15,5 @@ start:
   service docker start
 
 build priv:
-  priv/python2  -> docker build -t python2.7 .
+  priv/python2  -> docker build -t python:2.7 .
   priv/*  -> make build
