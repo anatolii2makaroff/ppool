@@ -377,11 +377,11 @@ api(F) ->
                        F!{self(), {data, [<<"ok">>]}};
 
 
-               stop_workers ->
+               stop_worker ->
 
 
                    _Res = call(erlang:binary_to_atom(Tp, latin1),
-                            fun(N, _C) -> ppool_worker:cast_all_workers(N, 
+                            fun(N, _C) -> ppool_worker:cast_worker(N, 
                                                     stop)
  
                             end,
@@ -432,6 +432,39 @@ api(F) ->
 
 
                     F!{self(), {data, [<<"ok">>]}};
+
+               cast_worker ->
+
+                   [Args|_] = A,
+
+                   _Res = call(erlang:binary_to_atom(Tp, latin1),
+                            fun(N, C) -> 
+                                    ppool_worker:cast_worker(N, C)
+ 
+                            end,
+                            erlang:binary_to_atom(Name, latin1),
+                            [Args] ++ "\n"
+                             ),
+
+
+                    F!{self(), {data, [<<"ok">>]}};
+
+               change_limit ->
+
+                   [Args|_] = A,
+
+                   _Res = call(erlang:binary_to_atom(Tp, latin1),
+                            fun(N, C) -> 
+                                    ppool_worker:change_limit(N, C)
+ 
+                            end,
+                            erlang:binary_to_atom(Name, latin1),
+                            erlang:binary_to_integer(Args)
+                           
+                             ),
+
+                    F!{self(), {data, [<<"ok">>]}};
+
 
 
                call_workers ->

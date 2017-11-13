@@ -9,10 +9,10 @@
             "name" : "default",
             "cook": [
                 {"num":1,
-                 "cmd":"system::all::start_pool::ping::2"
+                 "cmd":"system::all::start_pool::ping::1"
                 },
                 {"num":2,
-                 "cmd":"system::all::start_pool::pong::2"
+                 "cmd":"system::all::start_pool::pong::1"
                 },
                 {"num":3,
                  "cmd":"system::all::start_all_workers::ping::ping:0.1.0::/usr/bin/python ping.py 1 ./ping 1 ::ping.log::10000"
@@ -21,15 +21,62 @@
                  "cmd":"system::all::start_all_workers::pong::pong:0.1.0::/usr/bin/nodejs ./pong.js ::pong.log::10000"
                 },
                 {"num":5,
-                 "cmd":"system::all::subscribe::ping::pong::no::all"
+                 "cmd":"system::all::subscribe::ping::pong::no::one"
                 },
                 {"num":6,
-                 "cmd":"system::all::subscribe::pong::ping::no::all"
+                 "cmd":"system::all::subscribe::pong::ping::no::one"
                 }
  
             ]
 
         },
+
+        {
+            "name" : "down_ping",
+            "cook": [
+                {"num":1,
+                 "cmd":"system::all::stop_worker::ping"
+                }
+            ]
+        },
+
+        {
+            "name" : "down_pong",
+            "cook": [
+                {"num":1,
+                 "cmd":"system::all::stop_worker::pong"
+                }
+            ]
+        },
+
+
+        {
+            "name" : "up_ping",
+            "cook": [
+                {"num":1,
+                 "cmd":"system::all::change_limit::ping::1"
+                },
+                {"num":2,
+                 "cmd":"system::all::start_all_workers::ping::ping:0.1.0::/usr/bin/python ping.py 1 ./ping 1 ::ping.log::10000"
+                }
+            ]
+
+        },
+ 
+        {
+            "name" : "up_pong",
+            "cook": [
+                {"num":1,
+                 "cmd":"system::all::change_limit::pong::1"
+                },
+
+                {"num":2,
+                 "cmd":"system::all::start_all_workers::pong::pong:0.1.0::/usr/bin/nodejs ./pong.js ::pong.log::10000"
+                }
+            ]
+
+        },
+ 
         {
             "name" : "stop",
             "cook": [
