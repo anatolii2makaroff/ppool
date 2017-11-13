@@ -423,13 +423,16 @@ api(F) ->
 
                    _Res = call(erlang:binary_to_atom(Tp, latin1),
                             fun(N, C) -> 
-                                    ppool_worker:call_worker(N, C)
- 
+                               node_scheduler:try_start(
+                                    fun() -> 
+                                            ppool_worker:call_worker(N, C)
+                                    end
+                                 )
                             end,
+
                             erlang:binary_to_atom(Name, latin1),
                             [Args] ++ "\n"
                              ),
-
 
                     F!{self(), {data, [<<"ok">>]}};
 
