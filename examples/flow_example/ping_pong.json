@@ -25,6 +25,9 @@
                 },
                 {"num":6,
                  "cmd":"system::all::subscribe::pong::ping::no::one"
+                },
+                {"num":7,
+                 "cmd":"system::all::call_worker::ping::boom"
                 }
  
             ]
