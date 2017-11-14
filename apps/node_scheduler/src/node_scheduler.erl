@@ -425,7 +425,7 @@ api(F) ->
                             fun(N, C) -> 
                                node_scheduler:try_start(
                                     fun() -> 
-                                            ppool_worker:call_worker(N, C)
+                                            ppool_worker:call_cast_worker(N, C)
                                     end
                                  )
                             end,
