@@ -59,7 +59,7 @@ handle_info({nodedown, Node, InfoList}, State)->
 
     [{nodedown_reason,I}] = InfoList,
 
-        Msg=erlang:list_to_bitstring(["tag:node_watch::", 
+        Msg=erlang:list_to_bitstring(["system::node_watch::", 
                                        erlang:atom_to_list(Node), "::", 
                                        "nodedown::", 
                                        erlang:atom_to_list(I), "\n"]),
@@ -80,7 +80,7 @@ handle_info({nodeup, Node, _InfoList}, State) ->
     error_logger:warning_msg("node ~p is up~n",[Node]),
 
 
-        Msg=erlang:list_to_bitstring(["tag:node_watch::", 
+        Msg=erlang:list_to_bitstring(["system::node_watch::", 
                                        erlang:atom_to_list(Node), "::", 
                                        "nodeup::", 
                                        "nodeup..", "\n"]),

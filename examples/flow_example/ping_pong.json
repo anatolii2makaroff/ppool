@@ -1,12 +1,13 @@
 {
     "name": "ping_pong",
     "active": 1,
-    "date": "07.10.2017",
+    "priority": 0,
+    "version": 1,
     "entry_ppool": "ping",
-    "start_scene": "default",
+    "start_scene": "start",
     "scenes":[
         {
-            "name" : "default",
+            "name" : "start",
             "cook": [
                 {"num":1,
                  "cmd":"system::all::start_pool::ping::1"
@@ -34,52 +35,6 @@
 
         },
 
-        {
-            "name" : "down_ping",
-            "cook": [
-                {"num":1,
-                 "cmd":"system::all::stop_worker::ping"
-                }
-            ]
-        },
-
-        {
-            "name" : "down_pong",
-            "cook": [
-                {"num":1,
-                 "cmd":"system::all::stop_worker::pong"
-                }
-            ]
-        },
-
-
-        {
-            "name" : "up_ping",
-            "cook": [
-                {"num":1,
-                 "cmd":"system::all::change_limit::ping::1"
-                },
-                {"num":2,
-                 "cmd":"system::all::start_all_workers::ping::ping:0.1.0::/usr/bin/python ping.py 1 ./ping 1 ::ping.log::10000"
-                }
-            ]
-
-        },
- 
-        {
-            "name" : "up_pong",
-            "cook": [
-                {"num":1,
-                 "cmd":"system::all::change_limit::pong::1"
-                },
-
-                {"num":2,
-                 "cmd":"system::all::start_all_workers::pong::pong:0.1.0::/usr/bin/nodejs ./pong.js ::pong.log::10000"
-                }
-            ]
-
-        },
- 
         {
             "name" : "stop",
             "cook": [

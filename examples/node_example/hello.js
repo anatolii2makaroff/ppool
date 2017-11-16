@@ -18,8 +18,9 @@ function log(m){
 }
 
 function send(m){
-   console.log(m+"\n");
+   console.log(m.replace(/\n$/, '')+"\n");
 }
+
 
 
 //Process - actor

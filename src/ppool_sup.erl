@@ -19,7 +19,7 @@ init([]) ->
              [ppool]
      }],
 
-	{ok, {{one_for_one, 1, 5}, Procs}}.
+	{ok, {{one_for_one, 100, 1}, Procs}}.
 
 
 start_pool(Name, Limit, MFA) ->

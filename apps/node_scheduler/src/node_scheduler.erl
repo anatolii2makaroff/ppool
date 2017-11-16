@@ -29,6 +29,8 @@
 -include("node_scheduler.hrl").
 -include("../../src/ppool.hrl").
 
+
+
 %% API.
 
 -spec start_link() -> {ok, pid()}.
@@ -50,10 +52,10 @@ handle_call(restart, _From, State) ->
 
     ppool:stop_pool(ppool, node_info_stream),
     ppool:stop_pool(ppool, node_info_internal_stream),
- 
     ppool:stop_pool(ppool, node_collector),
     ppool:stop_pool(ppool, rrd),
     ppool:stop_pool(ppool, node_api),
+    ppool:stop_pool(ppool, flower),
 
 	{reply, ok, State, 0};
 
@@ -151,7 +153,7 @@ handle_info(timeout, State) ->
 
     ppool_worker:start_all_workers(flower, 
                               {cmd("flower:"?FLOWER_VER,
-                                   "./flower /tmp/scene/ ",
+                                   "./flower /tmp/flows/ ",
                                    "flower.log"
                                   ), ?FLOWER_TIMEOUT}
     ),
@@ -191,6 +193,7 @@ try_start(N) ->
         _ -> ok
 
      end.
+
 
 
 call(Type, F, Name, Cmd) ->

@@ -66,10 +66,8 @@ def main(p):
         if line.startswith("system::"):
 
             # system msg
-
             args = line.strip().split("::")
 
-            # get stat by tick
             if args[1] in ["error", "timeout"]:
                 send("ok")
 

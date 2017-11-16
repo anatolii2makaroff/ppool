@@ -13,7 +13,7 @@ def log(m):
 
 
 def send(m):
-    sys.stdout.write("{}\n".format(m))
+    sys.stdout.write("{}\n".format(m.strip()))
     sys.stdout.flush()
 
 

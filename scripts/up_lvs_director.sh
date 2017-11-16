@@ -3,9 +3,6 @@
  VIP="10.128.35.71"
                                                                                 
                                                                                 
- echo "1"> /proc/sys/net/ipv4/ip_forward                                        
- sysctl -p                                                                      
-                                                                                
  ifconfig lo:0 down
                                                                                
  ifconfig ${IFACE}:0 ${VIP} netmask 255.255.255.255 broadcast ${VIP} up           

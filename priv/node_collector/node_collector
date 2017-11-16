@@ -87,14 +87,14 @@ def check_table(cur):
 def insert_node_info(args):
 
     """
-     node_watch::%Node::nodedown::%Info
+    system::node_watch::%Node::nodedown::%Info
     """
 
     return """INSERT INTO node_list(node, active, date, msg)
                    VALUES ('{node}', {active}, CURRENT_TIMESTAMP,
-                           '{msg}');""".format(node=args[1],
-                                               active=(lambda x: x != "nodedown" and 1 or 0)(args[2]),
-                                               msg=args[3])
+                           '{msg}');""".format(node=args[2],
+                                               active=(lambda x: x != "nodedown" and 1 or 0)(args[3]),
+                                               msg=args[4])
 
 
 def insert_ppool_info(args):
@@ -178,7 +178,7 @@ def main(p, cnt, t):
         log("start working..")
         log("get message: " + line)
 
-        if line.startswith("tag:node_watch::"):
+        if line.startswith("system::node_watch::"):
 
             # simple line format
 

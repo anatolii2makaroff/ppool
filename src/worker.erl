@@ -57,6 +57,8 @@ handle_call({msg, R, Msg}, From, #state{master=N, ev=E, cmd=Cmd, timeout=T,
             _ -> {noreply, State}
        end;
 
+
+
 handle_call({sync_msg, R, Msg}, _From, #state{master=N, ev=E,
                                            cmd=Cmd, timeout=T, 
                                            port=Port}=State) ->
@@ -74,10 +76,13 @@ handle_call({sync_msg, R, Msg}, _From, #state{master=N, ev=E,
                  {stop, port_timeout, State}
         end;
 
+
+
 handle_call(stop, From, State) ->
     ?Debug({stop, self()}),
     gen_server:reply(From, ok),
      {stop, normal, State};
+
 
 handle_call(_Request, _From, State) ->
 	{reply, ignored, State}.
@@ -136,16 +141,15 @@ handle_cast({dmsg, R, Msg}, #state{master=N}=State) ->
            ?Debug1({local, self()}),
             gen_server:cast(self(), {msg, R, Msg});
 
+
         Arr ->
            ?Debug1({remote, Arr}),
- 
-            %% TODO rotate nodes
-            [NewP|_] = [X||X<-Arr, X=/=Ms],
+            Index = rand:uniform(length(Arr)),
+             NewP=lists:nth(Index, Arr),
 
               ?Debug1({remote_choise_to, NewP}),
  
-
-              ppool_worker:call_worker(NewP, R, Msg)
+              ppool_worker:cast_worker(NewP, R, Msg)
 
     end,
      ?Debug1({noreply_send, self()}),

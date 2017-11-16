@@ -10,7 +10,6 @@
          stop_all_workers/1,
          stop_all_workers/2,
 
-
          call_worker/2,
          call_worker/3,
          call_cast_worker/3,
@@ -50,7 +49,7 @@
 -include("ppool.hrl").
 -include_lib("stdlib/include/ms_transform.hrl").
 
--define(INTERVAL, 5*60).
+-define(INTERVAL, 5000).
 
 -record(state, {
           limit, 
@@ -67,6 +66,7 @@ start_link(Name, Limit, MFA) ->
 	gen_server:start_link({local, Name}, ?MODULE, [Name, Limit, MFA], []).
 
 
+
 init([Name, Limit, MFA]) ->
     Name = ets:new(Name, [set, public, named_table, 
                           {keypos, #worker_stat.ref}]),
@@ -78,8 +78,11 @@ init([Name, Limit, MFA]) ->
 
 	{ok, #state{limit=Limit, mfa=MFA, name=Name}}.
 
+
+
 register_worker(Name, Pid) ->
     gen_server:call(Name, {register, Pid}).
+
 
 
 %% start/stop worker
@@ -211,8 +214,10 @@ handle_call({start_worker, Cmd}, _From, #state{name=Name,
                {reply, Pid, State#state{limit=NewLimit} };
  
 
+
 handle_call({start_worker, _}, _From, State) ->
     {reply, full_limit, State};
+
 
 
 handle_call({stop_all_workers}, _From, #state{workers_pids=Pids}=State) ->
@@ -226,6 +231,7 @@ handle_call({register, Pid}, _From, #state{workers_pids=Pids}=State) ->
     erlang:monitor(process, Pid),
 
 	    {reply, ok, State#state{workers_pids=maps:put(Pid, 0, Pids) } };
+
 
 
 handle_call({call_worker, Msg}, _From, #state{workers_pids=Pids}=State) ->
@@ -319,6 +325,9 @@ handle_cast({cast_all_workers, Msg},  #state{workers_pids=Pids}=State) ->
 
 	        {noreply, State};
 
+
+
+
 handle_cast({set_status_worker, Pid, S},
             #state{workers_pids=Pids}=State) ->
 
@@ -340,6 +349,8 @@ handle_cast({subscribe, S, Filter, API}, #state{name=Name}=State) ->
     end,
 
     	{noreply, State};
+
+
 
 handle_cast({unsubscribe, S}, #state{name=Name}=State) ->
 

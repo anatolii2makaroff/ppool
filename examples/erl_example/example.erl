@@ -13,8 +13,8 @@ example(F) ->
 
         R -> timer:sleep(5000),
             io:format("spawn ~p~n", [R]),
-
-            F!{self(), {data, {response, F, R}}},
+            F!{self(), {data, [<<"ok">>]}}
+ 
              example(F)
 
     end.

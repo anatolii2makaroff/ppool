@@ -29,6 +29,7 @@ def send(m):
 #  send - send message to world
 #  log - logging anything
 
+
 _INTERVAL = 5
 
 _CREATE = "rrdtool create {}.rrd -s " + str(_INTERVAL)
@@ -36,13 +37,9 @@ _UPDATE = "rrdtool update {}.rrd -t"
 
 _IMG = "rrdtool graph {}.png -t {} -w 570 -h 120 --start end-300s"
 
-_RRA = ["RRA:AVERAGE:0.3:2:600"]
+_RRA = ["RRA:AVERAGE:0.3:2:500"]
 
 _COLORS = ["#FF1100", "#87dd7d", "#5978ea"]
-
-
-data_list = []
-tb = time.time()
 
 
 def main(p):
@@ -50,13 +47,16 @@ def main(p):
     if not os.path.exists(p):
         os.makedirs(p)
 
+    data_list = []
+    tb = time.time()
+
     while 1:
         line = sys.stdin.readline()
         if not line:
             break
 
-        log("start working..")
-        log("get message: " + line)
+        # log("start working..")
+        # log("get message: " + line)
 
         data = json.loads(line)
 
@@ -64,7 +64,7 @@ def main(p):
 
         send("ok")
 
-        if time.time() - tb > _INTERVAL:
+        if time.time() - tb > _INTERVAL/2:
             log("flush data...")
 
             for i in data_list:
@@ -73,13 +73,23 @@ def main(p):
                 except Exception as e:
                     log(e)
 
+            # draw graph
+            # for i in graph:
+            #     try:
+            #         sp.call(i.split(" "))
+            #     except Exception as e:
+            #         log(e)
+
+            tb = time.time()
+            data_list = []
+
 
 def update(path, data):
 
     if data is None:
         return
 
-    name = "drop--" + data.pop("tag").replace(":", "-")
+    name = "drop--" + data.get("tag").replace(":", "-")
     f_file = path + "/" + name
 
     p = []
@@ -100,7 +110,7 @@ def update(path, data):
 
     sp.call(_UPDATE.format(f_file).split(" ") +
             [":".join([str(x) for x in labels])] +
-            ["N:"+":".join([str(x) for x in values])])
+            ["N:" + ":".join([str(x) for x in values])])
 
     sp.call(_IMG.format(f_file, name).split(" ") + df + line)
 

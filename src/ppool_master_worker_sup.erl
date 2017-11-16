@@ -25,11 +25,11 @@ init([Name, Limit, MFA]) ->
     Ppool_worker_sup = {ppool_worker_sup,
                         {ppool_worker_sup, start_link, [Name, MFA]},
                         permanent,
-                        5000,
+                        10000,
                         supervisor,
                         [ppool_worker_sup] 
      },
 
 	Procs = [Ppool_worker, Ppool_event, Ppool_worker_sup],
-	{ok, {{one_for_all, 1, 5}, Procs}}.
+	{ok, {{one_for_all, 100, 1}, Procs}}.
 
