@@ -124,13 +124,20 @@ call_worker(Name, Msg) ->
     %% ?Debug(Msg),
     gen_server:call(Name, {call_worker, {msg, no, Msg}}).
 
+
 call_worker(Name, Ref, Msg) ->
     gen_server:call(Name, {call_worker, {msg, Ref, Msg}}).
-
+  
 
 call_cast_worker(Name, Ref, Msg) ->
-    gen_server:call(Name, {call_cast_worker, {msg, Ref, Msg}}).
 
+    try gen_server:call(Name, {call_cast_worker, {msg, Ref, Msg}}) of
+        R -> R
+    catch
+        _:_ -> {ok, []}
+    end.
+
+    
 
 cast_worker(Name, Msg) ->
     %% ?Debug(Msg),
@@ -373,10 +380,9 @@ handle_cast(_Msg, State) ->
 
 
 handle_info({'DOWN', _MonitorRef, process, Pid, _Info}, 
-            #state{workers_pids=Pids, limit=Limit}=State) ->
+            #state{workers_pids=Pids}=State) ->
 
-    	{noreply, State#state{workers_pids=maps:remove(Pid, Pids),
-                              limit=Limit+1}};
+    	{noreply, State#state{workers_pids=maps:remove(Pid, Pids)}};
 
 
 handle_info(clean_ets, #state{name=Name}=State) ->

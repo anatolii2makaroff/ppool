@@ -69,6 +69,7 @@ def main(p):
             args = line.strip().split("::")
 
             if args[1] in ["error", "timeout"]:
+                log("reciver error: " + line)
                 send("ok")
 
             else:

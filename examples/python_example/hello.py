@@ -22,6 +22,10 @@ def send(m):
 #  send - send message to world
 #  log  -  logging anything
 
+
+
+data = []
+
 def main(t):
     while 1:
         line = sys.stdin.readline()
@@ -32,6 +36,15 @@ def main(t):
         log("get message: " + line)
 
         resp = "{}".format(line)
+
+        data = []
+
+        s =0
+        a = 0
+        while True:
+            a = 100**23/1234 + 123
+            s +=1
+            data.append("sdfsfsdfddssdfsdfsdfsfsf"+str(s))
 
         send(resp)
 

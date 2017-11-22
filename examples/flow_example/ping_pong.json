@@ -10,25 +10,25 @@
             "name" : "start",
             "cook": [
                 {"num":1,
-                 "cmd":"system::all::start_pool::ping::1"
+                 "cmd":"system::local::start_pool::ping::1"
                 },
                 {"num":2,
-                 "cmd":"system::all::start_pool::pong::1"
+                 "cmd":"system::local::start_pool::pong::1"
                 },
                 {"num":3,
-                 "cmd":"system::all::start_all_workers::ping::ping:0.1.0::/usr/bin/python ping.py 1 ./ping 1 ::ping.log::10000"
+                 "cmd":"system::local::start_all_workers::ping::-m 20m ping:0.1.0::/usr/bin/python ping.py 1 ./ping 1 ::ping.log::10000"
                 },
                 {"num":4,
-                 "cmd":"system::all::start_all_workers::pong::pong:0.1.0::/usr/bin/nodejs ./pong.js ::pong.log::10000"
+                 "cmd":"system::local::start_all_workers::pong::-m 20m pong:0.1.0::/usr/bin/nodejs ./pong.js ::pong.log::10000"
                 },
                 {"num":5,
-                 "cmd":"system::all::subscribe::ping::pong::no::one"
+                 "cmd":"system::local::subscribe::ping::pong::no::one"
                 },
                 {"num":6,
-                 "cmd":"system::all::subscribe::pong::ping::no::one"
+                 "cmd":"system::local::subscribe::pong::ping::no::one"
                 },
                 {"num":7,
-                 "cmd":"system::all::call_worker::ping::boom"
+                 "cmd":"system::local::call_worker::ping::boom"
                 }
  
             ]
@@ -39,10 +39,10 @@
             "name" : "stop",
             "cook": [
                 {"num":1,
-                 "cmd":"system::all::stop_pool::ping"
+                 "cmd":"system::local::stop_pool::ping"
                 },
                 {"num":2,
-                 "cmd":"system::all::stop_pool::pong"
+                 "cmd":"system::local::stop_pool::pong"
                 }
 
             ]

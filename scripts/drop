@@ -129,7 +129,7 @@ remsh() {
         -remsh ${DROP_NAME} \
         -hidden \
         -connect_all false \
-        -sname remsh
+        -name remsh
 }
 
 
@@ -140,7 +140,7 @@ stop() {
         -noshell \
         -hidden \
         -connect_all false \
-        -sname temp_control \
+        -name temp_control \
         -setcookie ${DROP_COOKIE} \
         -eval "rpc:call('${DROP_NAME}', init, stop, [])" -s init stop
 

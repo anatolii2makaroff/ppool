@@ -64,8 +64,8 @@ def get_ppool_stat(node):
             if pinfo["cmdline"][1:3] == ["run", "--rm"]:
                 p = ps.Process(pinfo["pid"])
 
-                cnt, pp, mp = ppool.get(pinfo["cmdline"][10], [0, 0, 0])
-                ppool[pinfo["cmdline"][10]] = [cnt + 1,
+                cnt, pp, mp = ppool.get(pinfo["cmdline"][12], [0, 0, 0])
+                ppool[pinfo["cmdline"][12]] = [cnt + 1,
                                                pp + p.cpu_percent(),
                                                mp + p.memory_percent()]
 

@@ -57,6 +57,7 @@ handle_call(restart, _From, State) ->
     ppool:stop_pool(ppool, node_api),
     ppool:stop_pool(ppool, flower),
 
+
 	{reply, ok, State, 0};
 
 
@@ -94,6 +95,7 @@ handle_info(timeout, State) ->
 
 
 
+
     %% link ppools
     
     ppool_worker:subscribe(node_info_stream, {node_collector, <<"no">>, dall}),
@@ -104,7 +106,7 @@ handle_info(timeout, State) ->
     ppool_worker:subscribe(flower, {node_api, <<"system::">>, one}),
     ppool_worker:subscribe(node_api, {flower, <<"ok">>, one}),
 
-
+ 
     %% System info stream worker
 
     ppool_worker:start_worker(node_info_stream,         
@@ -122,7 +124,7 @@ handle_info(timeout, State) ->
 
     %% master 
     ppool_worker:start_worker(node_collector, 
-                              {cmd("node_collector:"?NODE_CLTR_VER,
+                              {cmd("-m 50m node_collector:"?NODE_CLTR_VER,
                                    "./node_collector /tmp/db 100 5 ",
                                    "node_collector.log"
                                   ), ?NODE_CLTR_TIMEOUT}
@@ -132,7 +134,7 @@ handle_info(timeout, State) ->
     %% rrd
 
     ppool_worker:start_all_workers(rrd, 
-                              {cmd("rrd:"?NODE_RRD_VER,
+                              {cmd("-m 50m rrd:"?NODE_RRD_VER,
                                    "./rrd /tmp/rrd ",
                                    "rrd.log"
                                   ), ?NODE_RRD_TIMEOUT}
@@ -152,11 +154,12 @@ handle_info(timeout, State) ->
     %% flower
 
     ppool_worker:start_all_workers(flower, 
-                              {cmd("flower:"?FLOWER_VER,
+                              {cmd("-m 20m flower:"?FLOWER_VER,
                                    "./flower /tmp/flows/ ",
                                    "flower.log"
                                   ), ?FLOWER_TIMEOUT}
     ),
+
 
      % try_start(flower),
 
@@ -211,10 +214,6 @@ call(Type, F, Name, Cmd) ->
         all ->
             [F(P, Cmd)||P <- pg2:get_members(Name)];
  
-        dyn ->
-            %% TODO dynamic ppool choose
-            ok;
-
         Node ->
             [F(P, Cmd)||P <- [X || X<-pg2:get_members(Name), node(X)=:=Node]]
  
@@ -276,7 +275,7 @@ node_info_loop(F) ->
   %%
    
   List=[X||X<-pg2:which_groups(), 
-            string:find(atom_to_list(X), "_ev")=:=nomatch,
+            lists:suffix("_ev", atom_to_list(X))=/=true,
             X=/=ppool
        ],
 
@@ -426,11 +425,8 @@ api(F) ->
 
                    _Res = call(erlang:binary_to_atom(Tp, latin1),
                             fun(N, C) -> 
-                               node_scheduler:try_start(
-                                    fun() -> 
-                                            ppool_worker:call_cast_worker(N, C)
-                                    end
-                                 )
+                                     ppool_worker:call_worker(N, C)
+
                             end,
 
                             erlang:binary_to_atom(Name, latin1),

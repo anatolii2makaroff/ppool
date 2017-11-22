@@ -1,0 +1,105 @@
+#!/usr/bin/python
+#
+# Flow scheduler worker
+#
+
+import sys
+import time
+import json
+import sqlite3
+import glob
+
+# API
+
+
+def log(m):
+    sys.stderr.write("{}: {}\n".format(time.time(), m))
+
+
+def send(m):
+    sys.stdout.write("{}\n".format(m.strip()))
+    sys.stdout.flush()
+
+
+# Process - actor
+#  line - recieve message from world
+#  send - send message to world
+#  log  -  logging anything
+
+
+def main(node, p, t):
+    """
+        t - time interval in secs
+    """
+
+    line = sys.stdin.readline()
+    log("get message: " + line)
+
+    while 1:
+
+        log("tick..")
+
+        # stats
+
+        start = None
+
+        for i in get_ppool_stat(p):
+
+
+            log("node {} load {}".format(i[0], i[6]))
+            if start is None:
+                start = i[0]
+                send("system::{}::ping_pong::start".format(start))
+            else:
+                send("system::{}::ping_pong::stop".format(i[0]))
+
+
+
+        # ppols
+        # for i in get_flows("/var/lib/drop/flows/"):
+        #     send(i)
+
+        # log("message send: {}".format(resp))
+
+        time.sleep(int(t))
+
+def connect(p):
+    return sqlite3.connect(p + '/node_collector.db')
+
+
+def get_ppool_stat(p):
+    con = connect(p)
+    cur = con.cursor()
+
+    cur.execute("""select * from (select s.node, l.active, s.cpu_count, s.ram_count,
+                         s.disk_count, MAX(s.date), AVG(s.cpu_percent) cp,
+                         AVG(s.ram_percent), AVG(s.disk_percent), AVG(s.net_count)
+                         from node_stat s left join (select node, active, MAX(date) from node_list) l
+                          on s.node = l.node
+                         where s.date > DATETIME('NOW', '-1 minutes')
+                         group by s.node) t
+                         order by t.cp asc
+                """)
+
+    data = []
+    for row in cur:
+        data.append(row)
+
+    con.close()
+
+    return data
+
+
+def get_flows(p):
+    l = glob.glob(p + "/*.json")
+
+    data = []
+    for i in l:
+        with open(i) as f:
+            data.append(json.loads(f.read()))
+
+    return data
+
+
+if __name__ == "__main__":
+    main(sys.argv[1], sys.argv[2], sys.argv[3])

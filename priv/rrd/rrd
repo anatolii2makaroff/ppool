@@ -55,30 +55,26 @@ def main(p):
         if not line:
             break
 
+        send("ok")
+
         # log("start working..")
         # log("get message: " + line)
 
         data = json.loads(line)
 
-        data_list.append(data)
+        try:
+            data_list.append(update(p, data.get("_trace")))
+        except Exception as e:
+            log(e)
 
-        send("ok")
-
-        if time.time() - tb > _INTERVAL/2:
-            log("flush data...")
+        if time.time() - tb > _INTERVAL:
+            log("draw data...")
 
             for i in data_list:
                 try:
-                    update(p, i.get("_trace"))
+                    sp.call(i)
                 except Exception as e:
                     log(e)
-
-            # draw graph
-            # for i in graph:
-            #     try:
-            #         sp.call(i.split(" "))
-            #     except Exception as e:
-            #         log(e)
 
             tb = time.time()
             data_list = []
@@ -112,7 +108,7 @@ def update(path, data):
             [":".join([str(x) for x in labels])] +
             ["N:" + ":".join([str(x) for x in values])])
 
-    sp.call(_IMG.format(f_file, name).split(" ") + df + line)
+    return _IMG.format(f_file, name).split(" ") + df + line
 
 
 if __name__ == "__main__":
