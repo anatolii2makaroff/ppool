@@ -66,9 +66,9 @@ def main(p, node, t):
             continue
 
         #  get node stats
-        for i in get_nodes_stat(p):
+        for i in get_stats(p):
 
-            log("node {} cpu {} cpu p {} ram {}".format(i[0], i[1], i[2], i[3]))
+            log("stats {}".format(i))
 
         log("tick..")
 
@@ -102,7 +102,7 @@ def get_main_node(p):
     return data
 
 
-def get_nodes_stat(p):
+def get_stats(p):
     con = connect(p)
     cur = con.cursor()
 
