@@ -221,6 +221,9 @@ def main(p, cnt, t):
             conn = connect(p)
             cur = conn.cursor()
 
+            cur.execute("PRAGMA JOURNAL_MODE=OFF;")
+            cur.execute("PRAGMA SYNCHRONOUS=OFF;")
+
             for i in data_list:
                 cur.execute(i)
             conn.commit()

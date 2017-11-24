@@ -16,8 +16,13 @@ def log(m):
     sys.stderr.write("{}: {}\n".format(time.time(), m))
 
 
+def read():
+    line = sys.stdin.readline()
+    return line.strip()
+
+
 def send(m):
-    sys.stdout.write("{}\n".format(m.strip()))
+    sys.stdout.write("{}\n".format(m))
     sys.stdout.flush()
 
 
@@ -27,59 +32,102 @@ def send(m):
 #  log  -  logging anything
 
 
-def main(node, p, t):
+def main(p, node, t):
     """
         t - time interval in secs
     """
 
-    line = sys.stdin.readline()
-    log("get message: " + line)
+    msg = read()
+
+    log("get message: " + msg)
 
     while 1:
 
-        log("tick..")
+        # gel local flows
+        # init flows
 
-        # stats
+        log("start init flows..")
 
-        start = None
+        for f in get_flows(p):
+            f_name, f_active = f.get("name"), f.get("active")
 
-        for i in get_ppool_stat(p):
+            log("init {} {}".format(f_name, f_active))
 
-
-            log("node {} load {}".format(i[0], i[6]))
-            if start is None:
-                start = i[0]
-                send("system::{}::ping_pong::start".format(start))
+            if f_active == 1:
+                send("system::{}::start".format(f_name))
             else:
-                send("system::{}::ping_pong::stop".format(i[0]))
+                send("system::{}::stop".format(f_name))
 
+        #  get main node
+        m_node = get_main_node(p)
+        if m_node != node:
+            log("main node {} ..sleep".format(m_node))
+            time.sleep(int(t))
+            continue
 
+        #  get node stats
+        for i in get_nodes_stat(p):
 
-        # ppols
-        # for i in get_flows("/var/lib/drop/flows/"):
-        #     send(i)
+            log("node {} cpu {} cpu p {} ram {}".format(i[0], i[1], i[2], i[3]))
 
-        # log("message send: {}".format(resp))
+        log("tick..")
 
         time.sleep(int(t))
 
+
 def connect(p):
-    return sqlite3.connect(p + '/node_collector.db')
+    return sqlite3.connect(p + '/db/node_collector.db')
 
 
-def get_ppool_stat(p):
+def get_main_node(p):
     con = connect(p)
     cur = con.cursor()
 
-    cur.execute("""select * from (select s.node, l.active, s.cpu_count, s.ram_count,
-                         s.disk_count, MAX(s.date), AVG(s.cpu_percent) cp,
-                         AVG(s.ram_percent), AVG(s.disk_percent), AVG(s.net_count)
+    cur.execute("""select s.node, s.date
                          from node_stat s left join (select node, active, MAX(date) from node_list) l
                           on s.node = l.node
                          where s.date > DATETIME('NOW', '-1 minutes')
-                         group by s.node) t
-                         order by t.cp asc
+                            and ifnull(l.active, 1) = 1
+                         group by s.node
+                         order by s.date, s.node desc
+                         LIMIT 1
                 """)
+
+    data = None
+    for row in cur:
+        data = row[0]
+
+    con.close()
+
+    return data
+
+
+def get_nodes_stat(p):
+    con = connect(p)
+    cur = con.cursor()
+
+    cur.execute("""
+
+        select s.node, l.name
+               ,MAX(ok)
+               ,MAX(l.error), MAX(l.timeout), MAX(running), SUM(l.nomore)
+               ,round(AVG(elapsed)/1000,2)
+
+               ,AVG(s.count), AVG(s.cpu_percent), AVG(s.ram_percent)
+
+               ,AVG(ns.cpu_percent), AVG(ns.ram_percent)
+               ,ns.cpu_count, ns.ram_count
+
+             from ppool_list l, ppool_stat s,
+                  node_stat ns
+             where l.node = s.node
+                 and l.name = substr(s.name,0,instr(s.name, ":"))
+                 and s.node = ns.node
+                 and l.date > DATETIME('NOW', '-5 minutes')
+             group by s.node, s.name
+
+
+               """)
 
     data = []
     for row in cur:
@@ -91,7 +139,7 @@ def get_ppool_stat(p):
 
 
 def get_flows(p):
-    l = glob.glob(p + "/*.json")
+    l = glob.glob(p + "/flows/*.json")
 
     data = []
     for i in l:

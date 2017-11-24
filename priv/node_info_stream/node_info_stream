@@ -58,16 +58,19 @@ def get_ppool_stat(node):
     ppool = {}
     stats = []
     for proc in ps.process_iter():
-        pinfo = proc.as_dict(attrs=["pid", "name", "cmdline"])
+        pinfo = proc.as_dict(attrs=["pid", "name", "cmdline",
+                                    "cpu_percent", "memory_percent"])
 
         if pinfo["cmdline"] is not None:
             if pinfo["cmdline"][1:3] == ["run", "--rm"]:
-                p = ps.Process(pinfo["pid"])
 
-                cnt, pp, mp = ppool.get(pinfo["cmdline"][12], [0, 0, 0])
+                cnt, pp, mp = ppool.get(pinfo["cmdline"][12],
+                                        [0, pinfo["cpu_percent"],
+                                         pinfo["memory_percent"]])
+
                 ppool[pinfo["cmdline"][12]] = [cnt + 1,
-                                               pp + p.cpu_percent(),
-                                               mp + p.memory_percent()]
+                                               pp + pinfo["cpu_percent"],
+                                               mp + pinfo["memory_percent"]]
 
     _trace = '{{"tag":"ppool_{}", "values":{}, "labels":{} }}'
 
