@@ -7,8 +7,15 @@ import sys
 import time
 import json
 import os
+from Queue import Queue
+
 
 # API
+
+
+def read():
+    line = sys.stdin.readline()
+    return line.strip()
 
 
 def log(m):
@@ -54,7 +61,7 @@ def get_command(p, args):
 
         else:
             return ["::".join([y
-                               for y in ["system", node] + x[1].split("::")[3:]])
+                               for y in ["system", node] + x[1].split("::")[2:]])
                     for x in sorted([(x["num"], x["cmd"]) for x in _d])]
 
 
@@ -63,24 +70,28 @@ def main(p):
     if not os.path.exists(p):
         os.makedirs(p)
 
+    q = Queue()
+
     while 1:
 
         log("start working..")
         send("ok")
 
-        line = sys.stdin.readline()
-        if not line:
-            break
+        if q.empty():
+            msg = read()
 
-        log("get message: " + line)
+        else:
+            msg = q.get(False)
 
-        if line.startswith("system::"):
+        log("get message: " + msg)
+
+        if msg.startswith("system::"):
 
             # system msg
-            args = line.strip().split("::")
+            args = msg.split("::")
 
             if args[1] in ["error", "timeout"]:
-                log("reciver error: " + line)
+                log("reciver error: " + msg)
                 send("ok")
 
             else:
@@ -91,8 +102,16 @@ def main(p):
                     send(x)
 
                     # get respone
-                    line = sys.stdin.readline()
-                    log("response from api: " + line)
+                    while 1:
+
+                        msg = read()
+
+                        if msg != "ok":
+                            q.put(msg)
+
+                        else:
+                            log("response from api: " + msg)
+                            break
 
 
 if __name__ == "__main__":

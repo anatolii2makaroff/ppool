@@ -15,7 +15,13 @@ shell:
 	sudo docker run --rm -it -u drop -w /home/drop/ -v /tmp/:/tmp/ $(NAME):$(VERSION) /bin/bash
 
 run:
-	sudo docker run --rm -i -u drop -w /home/drop/ -v /tmp/:/tmp/ -m 4m -c 1024 $(NAME):$(VERSION) $(CMD) 2>>/tmp/$(NAME).log
+	sudo docker run --rm -i -u drop -w /home/drop/ -v /tmp/:/tmp/ -e GROUP=hellopy -m 14m $(NAME):$(VERSION) $(CMD) 2>>/tmp/$(NAME).log
+
+run2:
+	sudo docker run --rm -i -u drop -w /home/drop/ -v /tmp/:/tmp/ -m 14m $(NAME):$(VERSION) $(CMD) 2>>/tmp/$(NAME).log
+
+
+
 
 run_stream:
 	sudo docker run --rm -i -u drop -w /home/drop/ -v /tmp/:/tmp/ $(NAME):$(VERSION) $(CMD2) 2>>/tmp/$(NAME).log

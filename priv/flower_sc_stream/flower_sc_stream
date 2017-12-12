@@ -8,6 +8,8 @@ import time
 import json
 import sqlite3
 import glob
+from operator import mul
+
 
 # API
 
@@ -27,7 +29,7 @@ def send(m):
 
 
 # Process - actor
-#  line - recieve message from world
+#  read - recieve message from world
 #  send - send message to world
 #  log  -  logging anything
 
@@ -36,6 +38,7 @@ def main(p, node, t):
     """
         t - time interval in secs
     """
+    tb = time.time()
 
     msg = read()
 
@@ -43,33 +46,99 @@ def main(p, node, t):
 
     while 1:
 
-        # gel local flows
-        # init flows
+        #  set clester network balancer
+        #  get main node floating ip
+        log("get main node..")
+
+        m_node = get_main_node(p)
+        if m_node != node:
+            log("i'm not main node {} ..set rserv".format(m_node))
+            time.sleep(int(t))
+            send("ok")
+
+            continue
+        else:
+            log("main node {} ..set admin".format(m_node))
+
+        if time.time() - tb < int(t) * 5:
+            time.sleep(int(t))
+            send("ok")
+
+            continue
+        else:
+            tb = time.time()
+
+        #  get node's statistic
+        log("get stats..")
+
+        pstats = get_stats(p)
+
+        #  gel flows scenes
+        #  start/stop flows
 
         log("start init flows..")
 
         for f in get_flows(p):
-            f_name, f_active = f.get("name"), f.get("active")
+            f_name, f_active, f_ppools, f_count, f_ram = f.get("name"), f.get("active"),\
+                [[y.get("cmd").split("::")[3] for y in x.get("cook")
+                  if y.get("cmd").split("::")[2] == "start_pool"]
+                 for x in f.get("scenes")
+                 if x["name"] == f.get("start_scene")][0],\
+                [[int(y.get("cmd").split("::")[4]) for y in x.get("cook")
+                  if y.get("cmd").split("::")[2] == "start_pool"]
+                 for x in f.get("scenes")
+                 if x["name"] == f.get("start_scene")][0],\
+                [[int(y.get("cmd").split("::")[4].split(" ")[1][:-1]) for y in x.get("cook")
+                  if y.get("cmd").split("::")[2] == "start_all_workers"]
+                 for x in f.get("scenes")
+                 if x["name"] == f.get("start_scene")][0]
 
-            log("init {} {}".format(f_name, f_active))
+            log("read flow {} {} {} {} {}".format(f_name, f_active, f_ppools, f_count, f_ram))
 
-            if f_active == 1:
-                send("system::{}::start".format(f_name))
-            else:
-                send("system::{}::stop".format(f_name))
+            # if flow not active stop on all nodes
+            if f_active == 0:
+                log("stop on all nodes..{}".format(f_name))
+                send("system::all::{}::stop".format(f_name))
 
-        #  get main node
-        m_node = get_main_node(p)
-        if m_node != node:
-            log("main node {} ..sleep".format(m_node))
-            time.sleep(int(t))
-            continue
+            elif f_active == 1:
+                # check already started
 
-        #  get node stats
-        for i in get_stats(p):
+                first_start = True
+                for k, v in pstats.iteritems():
 
-            log("stats {}".format(i))
+                    if set(f_ppools).issubset(set([x[1] for x in v])):
 
+                        log("on node {} flow {} is started".format(k, f_name))
+                        send("system::{}::{}::start".format(k, f_name))
+
+                        first_start = False
+
+                    else:
+                        log("on node {} flow {} is NOT started".format(k, f_name))
+
+                        # force clear
+                        send("system::{}::{}::stop".format(k, f_name))
+
+                        first_start = False or first_start
+
+                if first_start:
+                    log("flow {} first start {}".format(f_name, first_start))
+
+                    _ram_need = sum(map(mul, f_ram, f_count))
+
+                    # check resources for first start
+                    # ram cpu
+
+                    v = get_load_nodes(p)
+                    for n, l in v.iteritems():
+                        log("load nodes {} {} {}".format(n, l, _ram_need))
+
+                        if l[1] > _ram_need:
+                            send("system::{}::{}::start".format(n, f_name))
+                            break
+                        else:
+                            continue
+        send("ok")
         log("tick..")
 
         time.sleep(int(t))
@@ -79,12 +148,41 @@ def connect(p):
     return sqlite3.connect(p + '/db/node_collector.db')
 
 
+def get_load_nodes(p):
+    con = connect(p)
+    cur = con.cursor()
+
+    cur.execute(""" select * from(
+                     select s.node, AVG(s.cpu_percent) cpu, (1 - AVG(s.ram_percent)/100) * s.ram_count ram
+                         from node_stat s left join (select node, active, MAX(date) from node_list
+                                                      where date > DATETIME('NOW', '-1 minutes')
+                                                    ) l
+                          on s.node = l.node
+                         where s.date > DATETIME('NOW', '-1 minutes')
+                            and ifnull(l.active, 1) = 1
+                         group by s.node
+                   ) t
+                   order by t.ram desc, t.cpu asc
+                """)
+
+    data = {}
+
+    for row in cur:
+        data[row[0]] = (row[1], row[2])
+
+    con.close()
+
+    return data
+
+
 def get_main_node(p):
     con = connect(p)
     cur = con.cursor()
 
     cur.execute("""select s.node, s.date
-                         from node_stat s left join (select node, active, MAX(date) from node_list) l
+                         from node_stat s left join (select node, active, MAX(date) from node_list
+                                                      where date > DATETIME('NOW', '-1 minutes')
+                                                    ) l
                           on s.node = l.node
                          where s.date > DATETIME('NOW', '-1 minutes')
                             and ifnull(l.active, 1) = 1
@@ -94,6 +192,7 @@ def get_main_node(p):
                 """)
 
     data = None
+
     for row in cur:
         data = row[0]
 
@@ -121,7 +220,7 @@ def get_stats(p):
              from ppool_list l, ppool_stat s,
                   node_stat ns
              where l.node = s.node
-                 and l.name = substr(s.name,0,instr(s.name, ":"))
+                 and l.name = s.name
                  and s.node = ns.node
                  and l.date > DATETIME('NOW', '-5 minutes')
              group by s.node, s.name
@@ -129,9 +228,12 @@ def get_stats(p):
 
                """)
 
-    data = []
+    data = {}
     for row in cur:
-        data.append(row)
+        if data.get(row[0]) is None:
+            data[row[0]] = [row]
+        else:
+            data[row[0]].append(row)
 
     con.close()
 

@@ -1,7 +1,7 @@
 
 NAME=flower_sc_stream
 VERSION=0.1.0
-CMD=./flower_sc_stream 1
+CMD=./flower_sc_stream /var/lib/drop/ node 1
 
 clean:
 	sudo docker rmi -f $(NAME):$(VERSION) 

@@ -207,7 +207,11 @@ terminate({port_terminated, _Reason}, _State) ->
     ok;
 
 terminate(_Reason, #state{port=Port}=_State) ->
-    port_close(Port);
+    try port_close(Port) of
+        _ -> ok
+    catch 
+        _:_ -> ok
+    end;
 
 terminate(_Reason, _State) ->
 	ok.

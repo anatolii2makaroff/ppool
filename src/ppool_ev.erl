@@ -94,6 +94,33 @@ handle_event({msg, {_,R,[Msg]}=_M},
       {ok, State};
 
 
+%% sone
+
+handle_event({msg, {_,R,[Msg]}=_M}, 
+             #state{pid=Pid, filter=Filter, api=API}=State)
+      when Filter=/=<<"no">>, API=:=sone ->
+
+    ?Debug({event_one, self(), Pid, Msg, Filter, API}),
+
+     case binary:match(Msg, Filter) of
+         nomatch -> ok;
+               _ -> ppool_worker:cast_worker(Pid, R, [Msg]++"\n")
+     end,
+ 
+      {ok, State};
+
+
+handle_event({msg, {_,R,[Msg]}=_M}, 
+             #state{pid=Pid, api=API}=State)
+      when API=:=sone ->
+
+     ?Debug({event_one, self(), Pid, Msg, API}),
+
+        ppool_worker:cast_worker(Pid, R, [Msg]++"\n"),
+    
+      {ok, State};
+
+
 
 
 %% done

@@ -56,7 +56,7 @@ handle_call(restart, _From, State) ->
     ppool:stop_pool(ppool, rrd),
     ppool:stop_pool(ppool, node_api),
     ppool:stop_pool(ppool, flower),
-
+    ppool:stop_pool(ppool, flower_sc_stream),
 
 	{reply, ok, State, 0};
 
@@ -93,20 +93,26 @@ handle_info(timeout, State) ->
     ppool:start_pool(ppool, {flower, ?FLOWER_WORKERS, 
                             {port_worker, start_link, []} }),
 
+    ppool:start_pool(ppool, {flower_sc_stream, ?FLOWER_SC_WORKERS, 
+                            {port_worker, start_link, []} }),
 
 
 
     %% link ppools
     
     ppool_worker:subscribe(node_info_stream, {node_collector, <<"no">>, dall}),
+
     ppool_worker:subscribe(node_info_internal_stream, {node_collector, <<"no">>, dall}),
 
-    ppool_worker:subscribe(node_collector, {rrd, <<"_trace">>, one}),
+    ppool_worker:subscribe(node_collector, {rrd, <<"_trace">>, sone}),
 
-    ppool_worker:subscribe(flower, {node_api, <<"system::">>, one}),
-    ppool_worker:subscribe(node_api, {flower, <<"ok">>, one}),
+    ppool_worker:subscribe(flower, {node_api, <<"system::">>, sone}),
 
- 
+    ppool_worker:subscribe(node_api, {flower, <<"ok">>, sone}),
+
+    ppool_worker:subscribe(flower_sc_stream, {flower, <<"system::">>, sone}),
+
+
     %% System info stream worker
 
     ppool_worker:start_worker(node_info_stream,         
@@ -160,6 +166,16 @@ handle_info(timeout, State) ->
                                   ), ?FLOWER_TIMEOUT}
     ),
 
+    %% scheduler
+
+    ppool_worker:start_all_workers(flower_sc_stream, 
+                              {cmd("-m 50m flower_sc_stream:"?FLOWER_SC_VER,
+                     lists:concat(["./flower_sc_stream /tmp/ ", node(), " 2 "]),
+                                   "flower_sc_stream.log"
+                                  ), ?FLOWER_SC_TIMEOUT}
+    ),
+
+
 
      % try_start(flower),
 
@@ -180,9 +196,12 @@ code_change(_OldVsn, State, _Extra) ->
 
 
 cmd(Img, Cmd, Log) ->
+
+  [Gr,_] = string:split(lists:last(string:split(Img, " ", all)), ":"),
+
    R = lists:concat(["docker run --rm -i -u drop -w /home/drop/"
                      " -v ", os:getenv("DROP_VAR_DIR"), ":/tmp ", 
-                     Img, " ", Cmd, 
+                     "-e GROUP=", Gr, " ", Img, " ", Cmd, 
                      " 2>>", os:getenv("DROP_LOG_DIR"), "/", Log]),
    R.
 
@@ -220,15 +239,12 @@ call(Type, F, Name, Cmd) ->
     end.
 
 
-
-
 %%
 %%
 %% INFO stream worker 
 %% tick every X secs
 %%  
 %%
-
 
 
 average([]) ->
@@ -553,6 +569,10 @@ api(F) ->
                              ),
 
 
+                      F!{self(), {data, [<<"ok">>]}};
+
+
+               _ ->
                       F!{self(), {data, [<<"ok">>]}}
 
 
