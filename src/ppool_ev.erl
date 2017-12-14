@@ -51,7 +51,8 @@ handle_event({msg, {_,R,[Msg]}=_M},
 
      case binary:match(Msg, Filter) of
          nomatch -> ok;
-               _ -> ppool_worker:cast_all_workers(Pid, R, [Msg]++"\n")
+               _ -> ppool_worker:cast_all_workers(Pid,
+                                R, <<Msg/binary, <<"\n">>/binary>>)
      end,
     
       {ok, State};
@@ -62,8 +63,9 @@ handle_event({msg, {_,R,[Msg]}=_M},
       when API=:=all ->
 
     ?Debug({event_all, self(), Pid, Msg, API}),
-      ppool_worker:cast_all_workers(Pid, R, [Msg]++"\n"),
-    
+      ppool_worker:cast_all_workers(Pid,
+                                R, <<Msg/binary, <<"\n">>/binary>>),
+ 
       {ok, State};
 
 
@@ -77,7 +79,7 @@ handle_event({msg, {_,R,[Msg]}=_M},
 
      case binary:match(Msg, Filter) of
          nomatch -> ok;
-               _ -> call_worker0(Pid, R, [Msg]++"\n")
+               _ -> call_worker0(Pid, R, <<Msg/binary, <<"\n">>/binary>>)
      end,
  
       {ok, State};
@@ -89,7 +91,8 @@ handle_event({msg, {_,R,[Msg]}=_M},
 
      ?Debug({event_one, self(), Pid, Msg, API}),
 
-        call_worker0(Pid, R, [Msg]++"\n"),
+        call_worker0(Pid, R, <<Msg/binary, <<"\n">>/binary>>),
+                     
     
       {ok, State};
 
@@ -104,7 +107,9 @@ handle_event({msg, {_,R,[Msg]}=_M},
 
      case binary:match(Msg, Filter) of
          nomatch -> ok;
-               _ -> ppool_worker:cast_worker(Pid, R, [Msg]++"\n")
+               _ -> ppool_worker:cast_worker(Pid,
+                                 R, <<Msg/binary, <<"\n">>/binary>>)
+ 
      end,
  
       {ok, State};
@@ -116,7 +121,7 @@ handle_event({msg, {_,R,[Msg]}=_M},
 
      ?Debug({event_one, self(), Pid, Msg, API}),
 
-        ppool_worker:cast_worker(Pid, R, [Msg]++"\n"),
+        ppool_worker:cast_worker(Pid, R, <<Msg/binary, <<"\n">>/binary>>),
     
       {ok, State};
 
@@ -133,7 +138,7 @@ handle_event({msg, {_,R,[Msg]}=_M},
 
      case binary:match(Msg, Filter) of
          nomatch -> ok;
-               _ -> call_worker(Pid, R, [Msg]++"\n")
+               _ -> call_worker(Pid, R, <<Msg/binary, <<"\n">>/binary>>)
      end,
  
       {ok, State};
@@ -145,7 +150,7 @@ handle_event({msg, {_,R,[Msg]}=_M},
 
      ?Debug({event_one, self(), Pid, Msg, API}),
 
-         call_worker(Pid, R, [Msg]++"\n"),
+         call_worker(Pid, R, <<Msg/binary, <<"\n">>/binary>>),
     
       {ok, State};
 
@@ -160,7 +165,8 @@ handle_event({msg, {_,R,[Msg]}=_M},
 
      case binary:match(Msg, Filter) of
          nomatch -> ok;
-               _ -> ppool_worker:dacast_worker(Pid, R, [Msg]++"\n")
+               _ -> ppool_worker:dacast_worker(Pid, 
+                            R, <<Msg/binary, <<"\n">>/binary>>) 
      end,
  
       {ok, State};
@@ -172,7 +178,7 @@ handle_event({msg, {_,R,[Msg]}=_M},
 
      ?Debug({event_dall, self(), Pid, Msg, API}),
 
-         ppool_worker:dacast_worker(Pid, R, [Msg]++"\n"),
+        ppool_worker:dacast_worker(Pid, R, <<Msg/binary, <<"\n">>/binary>>),
     
       {ok, State};
 

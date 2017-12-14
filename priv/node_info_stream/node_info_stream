@@ -13,8 +13,14 @@ import json
 # API
 
 
+def read():
+    line = sys.stdin.readline()
+    return line.strip()
+
+
 def log(m):
-    sys.stderr.write("{}: {}\n ".format(time.time(), m))
+    sys.stderr.write("{}: {}\n".format(time.time(), m))
+    sys.stderr.flush()
 
 
 def send(m):
@@ -33,7 +39,7 @@ def main(node, t):
         t - time interval in secs
     """
 
-    line = sys.stdin.readline()
+    line = read()
     log("get message: " + line)
 
     while 1:

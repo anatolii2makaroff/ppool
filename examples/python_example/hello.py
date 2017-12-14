@@ -8,12 +8,18 @@ import time
 # API
 
 
+def read():
+    line = sys.stdin.readline()
+    return line.strip()
+
+
 def log(m):
     sys.stderr.write("{}: {}\n".format(time.time(), m))
+    sys.stderr.flush()
 
 
 def send(m):
-    sys.stdout.write("{}\n".format(m.strip()))
+    sys.stdout.write("{}\n".format(m))
     sys.stdout.flush()
 
 
@@ -23,28 +29,14 @@ def send(m):
 #  log  -  logging anything
 
 
-
-data = []
-
 def main(t):
     while 1:
-        line = sys.stdin.readline()
-        if not line:
-            break
+        line = read()
 
         log("start working..")
         log("get message: " + line)
 
         resp = "{}".format(line)
-
-        data = []
-
-        s =0
-        a = 0
-        while True:
-            a = 100**23/1234 + 123
-            s +=1
-            data.append("sdfsfsdfddssdfsdfsdfsfsf"+str(s))
 
         send(resp)
 

@@ -20,6 +20,7 @@ def read():
 
 def log(m):
     sys.stderr.write("{}: {}\n".format(time.time(), m))
+    sys.stderr.flush()
 
 
 def send(m):
@@ -75,7 +76,6 @@ def main(p):
     while 1:
 
         log("start working..")
-        send("ok")
 
         if q.empty():
             msg = read()
@@ -107,6 +107,7 @@ def main(p):
                         msg = read()
 
                         if msg != "ok":
+                            log("add to queue: " + msg)
                             q.put(msg)
 
                         else:

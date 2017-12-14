@@ -15,8 +15,14 @@ import os
 # API
 
 
+def read():
+    line = sys.stdin.readline()
+    return line.strip()
+
+
 def log(m):
     sys.stderr.write("{}: {}\n".format(time.time(), m))
+    sys.stderr.flush()
 
 
 def send(m):
@@ -51,9 +57,7 @@ def main(p):
     tb = time.time()
 
     while 1:
-        line = sys.stdin.readline()
-        if not line:
-            break
+        line = read()
 
         send("ok")
 

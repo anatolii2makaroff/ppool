@@ -130,7 +130,7 @@ handle_info(timeout, State) ->
 
     %% master 
     ppool_worker:start_worker(node_collector, 
-                              {cmd("-m 50m node_collector:"?NODE_CLTR_VER,
+                              {cmd("-m 100m node_collector:"?NODE_CLTR_VER,
                                    "./node_collector /tmp/db 100 5 ",
                                    "node_collector.log"
                                   ), ?NODE_CLTR_TIMEOUT}
@@ -140,7 +140,7 @@ handle_info(timeout, State) ->
     %% rrd
 
     ppool_worker:start_all_workers(rrd, 
-                              {cmd("-m 50m rrd:"?NODE_RRD_VER,
+                              {cmd("-m 100m rrd:"?NODE_RRD_VER,
                                    "./rrd /tmp/rrd ",
                                    "rrd.log"
                                   ), ?NODE_RRD_TIMEOUT}
@@ -160,7 +160,7 @@ handle_info(timeout, State) ->
     %% flower
 
     ppool_worker:start_all_workers(flower, 
-                              {cmd("-m 20m flower:"?FLOWER_VER,
+                              {cmd("-m 100m flower:"?FLOWER_VER,
                                    "./flower /tmp/flows/ ",
                                    "flower.log"
                                   ), ?FLOWER_TIMEOUT}
@@ -169,7 +169,7 @@ handle_info(timeout, State) ->
     %% scheduler
 
     ppool_worker:start_all_workers(flower_sc_stream, 
-                              {cmd("-m 50m flower_sc_stream:"?FLOWER_SC_VER,
+                              {cmd("-m 100m flower_sc_stream:"?FLOWER_SC_VER,
                      lists:concat(["./flower_sc_stream /tmp/ ", node(), " 2 "]),
                                    "flower_sc_stream.log"
                                   ), ?FLOWER_SC_TIMEOUT}
@@ -341,7 +341,7 @@ api(F) ->
         [R, _] ->
             [_|[Tp|[Fn|[Name|A]]]] = binary:split(R, <<"::">>, [global]),
 
-           ?Debug2({Tp, Fn, Name, A}),
+           ?Debug3({Tp, Fn, Name, A}),
 
            case erlang:binary_to_atom(Fn, latin1) of
 
@@ -446,7 +446,7 @@ api(F) ->
                             end,
 
                             erlang:binary_to_atom(Name, latin1),
-                            [Args] ++ "\n"
+                            <<Args/binary, <<"\n">>/binary>>
                              ),
 
                     F!{self(), {data, [<<"ok">>]}};
@@ -461,7 +461,7 @@ api(F) ->
  
                             end,
                             erlang:binary_to_atom(Name, latin1),
-                            [Args] ++ "\n"
+                            <<Args/binary, <<"\n">>/binary>>
                              ),
 
 
@@ -495,7 +495,7 @@ api(F) ->
  
                             end,
                             erlang:binary_to_atom(Name, latin1),
-                            [Args] ++ "\n"
+                             <<Args/binary, <<"\n">>/binary>>
                              ),
                 
                    F!{self(), {data, [<<"ok">>]}};
@@ -511,7 +511,7 @@ api(F) ->
  
                             end,
                             erlang:binary_to_atom(Name, latin1),
-                            [Args] ++ "\n"
+                             <<Args/binary, <<"\n">>/binary>>
                              ),
 
 
@@ -528,7 +528,7 @@ api(F) ->
  
                             end,
                             erlang:binary_to_atom(Name, latin1),
-                            [Args] ++ "\n"
+                             <<Args/binary, <<"\n">>/binary>>
                              ),
 
                      F!{self(), {data, [<<"ok">>]}};
@@ -572,7 +572,9 @@ api(F) ->
                       F!{self(), {data, [<<"ok">>]}};
 
 
-               _ ->
+               _D ->
+                   ?Debug3({unknow_call_api, _D}),
+
                       F!{self(), {data, [<<"ok">>]}}
 
 

@@ -198,7 +198,7 @@ handle_info(timeout, #state{master=M, cmd=Cmd}=State) ->
 
         case string:find(erlang:atom_to_list(F), "_stream") of
             nomatch -> ok;
-            _ -> ppool_worker:stream_all_workers(M, "start\n")
+            _ -> ppool_worker:stream_all_workers(M, <<"start\n">>)
         end,
 
 

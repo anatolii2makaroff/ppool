@@ -5,6 +5,13 @@
     -define(Debug2(M), void).
 -endif.
 
+-ifdef(debug3).
+    -define(Debug3(M), io:format("~p~n", [M])).
+-else.
+    -define(Debug3(M), void).
+-endif.
+
+
 
 -define(NODE_API_WORKERS, 2).
 -define(NODE_API_TIMEOUT, 10000).

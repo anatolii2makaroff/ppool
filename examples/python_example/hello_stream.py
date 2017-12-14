@@ -7,13 +7,18 @@ import time
 
 # API
 
+def read():
+    line = sys.stdin.readline()
+    return line.strip()
+
 
 def log(m):
-    sys.stderr.write("{}: {}\n ".format(time.time(), m))
+    sys.stderr.write("{}: {}\n".format(time.time(), m))
+    sys.stderr.flush()
 
 
 def send(m):
-    sys.stdout.write("{}\n".format(m.strip()))
+    sys.stdout.write("{}\n".format(m))
     sys.stdout.flush()
 
 
@@ -24,7 +29,7 @@ def send(m):
 
 def main(t):
 
-    line = sys.stdin.readline()
+    line = read()
 
     while 1:
 

@@ -13,20 +13,19 @@ from operator import mul
 
 # API
 
-
-def log(m):
-    sys.stderr.write("{}: {}\n".format(time.time(), m))
-
-
 def read():
     line = sys.stdin.readline()
     return line.strip()
 
 
+def log(m):
+    sys.stderr.write("{}: {}\n".format(time.time(), m))
+    sys.stderr.flush()
+
+
 def send(m):
     sys.stdout.write("{}\n".format(m))
     sys.stdout.flush()
-
 
 # Process - actor
 #  read - recieve message from world

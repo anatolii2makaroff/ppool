@@ -14,11 +14,11 @@ var rl = readline.createInterface({
 //API
 
 function log(m){
-    console.error( Date.now()+": "+ m + "\n")
+    console.error(Date.now() + ": " + m);
 }
 
 function send(m){
-   console.log(m.replace(/\n$/, '')+"\n");
+   console.log(m);
 }
 
 
@@ -31,6 +31,7 @@ function send(m){
 
 rl.on('line', function(line){
 
+    line = line.replace(/\n$/, '')
 
     log("start working..");
     log("get message: " + line);
