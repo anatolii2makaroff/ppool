@@ -108,7 +108,7 @@ handle_info(timeout, State) ->
 
     ppool_worker:subscribe(flower, {node_api, <<"system::">>, one}),
 
-    ppool_worker:subscribe(node_api, {flower, <<"ok">>, sone}),
+    ppool_worker:subscribe(node_api, {flower, <<"ok">>, one}),
 
     ppool_worker:subscribe(flower_sc_stream, {flower, <<"system::">>, sone}),
 
@@ -227,9 +227,9 @@ call(Type, F, Name, Cmd) ->
             try F(P0, Cmd0) of
                 _ -> ok
             catch 
-                _:Err -> 
+                _:_ -> 
                      error_logger:warning_msg("call api ~p~n ",
-                                              [Err]),
+                                              [Cmd]),
                       ok
             end
         end,
@@ -354,6 +354,9 @@ api(F) ->
               api(F);
 
          Msg ->
+           ?Debug3({recv, Msg}),
+
+
             R = binary:replace(Msg, <<"\n">>, <<>>),
 
             [_|[Tp|[Fn|[Name|A]]]] = binary:split(R, <<"::">>, [global]),
