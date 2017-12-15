@@ -106,7 +106,7 @@ handle_info(timeout, State) ->
 
     ppool_worker:subscribe(node_collector, {rrd, <<"_trace">>, sone}),
 
-    ppool_worker:subscribe(flower, {node_api, <<"system::">>, sone}),
+    ppool_worker:subscribe(flower, {node_api, <<"system::">>, one}),
 
     ppool_worker:subscribe(node_api, {flower, <<"ok">>, sone}),
 
@@ -222,19 +222,32 @@ call(Type, F, Name, Cmd) ->
 
     ?Debug2({?MODULE, Type, F, Name, Cmd}),
 
+
+    Tf = fun(P0, Cmd0) ->
+            try F(P0, Cmd0) of
+                _ -> ok
+            catch 
+                _:Err -> 
+                     error_logger:warning_msg("call api ~p~n ",
+                                              [Err]),
+                      ok
+            end
+        end,
+
+
     case Type of
 
         local ->
-            [F(P, Cmd)||P <- [X || X<-pg2:get_members(Name), node(X)=:=node()]];
+            [Tf(P, Cmd)||P <- [X || X<-pg2:get_members(Name), node(X)=:=node()]];
 
         near ->
-            [F(P, Cmd)||P <- [pg2:get_closest_pid(Name)]];
+            [Tf(P, Cmd)||P <- [pg2:get_closest_pid(Name)]];
 
         all ->
-            [F(P, Cmd)||P <- pg2:get_members(Name)];
+            [Tf(P, Cmd)||P <- pg2:get_members(Name)];
  
         Node ->
-            [F(P, Cmd)||P <- [X || X<-pg2:get_members(Name), node(X)=:=Node]]
+            [Tf(P, Cmd)||P <- [X || X<-pg2:get_members(Name), node(X)=:=Node]]
  
     end.
 
@@ -335,10 +348,14 @@ node_info_internal_stream(F) ->
 api(F) ->
     receive
 
-        [<<"ok">>, _] ->
-            ok;
+        <<"ok\n">> ->
+           ?Debug3({recv, ok}),
 
-        [R, _] ->
+              api(F);
+
+         Msg ->
+            R = binary:replace(Msg, <<"\n">>, <<>>),
+
             [_|[Tp|[Fn|[Name|A]]]] = binary:split(R, <<"::">>, [global]),
 
            ?Debug3({Tp, Fn, Name, A}),
@@ -571,16 +588,18 @@ api(F) ->
 
                       F!{self(), {data, [<<"ok">>]}};
 
-
-               _D ->
-                   ?Debug3({unknow_call_api, _D}),
-
-                      F!{self(), {data, [<<"ok">>]}}
-
+               _M ->
+                 ok,
+                  ?Debug3({unknow_call_api, _M})
 
            end,
-
-            
              api(F)
+
+         %% Any ->
+         %%     ?Debug3({unknow_call_api, Any}),
+         %%
+         %%       F!{self(), {data, [<<"ok">>]}},
+         %%   
+         %%    api(F)
 
     end.

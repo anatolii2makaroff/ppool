@@ -76,9 +76,12 @@ def main(p):
     while 1:
 
         log("start working..")
+        send("ok")
 
         if q.empty():
             msg = read()
+            if not msg:
+                break
 
         else:
             msg = q.get(False)
@@ -105,10 +108,14 @@ def main(p):
                     while 1:
 
                         msg = read()
+                        if not msg:
+                            break
 
                         if msg != "ok":
-                            log("add to queue: " + msg)
+                            log("add to queue q({}) : {}".format(q.qsize(), msg))
+
                             q.put(msg)
+                            send("ok")
 
                         else:
                             log("response from api: " + msg)

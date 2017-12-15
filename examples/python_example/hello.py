@@ -32,6 +32,8 @@ def send(m):
 def main(t):
     while 1:
         line = read()
+        if not line:
+            break
 
         log("start working..")
         log("get message: " + line)

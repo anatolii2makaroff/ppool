@@ -58,6 +58,8 @@ def main(p):
 
     while 1:
         line = read()
+        if not line:
+            break
 
         send("ok")
 
