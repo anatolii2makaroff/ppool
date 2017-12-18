@@ -316,12 +316,18 @@ handle_cast({cast_worker, Msg},  #state{workers_pids=Pids}=State) ->
    List=maps:keys(Pids),
     Index = rand:uniform(length(List)),
 
-     Pid=lists:nth(Index, List),
 
-     ?Debug({cast_worker_random, Pid}),
+    case Index of
+        0 -> ok;
+        I ->
+            Pid=lists:nth(I, List),
 
-        gen_server:cast(Pid, Msg),
-	        {noreply, State};
+            ?Debug({cast_worker_random, Pid}),
+
+                gen_server:cast(Pid, Msg)
+    end,
+
+      {noreply, State};
 
 
 

@@ -9,6 +9,7 @@ import json
 import sqlite3
 import glob
 from operator import mul
+import math
 
 
 # API
@@ -48,8 +49,15 @@ def main(p, node, t):
         #  set clester network balancer
         #  get main node floating ip
         log("get main node..")
+        m_nodes = get_active_nodes(p)
 
-        m_node = get_main_node(p)
+        log("get active nodes: {}".format(m_nodes))
+
+        if len(m_nodes) == 0:
+            m_node = None
+        else:
+            m_node = m_nodes[0]
+
         if m_node != node:
             log("i'm not main node {} ..set rserv".format(m_node))
             time.sleep(int(t))
@@ -77,66 +85,8 @@ def main(p, node, t):
 
         log("start init flows..")
 
-        for f in get_flows(p):
-            f_name, f_active, f_ppools, f_count, f_ram = f.get("name"), f.get("active"),\
-                [[y.get("cmd").split("::")[3] for y in x.get("cook")
-                  if y.get("cmd").split("::")[2] == "start_pool"]
-                 for x in f.get("scenes")
-                 if x["name"] == f.get("start_scene")][0],\
-                [[int(y.get("cmd").split("::")[4]) for y in x.get("cook")
-                  if y.get("cmd").split("::")[2] == "start_pool"]
-                 for x in f.get("scenes")
-                 if x["name"] == f.get("start_scene")][0],\
-                [[int(y.get("cmd").split("::")[4].split(" ")[1][:-1]) for y in x.get("cook")
-                  if y.get("cmd").split("::")[2] == "start_all_workers"]
-                 for x in f.get("scenes")
-                 if x["name"] == f.get("start_scene")][0]
+        start_init_flows(p, pstats, m_nodes)
 
-            log("read flow {} {} {} {} {}".format(f_name, f_active, f_ppools, f_count, f_ram))
-
-            # if flow not active stop on all nodes
-            if f_active == 0:
-                log("stop on all nodes..{}".format(f_name))
-                send("system::all::{}::stop".format(f_name))
-
-            elif f_active == 1:
-                # check already started
-
-                first_start = True
-                for k, v in pstats.iteritems():
-
-                    if set(f_ppools).issubset(set([x[1] for x in v])):
-
-                        log("on node {} flow {} is started".format(k, f_name))
-                        send("system::{}::{}::start".format(k, f_name))
-
-                        first_start = False
-
-                    else:
-                        log("on node {} flow {} is NOT started".format(k, f_name))
-
-                        # force clear
-                        send("system::{}::{}::stop".format(k, f_name))
-
-                        first_start = False or first_start
-
-                if first_start:
-                    log("flow {} first start {}".format(f_name, first_start))
-
-                    _ram_need = sum(map(mul, f_ram, f_count))
-
-                    # check resources for first start
-                    # ram cpu
-
-                    v = get_load_nodes(p)
-                    for n, l in v.iteritems():
-                        log("load nodes {} {} {}".format(n, l, _ram_need))
-
-                        if l[1] > _ram_need:
-                            send("system::{}::{}::start".format(n, f_name))
-                            break
-                        else:
-                            continue
         send("ok")
         log("tick..")
 
@@ -145,6 +95,100 @@ def main(p, node, t):
 
 def connect(p):
     return sqlite3.connect(p + '/db/node_collector.db')
+
+
+
+def decrease_ppools(pstats, m_nodes):
+
+    for k, v in pstats.iteritems():
+
+        if k not in m_nodes:
+            continue
+
+        if set(f_ppools).issubset(set([x[1] for x in v])):
+
+            log("on node {} flow {} is started".format(k, f_name))
+            send("system::{}::{}::start".format(k, f_name))
+
+            first_start = False
+
+        else:
+            log("on node {} flow {} is NOT started".format(k, f_name))
+
+            # force clear
+            send("system::{}::{}::stop".format(k, f_name))
+
+            first_start = False or first_start
+
+
+
+def start_init_flows(p, pstats, m_nodes):
+
+    for f in get_flows(p):
+        f_name, f_active, f_ppools, f_count, f_ram = f.get("name"), f.get("active"),\
+            [[y.get("cmd").split("::")[3] for y in x.get("cook")
+              if y.get("cmd").split("::")[2] == "start_pool"]
+             for x in f.get("scenes")
+             if x["name"] == f.get("start_scene")][0],\
+            [[int(y.get("cmd").split("::")[4]) for y in x.get("cook")
+              if y.get("cmd").split("::")[2] == "start_pool"]
+             for x in f.get("scenes")
+             if x["name"] == f.get("start_scene")][0],\
+            [[int(y.get("cmd").split("::")[4].split(" ")[1][:-1]) for y in x.get("cook")
+              if y.get("cmd").split("::")[2] == "start_all_workers"]
+             for x in f.get("scenes")
+             if x["name"] == f.get("start_scene")][0]
+
+        log("read flow {} {} {} {} {}".format(f_name, f_active, f_ppools, f_count, f_ram))
+
+        # if flow not active stop on all nodes
+        if f_active == 0:
+            log("stop on all nodes..{}".format(f_name))
+            send("system::all::{}::stop".format(f_name))
+
+        elif f_active == 1:
+            # check already started
+
+            first_start = True
+            for k, v in pstats.iteritems():
+
+                if k not in m_nodes:
+                    continue
+
+                if set(f_ppools).issubset(set([x[1] for x in v])):
+
+                    log("on node {} flow {} is started".format(k, f_name))
+                    send("system::{}::{}::start".format(k, f_name))
+
+                    first_start = False
+
+                else:
+                    log("on node {} flow {} is NOT started".format(k, f_name))
+
+                    # force clear
+                    send("system::{}::{}::stop".format(k, f_name))
+
+                    first_start = False or first_start
+
+            # need first start
+
+            if first_start:
+                log("flow {} first start {}".format(f_name, first_start))
+
+                _ram_need = sum(map(mul, f_ram, f_count))
+
+                # check resources for first start
+                # ram cpu
+
+                v = get_load_nodes(p)
+                for n, l in v.iteritems():
+                    log("load nodes {} {} {}".format(n, l, _ram_need))
+
+                    if l[1] > _ram_need and l[0] < 85:
+                        send("system::{}::{}::start".format(n, f_name))
+                        break
+                    else:
+                        continue
 
 
 def get_load_nodes(p):
@@ -174,7 +218,7 @@ def get_load_nodes(p):
     return data
 
 
-def get_main_node(p):
+def get_active_nodes(p):
     con = connect(p)
     cur = con.cursor()
 
@@ -187,17 +231,64 @@ def get_main_node(p):
                             and ifnull(l.active, 1) = 1
                          group by s.node
                          order by s.date, s.node desc
-                         LIMIT 1
+                         -- LIMIT 1
                 """)
 
-    data = None
+    data = []
 
     for row in cur:
-        data = row[0]
+        data.append(row[0])
 
     con.close()
 
     return data
+
+
+def get_stats_decrease(p):
+    con = connect(p)
+    cur = con.cursor()
+
+    cur.execute("""
+
+        select t.node, t.name, t.cnt, t.ok/(300*1000/t.time), t.nm
+
+          from (
+             select s.node, l.name
+                    ,MAX(ok) ok
+                    ,MAX(running) run
+                    ,SUM(l.nomore) nm
+                    ,round(MAX(elapsed)/1000,2) time
+                    ,AVG(s.count) cnt
+
+                  from ppool_list l, ppool_stat s,
+                       node_stat ns
+                  where l.node = s.node
+                      and l.name = s.name
+                      and s.node = ns.node
+                      and l.date > DATETIME('NOW', '-5 minutes')
+                  group by s.node, s.name
+               ) t
+
+
+               """)
+
+    data = {}
+    for row in cur:
+
+        workers = math.ceil(row[2]) - math.ceil(row[3] * 0.25)
+
+        if workers > 0:
+            if data.get(row[1]) is None:
+                data[row[1]] = (row[0], math.ceil(row[2]), workers)
+            else:
+                data.get(row[1])[1] =
+
+    con.close()
+
+    return data
+
+
+
 
 
 def get_stats(p):

@@ -72,6 +72,7 @@ def main(p):
         os.makedirs(p)
 
     q = Queue()
+    qo = Queue()
 
     while 1:
 
@@ -107,19 +108,27 @@ def main(p):
                     # get respone
                     while 1:
 
-                        msg = read()
-                        if not msg:
-                            break
+                        if qo.empty():
+                            msg = read()
+                            if not msg:
+                                break
+                        else:
+                            msg = qo.get(False)
 
                         if msg != "ok":
                             log("add to queue q({}) : {}".format(q.qsize(), msg))
 
                             q.put(msg)
+                            if q.qsize() > 3:
+                                break
+
                             send("ok")
 
                         else:
                             log("response from api: " + msg)
                             break
+        else:
+            qo.put(msg)
 
 
 if __name__ == "__main__":

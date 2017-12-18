@@ -108,7 +108,7 @@ handle_info(timeout, State) ->
 
     ppool_worker:subscribe(flower, {node_api, <<"system::">>, one}),
 
-    ppool_worker:subscribe(node_api, {flower, <<"ok">>, one}),
+    ppool_worker:subscribe(node_api, {flower, <<"ok">>, sone}),
 
     ppool_worker:subscribe(flower_sc_stream, {flower, <<"system::">>, sone}),
 
@@ -170,7 +170,7 @@ handle_info(timeout, State) ->
 
     ppool_worker:start_all_workers(flower_sc_stream, 
                               {cmd("-m 100m flower_sc_stream:"?FLOWER_SC_VER,
-                     lists:concat(["./flower_sc_stream /tmp/ ", node(), " 2 "]),
+                     lists:concat(["./flower_sc_stream /tmp/ ", node(), " 3 "]),
                                    "flower_sc_stream.log"
                                   ), ?FLOWER_SC_TIMEOUT}
     ),
@@ -235,19 +235,34 @@ call(Type, F, Name, Cmd) ->
         end,
 
 
+    Get_memb = fun(N0, F0) ->
+                      try F0(N0) of
+                          {error,{no_such_group,N0}} -> [];
+
+                          R -> R
+                      catch 
+                         _:_ -> 
+                           error_logger:warning_msg("get members api ~p~n ",
+                                              [N0]),
+                      []
+            end
+        end,
+
+
     case Type of
 
         local ->
-            [Tf(P, Cmd)||P <- [X || X<-pg2:get_members(Name), node(X)=:=node()]];
+            [Tf(P, Cmd)||P <- [X || X<- Get_memb(Name, fun pg2:get_members/1), 
+                                                   node(X)=:=node()]];
 
         near ->
-            [Tf(P, Cmd)||P <- [pg2:get_closest_pid(Name)]];
+            [Tf(P, Cmd)||P <- [ Get_memb(Name, fun pg2:get_closest_pid/1)]];
 
         all ->
-            [Tf(P, Cmd)||P <- pg2:get_members(Name)];
+            [Tf(P, Cmd)||P <-  Get_memb(Name, fun pg2:get_members/1)];
  
         Node ->
-            [Tf(P, Cmd)||P <- [X || X<-pg2:get_members(Name), node(X)=:=Node]]
+            [Tf(P, Cmd)||P <- [X || X <- Get_memb(Name, fun pg2:get_members/1), node(X)=:=Node]]
  
     end.
 
