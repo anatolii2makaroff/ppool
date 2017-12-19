@@ -314,13 +314,13 @@ handle_cast({cast_worker, Msg},  #state{workers_pids=Pids}=State) ->
 
    %% get random pid
    List=maps:keys(Pids),
-    Index = rand:uniform(length(List)),
 
-
-    case Index of
+    case length(List) of
         0 -> ok;
-        I ->
-            Pid=lists:nth(I, List),
+        L ->
+            Index = rand:uniform(L),
+
+            Pid=lists:nth(Index, List),
 
             ?Debug({cast_worker_random, Pid}),
 
