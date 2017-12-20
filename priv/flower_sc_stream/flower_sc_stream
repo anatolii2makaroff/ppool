@@ -100,7 +100,7 @@ def main(p, node, t):
 
 
 def connect(p):
-    return sqlite3.connect(p + '/db/node_collector.db')
+    return sqlite3.connect(p + '/db/node_collector.db', timeout=3)
 
 
 def decrease_ppools(pstats, m_nodes):
@@ -110,7 +110,7 @@ def decrease_ppools(pstats, m_nodes):
         # if k not in m_nodes:
         #     continue
 
-        log("decrease ppool : {} {}".format(k, v))
+        log("change ppool : {} {}".format(k, v))
 
 
 def start_init_flows(p, pstats, m_nodes):
@@ -241,23 +241,28 @@ def get_stats_decrease(p):
 
     cur.execute("""
 
-        select t.node, t.name, t.cnt, t.ok/(300*1000/t.time), t.nm
+        select t.node, t.name, t.cnt, t.ok/(300*1000/t.time),
+               t.ok, t.nm, t.timeo, t.err
 
           from (
              select s.node, l.name
                     ,MAX(ok) ok
                     ,MAX(running) run
                     ,SUM(l.nomore) nm
+                    ,MAX(l.error) err
+                    ,MAX(l.timeout) timeo
                     ,round(MAX(elapsed)/1000,2) time
                     ,MIN(s.count) cnt
 
-                  from ppool_list l, ppool_stat s,
-                       node_stat ns
-                  where l.node = s.node
-                      and l.name = s.name
-                      and s.node = ns.node
-                      and l.date > DATETIME('NOW', '-1 minutes')
-                  group by s.node, s.name
+                    from ppool_list l, (select s.node, s.name, MIN(s.count) count
+                                              from ppool_stat s
+                                              group by s.node, s.name) s
+
+                     where l.node = s.node
+                         and l.name = s.name
+                         and l.date > DATETIME('NOW', '-1 minutes')
+                     group by s.node, s.name
+
                ) t
 
 
@@ -269,15 +274,18 @@ def get_stats_decrease(p):
         if row[2] is None or row[3] is None:
             continue
 
-        log("decrease stat {}".format(row))
+        workers = math.ceil(row[3]) - math.ceil(row[2])
 
-        workers = math.ceil(row[2]) - math.ceil(row[3])
+        log("change ppool stat {} ->+-: {}".format(row, workers))
 
-        if workers > 0:
-            if data.get(row[1]) is None:
-                data[row[1]] = [(row[0], math.ceil(row[2]), workers)]
-            else:
-                data.get(row[1]).append((row[0], math.ceil(row[2]), workers))
+        if int(workers) == 0:
+            continue
+        # if
+
+        if data.get(row[1]) is None:
+            data[row[1]] = [(row[0], math.ceil(row[2]), workers)]
+        else:
+            data.get(row[1]).append((row[0], math.ceil(row[2]), workers))
 
     con.close()
 

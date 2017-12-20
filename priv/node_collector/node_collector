@@ -155,7 +155,7 @@ def clear_last_rows(cur, t):
 
 
 def connect(p):
-    return sqlite3.connect(p + '/node_collector.db')
+    return sqlite3.connect(p + '/node_collector.db', timeout=3)
 
 
 def main(p, cnt, t):
