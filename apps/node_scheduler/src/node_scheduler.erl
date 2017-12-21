@@ -502,6 +502,23 @@ api(F) ->
 
                     F!{self(), {data, [<<"ok">>]}};
 
+               first_call_worker ->
+
+                   [Args|_] = A,
+
+                   _Res = call(erlang:binary_to_atom(Tp, latin1),
+                            fun(N, C) -> 
+                                    ppool_worker:first_call_worker(N, C)
+ 
+                            end,
+                            erlang:binary_to_atom(Name, latin1),
+                            <<Args/binary, <<"\n">>/binary>>
+                             ),
+
+
+                    F!{self(), {data, [<<"ok">>]}};
+
+
                change_limit ->
 
                    [Args|_] = A,
