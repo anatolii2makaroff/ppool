@@ -10,7 +10,7 @@
             "name" : "start",
             "cook": [
                 {"num":1,
-                 "cmd":"system::local::start_pool::ping::1"
+                 "cmd":"system::local::start_pool::ping::5"
                 },
                 {"num":2,
                  "cmd":"system::local::start_pool::pong::1"
@@ -28,7 +28,7 @@
                  "cmd":"system::local::subscribe::pong::ping::no::one"
                 },
                 {"num":7,
-                 "cmd":"system::local::cast_worker::ping::boom"
+                 "cmd":"system::local::first_call_worker::ping::boom"
                 }
  
             ]
