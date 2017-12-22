@@ -241,7 +241,8 @@ def get_stats_decrease(p):
 
     cur.execute("""
 
-        select t.node, t.name, t.cnt, t.ok/(300*1000/t.time),
+        select t.node, t.name, t.cnt,
+               t.ok/(300*1000/t.time),
                t.ok, t.nm, t.timeo, t.err
 
           from (
@@ -276,16 +277,35 @@ def get_stats_decrease(p):
 
         workers = math.ceil(row[3]) - math.ceil(row[2])
 
-        log("change ppool stat {} ->+-: {}".format(row, workers))
+        log("ppool stat {} ->+-: {}".format(row, workers))
 
-        if int(workers) == 0:
-            continue
-        # if
+        d = [row[0], math.ceil(row[2]), workers]
+
+        # if nomore > 10% when min ppool to 1
+
+        log("check nomore rate {} / {} / {} > 10".format(row[5], row[4], row[2]))
+        if row[5] / (row[4] + 0.1) > 0.1:
+            log("too many nomore {} add workers:{} ".format(row[1],
+                                                            math.ceil(1.0*row[2]*row[5]/row[4])
+                ))
+
+            d[2] = math.ceil(1.0*row[2]*row[5]/row[4])
+
+        # if err > 70% when min ppool to 1
+
+        log("check err rate {} / {} > 70".format(row[7], row[4]))
+        if row[7] / (row[4] + 0.1) > 0.7:
+            log("too many err {}: {} > 70% ".format(row[1],
+                                                    row[7]/(row[4] + 0.1)))
+            d[2] = -1 * math.ceil(row[2]) + 1
+        else:
+            if d[2] == 0:
+                continue
 
         if data.get(row[1]) is None:
-            data[row[1]] = [(row[0], math.ceil(row[2]), workers)]
+            data[row[1]] = [d]
         else:
-            data.get(row[1]).append((row[0], math.ceil(row[2]), workers))
+            data.get(row[1]).append(d)
 
     con.close()
 

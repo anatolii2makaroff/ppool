@@ -271,11 +271,13 @@ handle_call({first_call_worker, Msg}, _From,
           '$end_of_table'-> 
             ?Debug4({first_call_worker, Name, Free}),
 
-            [P|_] = maps:keys(Free),
+            case maps:keys(Free) of 
+                [] -> ok;
+                 [P|_] ->
+                    _ = gen_server:call(P, Msg)
+             end,
 
-              R=gen_server:call(P, Msg),
-
-              {reply, {ok, R}, State};
+              {reply, {ok, call}, State};
 
           _ -> 
             ?Debug4({first_call_worker, already_started, Name}),
