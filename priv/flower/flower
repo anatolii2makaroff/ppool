@@ -99,36 +99,44 @@ def main(p):
                 send("ok")
 
             else:
-                for x in get_command(p, args):
 
-                    log("send to api: " + x)
-
-                    send(x)
-
-                    # get respone
-                    while 1:
-
-                        if qo.empty():
-                            msg = read()
-                            if not msg:
-                                break
-                        else:
-                            msg = qo.get(False)
-
-                        if msg != "ok":
-                            log("add to queue q({}) : {}".format(q.qsize(), msg))
-
-                            q.put(msg)
-                            if q.qsize() > 3:
-                                break
-
-                            send("ok")
-
-                        else:
-                            log("response from api: " + msg)
-                            break
+                try:
+                    read_json(p, args, q, qo)
+                except:
+                    send(args)
         else:
             qo.put(msg)
+
+
+def read_json(p, args, q, qo):
+    for x in get_command(p, args):
+
+        log("send to api: " + x)
+
+        send(x)
+
+        # get respone
+        while 1:
+
+            if qo.empty():
+                msg = read()
+                if not msg:
+                    break
+            else:
+                msg = qo.get(False)
+
+            if msg != "ok":
+                log("add to queue q({}) : {}".format(q.qsize(), msg))
+
+                q.put(msg)
+                if q.qsize() > 3:
+                    break
+
+                send("ok")
+
+            else:
+                log("response from api: " + msg)
+                break
 
 
 if __name__ == "__main__":

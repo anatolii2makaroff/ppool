@@ -78,14 +78,14 @@ def main(p, node, t):
         #  get node's statistic
         log("get stats..")
 
-        # pstats = get_stats(p)
+        pstats = get_stats(p)
 
         #  gel flows scenes
         #  start/stop flows
 
         log("start init flows..")
 
-        # start_init_flows(p, pstats, m_nodes)
+        start_init_flows(p, pstats, m_nodes)
 
         pstats = get_stats_decrease(p)
 
@@ -105,12 +105,39 @@ def connect(p):
 
 def decrease_ppools(pstats, m_nodes):
 
+    """
+    for f in get_flows(p):
+        f_name, f_active, f_ppools, f_count, f_ram = f.get("name"), f.get("active"),\
+            [[y.get("cmd").split("::")[3] for y in x.get("cook")
+              if y.get("cmd").split("::")[2] == "start_pool"]
+             for x in f.get("scenes")
+             if x["name"] == f.get("start_scene")][0],\
+            [[int(y.get("cmd").split("::")[4]) for y in x.get("cook")
+              if y.get("cmd").split("::")[2] == "start_pool"]
+             for x in f.get("scenes")
+             if x["name"] == f.get("start_scene")][0],\
+            [[int(y.get("cmd").split("::")[4].split(" ")[1][:-1]) for y in x.get("cook")
+              if y.get("cmd").split("::")[2] == "start_all_workers"]
+             for x in f.get("scenes")
+             if x["name"] == f.get("start_scene")][0]
+    """
+
     for k, v in pstats.iteritems():
 
-        # if k not in m_nodes:
-        #     continue
+        if k not in m_nodes:
+            continue
 
         log("change ppool : {} {}".format(k, v))
+
+        for i in v:
+            if i[2] > 0:
+                send("system::{}::change_limit::{}::{}".format(k, i[0], i[2]))
+                log("add ppool : {} {}".format(k, i[0]))
+            else:
+
+                for j in xrange(int(-1 * i[2])):
+                    send("system::{}::stop_worker::{}".format(k, i[0]))
+                    log("stop ppool : {} {}".format(k, i[0]))
 
 
 def start_init_flows(p, pstats, m_nodes):
@@ -279,7 +306,7 @@ def get_stats_decrease(p):
 
         log("ppool stat {} ->+-: {}".format(row, workers))
 
-        d = [row[0], math.ceil(row[2]), workers]
+        d = [row[1], math.ceil(row[2]), workers]
 
         # if nomore > 10% when min ppool to 1
 
@@ -302,10 +329,10 @@ def get_stats_decrease(p):
             if d[2] == 0:
                 continue
 
-        if data.get(row[1]) is None:
-            data[row[1]] = [d]
+        if data.get(row[0]) is None:
+            data[row[0]] = [d]
         else:
-            data.get(row[1]).append(d)
+            data.get(row[0]).append(d)
 
     con.close()
 
@@ -333,7 +360,7 @@ def get_stats(p):
              where l.node = s.node
                  and l.name = s.name
                  and s.node = ns.node
-                 and l.date > DATETIME('NOW', '-5 minutes')
+                 and l.date > DATETIME('NOW', '-1 minutes')
              group by s.node, s.name
 
 
