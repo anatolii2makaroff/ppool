@@ -445,6 +445,22 @@ api(F) ->
 
                        F!{self(), {data, [<<"ok">>]}};
 
+               stop_all_workers ->
+
+                   [Cnt|_] = A,
+
+                   _Res = call(erlang:binary_to_atom(Tp, latin1),
+                            fun(N, C) -> 
+                                     ppool_worker:stop_all_workers(N, C)
+
+                            end,
+
+                            erlang:binary_to_atom(Name, latin1),
+                            erlang:binary_to_integer(Cnt)
+                             ),
+
+                    F!{self(), {data, [<<"ok">>]}};
+
 
                start_all_workers ->
 
@@ -521,7 +537,7 @@ api(F) ->
 
                change_limit ->
 
-                   [Args|_] = A,
+                   [Cnt|_] = A,
 
                    _Res = call(erlang:binary_to_atom(Tp, latin1),
                             fun(N, C) -> 
@@ -529,7 +545,7 @@ api(F) ->
  
                             end,
                             erlang:binary_to_atom(Name, latin1),
-                            erlang:binary_to_integer(Args)
+                            erlang:binary_to_integer(Cnt)
                            
                              ),
 

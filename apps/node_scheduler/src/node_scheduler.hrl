@@ -13,8 +13,8 @@
 
 
 
--define(NODE_API_WORKERS, 2).
--define(NODE_API_TIMEOUT, 10000).
+-define(NODE_API_WORKERS, 10).
+-define(NODE_API_TIMEOUT, 5000).
 
 -define(NODE_RRD_WORKERS, 3).
 -define(NODE_RRD_TIMEOUT, 10000).

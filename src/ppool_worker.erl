@@ -113,9 +113,9 @@ start_map_workers(_Name, []) ->
 
 
 stop_all_workers(Name) ->
-    gen_server:call(Name, {stop_all_workers}).
-stop_all_workers(Name, _) ->
-    gen_server:call(Name, {stop_all_workers}).
+    gen_server:call(Name, {stop_all_workers, 0}).
+stop_all_workers(Name, C) ->
+    gen_server:call(Name, {stop_all_workers, C}).
 
 
 
@@ -230,11 +230,26 @@ handle_call({start_worker, _}, _From, State) ->
 
 
 
-handle_call({stop_all_workers}, _From, #state{workers_pids=Pids}=State) ->
-    ?Debug(maps:keys(Pids)),
-        lists:foreach(fun(Pid) -> gen_server:call(Pid, stop) end, 
-                                   maps:keys(Pids)),
-	        {reply, ok, State};
+handle_call({stop_all_workers, C}, _From, 
+                       #state{workers_pids=Pids}=State) ->
+
+    Cr = length(maps:keys(Pids)),
+
+    ?Debug4({stop_all_workers, Cr, C}),
+
+    case Cr - C > 0 of
+         true -> 
+           ?Debug4({stop, split(maps:keys(Pids), Cr-C)}),
+
+           lists:foreach(fun(Pid) -> 
+                                 gen_server:cast(Pid, {msg, no, stop}) end, 
+                                 split(maps:keys(Pids), Cr-C)
+                         );
+         false ->
+            ok
+     end, 
+
+	   {reply, ok, State};
 
 
 handle_call({register, Pid}, _From, #state{workers_pids=Pids}=State) ->
@@ -402,9 +417,16 @@ handle_cast({unsubscribe, S}, #state{name=Name}=State) ->
 
 
 
-handle_cast({change_limit, N}, State) ->
+handle_cast({change_limit, N}, #state{workers_pids=Pids}=State) ->
 
-     {noreply, State#state{limit=N}};
+    Cr=length(maps:keys(Pids)),
+     
+     case Cr < N of
+         true -> 
+             {noreply, State#state{limit=N-Cr}};
+         false ->
+              {noreply, State}
+    end;
 
 
 
@@ -452,5 +474,22 @@ terminate(_Reason, _State) ->
 
 code_change(_OldVsn, State, _Extra) ->
 	{ok, State}.
+
+
+split(A, I) ->
+    split(A, I, []).
+
+split(_, I, R) when I =:= 0 ->
+    R;
+
+split(A, I, R) when I > 0 ->
+    [H| T] = A,
+        split(T, I-1, [H|R]).
+
+
+
+
+
+
 
 

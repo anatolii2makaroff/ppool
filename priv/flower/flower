@@ -40,30 +40,39 @@ def get_command(p, args):
     # system::%local%::ping_pong::start
 
     node = None
+    raw = args[:]
+
     if len(args) == 4:
         node = args.pop(1)
 
-    with open(p + args[1] + ".json") as f:
-        d = json.loads(f.read())
+    try:
 
-        if args[2] == "start":
-            _start = d["start_scene"]
-        else:
-            _start = args[2]
+        with open(p + args[1] + ".json") as f:
+            d = json.loads(f.read())
 
-        _d = []
-        for x in d["scenes"]:
-            if x["name"] == _start:
-                _d = x["cook"]
-                break
+            if args[2] == "start":
+                _start = d["start_scene"]
+            else:
+                _start = args[2]
 
-        if node is None:
-            return [x[1] for x in sorted([(x["num"], x["cmd"]) for x in _d])]
+            _d = []
+            for x in d["scenes"]:
+                if x["name"] == _start:
+                    _d = x["cook"]
+                    break
 
-        else:
-            return ["::".join([y
-                               for y in ["system", node] + x[1].split("::")[2:]])
-                    for x in sorted([(x["num"], x["cmd"]) for x in _d])]
+            if node is None:
+                return [x[1] for x in sorted([(x["num"], x["cmd"]) for x in _d])]
+
+            else:
+                return ["::".join([y
+                                   for y in ["system", node] + x[1].split("::")[2:]])
+                        for x in sorted([(x["num"], x["cmd"]) for x in _d])]
+
+    except:
+        # raw cmd
+        return ["::".join(raw)]
+
 
 
 def main(p):
@@ -99,11 +108,8 @@ def main(p):
                 send("ok")
 
             else:
+                read_json(p, args, q, qo)
 
-                try:
-                    read_json(p, args, q, qo)
-                except:
-                    send(args)
         else:
             qo.put(msg)
 
