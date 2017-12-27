@@ -199,7 +199,7 @@ cmd(Img, Cmd, Log) ->
 
   [Gr,_] = string:split(lists:last(string:split(Img, " ", all)), ":"),
 
-   R = lists:concat(["docker run --rm -i -u drop -w /home/drop/"
+   R = lists:concat(["docker run --rm --log-driver none -i -u drop -w /home/drop/"
                      " -v ", os:getenv("DROP_VAR_DIR"), ":/tmp ", 
                      "-e GROUP=", Gr, " ", Img, " ", Cmd, 
                      " 2>>", os:getenv("DROP_LOG_DIR"), "/", Log]),
@@ -237,14 +237,16 @@ call(Type, F, Name, Cmd) ->
 
     Get_memb = fun(N0, F0) ->
                       try F0(N0) of
-                          {error,{no_such_group,N0}} -> [];
+                          {error,{no_such_group,N0}} ->
+                             [];
 
-                          R -> R
+                            R -> R
                       catch 
-                         _:_ -> 
+                         _:_ ->
+
                            error_logger:warning_msg("get members api ~p~n ",
                                               [N0]),
-                      []
+                            []
             end
         end,
 
@@ -328,8 +330,6 @@ node_info_loop(F) ->
                       try get_worker_info(M) of
                         Msg -> 
                             Msg2=list_to_binary(Msg),
-                             ?Debug2(Msg2),
-                        
                                 F!{self(), {data, [Msg2]}}
  
                       catch

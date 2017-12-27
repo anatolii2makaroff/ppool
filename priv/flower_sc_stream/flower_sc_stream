@@ -282,6 +282,7 @@ def get_stats_decrease(p):
 
                     from ppool_list l, (select s.node, s.name, MIN(s.count) count
                                               from ppool_stat s
+                                               where s.date > DATETIME('NOW', '-1 minutes')
                                               group by s.node, s.name) s
 
                      where l.node = s.node
@@ -297,7 +298,7 @@ def get_stats_decrease(p):
     data = {}
     for row in cur:
 
-        if row[2] is None or row[3] is None:
+        if row[2] is None or row[2] == 0 or row[3] is None:
             continue
 
         workers = math.ceil(row[3]) - math.ceil(row[2])
@@ -306,13 +307,13 @@ def get_stats_decrease(p):
 
         d = [row[1], math.ceil(row[2]), workers]
 
-        # if nomore > 10% when min ppool to 1
+        # if nomore > 70% when min ppool to 1
 
-        log("check nomore rate {} / {} / {} > 10".format(row[5], row[4], row[2]))
-        if row[5] / (row[4] + 0.1) > 0.1:
+        log("check nomore rate {} / {} / {} > 70".format(row[5], row[4], row[2]))
+        if row[5] / (row[4] + 0.1) > 0.7:
             log("too many nomore {} add workers:{} ".format(row[1],
                                                             math.ceil(1.0*row[2]*row[5]/row[4])
-                ))
+                                                            ))
 
             d[2] = math.ceil(1.0*row[2]*row[5]/row[4])
 

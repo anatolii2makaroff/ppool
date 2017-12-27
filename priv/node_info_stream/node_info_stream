@@ -71,11 +71,11 @@ def get_ppool_stat(node):
             if pinfo["cmdline"][1:3] == ["run", "--rm"]:
 
                 # get identity group
-                if "GROUP=" in pinfo["cmdline"][11]:
-                    pname = pinfo["cmdline"][11][6:]
+                if "GROUP=" in pinfo["cmdline"][12]:
+                    pname = pinfo["cmdline"][12][6:]
                 else:
                     # not group identity -> get image name
-                    pname = pinfo["cmdline"][12]
+                    pname = pinfo["cmdline"][13]
 
                 cnt, pp, mp = ppool.get(pname,
                                         [0, pinfo["cpu_percent"],

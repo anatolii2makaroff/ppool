@@ -208,8 +208,8 @@ call_worker0(Pid, R, Msg) ->
 
          case ppool_worker:call_cast_worker(Pid, R, Msg) of
              {ok, []} -> 
-                 error_logger:warning_msg("no more subscribers ~p, ~p~n",
-                                                            [{Pid,R}, Msg]),
+               %%  error_logger:warning_msg("no more subscribers ~p, ~p~n",
+               %%                                           [{Pid,R}, Msg]),
 
                 %% notify system 
                  Msg2=erlang:list_to_binary(["system::warning::nomore::", 
