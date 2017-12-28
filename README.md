@@ -23,3 +23,8 @@ hostnamectl set-hostname x.x.x
 
 'x.x.x'
    > .hosts.erlang
+
+
+FIX (fix in new docker version)
+    docker ps -a |awk '{print $1}'|xargs docker rm -f
+

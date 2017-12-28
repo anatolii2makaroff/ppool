@@ -70,7 +70,10 @@ start_link(Name, Limit, MFA) ->
 
 init([Name, Limit, MFA]) ->
     Name = ets:new(Name, [set, public, named_table, 
-                          {keypos, #worker_stat.ref}]),
+                          {keypos, #worker_stat.ref},
+                          {read_concurrency, true},
+                          {write_concurrency, true}
+                         ]),
 
     pg2:create(Name),
      pg2:join(Name, self()),
@@ -444,14 +447,14 @@ handle_info({'DOWN', _MonitorRef, process, Pid, _Info},
 
 handle_info(clean_ets, #state{name=Name}=State) ->
 
-    {M, S, Mc} = erlang:timestamp(),
+   {M, S, _} = os:timestamp(),
         
     R = ets:select(Name, 
                    ets:fun2ms(fun(N=#worker_stat{time_end=P, status=St}) 
                                     when P=/=undefined 
                                          andalso St=/=running
-                                         andalso P<{M, S-60, Mc}
-                                         
+                                         andalso P < {M, S-65, _}
+
                                          -> N 
                               end)
                   ),

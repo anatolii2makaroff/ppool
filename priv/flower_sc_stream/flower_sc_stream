@@ -130,6 +130,10 @@ def decrease_ppools(pstats, m_nodes):
         log("change ppool : {} {}".format(k, v))
 
         for i in v:
+            if i[2] > 3:
+                i[2] = 3
+                log("too big : {} set {}".format(k, i[2]))
+
             if i[2] > 0:
                 send("system::{}::change_limit::{}::{}".format(k, i[0], int(i[1] + i[2])))
                 log("add ppool : {} {}".format(k, i[0]))
@@ -267,7 +271,7 @@ def get_stats_decrease(p):
     cur.execute("""
 
         select t.node, t.name, t.cnt,
-               t.ok/(300*1000/t.time),
+               t.ok/(60*1000/t.time),
                t.ok, t.nm, t.timeo, t.err
 
           from (
