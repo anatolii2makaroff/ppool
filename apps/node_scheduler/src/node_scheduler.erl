@@ -108,8 +108,6 @@ handle_info(timeout, State) ->
 
     ppool_worker:subscribe(flower, {node_api, <<"system::">>, one}),
 
-    ppool_worker:subscribe(node_api, {flower, <<"ok">>, sone}),
-
     ppool_worker:subscribe(flower_sc_stream, {flower, <<"system::">>, sone}),
 
 
@@ -360,17 +358,9 @@ node_info_internal_stream(F) ->
 %%
 %%
 
-api(F) ->
-    receive
+call_api(Msg) ->
 
-        <<"ok\n">> ->
-           ?Debug3({recv, ok}),
-
-              api(F);
-
-         Msg ->
            ?Debug3({recv, Msg}),
-
 
             R = binary:replace(Msg, <<"\n">>, <<>>),
 
@@ -395,9 +385,8 @@ api(F) ->
                             ppool, 
                             {erlang:binary_to_atom(Name, latin1),
                              erlang:binary_to_integer(Cnt)}
-                              ),
+                              );
 
-                     F!{self(), {data, [<<"ok">>]}};
 
                stop_pool ->
                    
@@ -405,9 +394,8 @@ api(F) ->
                             fun(N, C) -> ppool:stop_pool(N, C) end,
                             ppool,
                             erlang:binary_to_atom(Name, latin1)
-                             ),
+                             );
 
-                     F!{self(), {data, [<<"ok">>]} };
 
                start_worker ->
 
@@ -425,10 +413,7 @@ api(F) ->
                              erlang:binary_to_list(Log),
                              erlang:binary_to_integer(Tm)
                             }
-                             ),
-
-                       F!{self(), {data, [<<"ok">>]}};
-
+                             );
 
                stop_worker ->
 
@@ -440,10 +425,8 @@ api(F) ->
                             end,
                             erlang:binary_to_atom(Name, latin1),
                             false
-                             ),
+                             );
 
-
-                       F!{self(), {data, [<<"ok">>]}};
 
                stop_all_workers ->
 
@@ -457,9 +440,7 @@ api(F) ->
 
                             erlang:binary_to_atom(Name, latin1),
                             erlang:binary_to_integer(Cnt)
-                             ),
-
-                    F!{self(), {data, [<<"ok">>]}};
+                             );
 
 
                start_all_workers ->
@@ -480,10 +461,7 @@ api(F) ->
                              erlang:binary_to_list(Log),
                              erlang:binary_to_integer(Tm)
                             }
-                             ),
-
-                       F!{self(), {data, [<<"ok">>]}};
-
+                             );
 
 
                call_worker ->
@@ -498,9 +476,7 @@ api(F) ->
 
                             erlang:binary_to_atom(Name, latin1),
                             <<Args/binary, <<"\n">>/binary>>
-                             ),
-
-                    F!{self(), {data, [<<"ok">>]}};
+                             );
 
                cast_worker ->
 
@@ -513,10 +489,8 @@ api(F) ->
                             end,
                             erlang:binary_to_atom(Name, latin1),
                             <<Args/binary, <<"\n">>/binary>>
-                             ),
+                             );
 
-
-                    F!{self(), {data, [<<"ok">>]}};
 
                first_call_worker ->
 
@@ -529,10 +503,7 @@ api(F) ->
                             end,
                             erlang:binary_to_atom(Name, latin1),
                             <<Args/binary, <<"\n">>/binary>>
-                             ),
-
-
-                    F!{self(), {data, [<<"ok">>]}};
+                             );
 
 
                change_limit ->
@@ -547,11 +518,7 @@ api(F) ->
                             erlang:binary_to_atom(Name, latin1),
                             erlang:binary_to_integer(Cnt)
                            
-                             ),
-
-                    F!{self(), {data, [<<"ok">>]}};
-
-
+                             );
 
                call_workers ->
 
@@ -564,10 +531,8 @@ api(F) ->
                             end,
                             erlang:binary_to_atom(Name, latin1),
                              <<Args/binary, <<"\n">>/binary>>
-                             ),
+                             );
                 
-                   F!{self(), {data, [<<"ok">>]}};
-
 
                cast_all_workers ->
 
@@ -580,12 +545,9 @@ api(F) ->
                             end,
                             erlang:binary_to_atom(Name, latin1),
                              <<Args/binary, <<"\n">>/binary>>
-                             ),
+                             );
 
 
-                     F!{self(), {data, [<<"ok">>]}};
-
- 
                stream_all_workers ->
 
                    [Args|_] = A,
@@ -597,9 +559,7 @@ api(F) ->
                             end,
                             erlang:binary_to_atom(Name, latin1),
                              <<Args/binary, <<"\n">>/binary>>
-                             ),
-
-                     F!{self(), {data, [<<"ok">>]}};
+                             );
 
 
                subscribe ->
@@ -616,10 +576,7 @@ api(F) ->
                               Fl,
                               erlang:binary_to_atom(Api, latin1)
                               }
-                             ),
-
-
-                     F!{self(), {data, [<<"ok">>]}};
+                             );
 
 
                unsubscribe ->
@@ -634,23 +591,33 @@ api(F) ->
                             erlang:binary_to_atom(Name, latin1),
                              {erlang:binary_to_atom(To, latin1)
                              }
-                             ),
+                             );
 
-
-                      F!{self(), {data, [<<"ok">>]}};
 
                _M ->
                  ok,
                   ?Debug3({unknow_call_api, _M})
 
            end,
+
+           ok.
+
+
+
+
+api(F) ->
+    receive
+
+         Msg ->
+
+            Msgs = binary:split(Msg, <<"\t">>, [global]),
+             ?Debug3({recv, Msgs}),
+
+             lists:foreach(fun(M) -> call_api(M) end,  Msgs),
+
+               F!{self(), {data, [<<"ok">>]}},
+
              api(F)
 
-         %% Any ->
-         %%     ?Debug3({unknow_call_api, Any}),
-         %%
-         %%       F!{self(), {data, [<<"ok">>]}},
-         %%   
-         %%    api(F)
 
     end.

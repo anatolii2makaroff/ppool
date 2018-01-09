@@ -7,7 +7,6 @@ import sys
 import time
 import json
 import os
-from Queue import Queue
 
 
 # API
@@ -74,27 +73,18 @@ def get_command(p, args):
         return ["::".join(raw)]
 
 
-
 def main(p):
 
     if not os.path.exists(p):
         os.makedirs(p)
 
-    q = Queue()
-    qo = Queue()
-
     while 1:
 
         log("start working..")
-        send("ok")
 
-        if q.empty():
-            msg = read()
-            if not msg:
-                break
-
-        else:
-            msg = q.get(False)
+        msg = read()
+        if not msg:
+            break
 
         log("get message: " + msg)
 
@@ -108,42 +98,19 @@ def main(p):
                 send("ok")
 
             else:
-                read_json(p, args, q, qo)
+                read_json(p, args)
 
         else:
-            qo.put(msg)
+            send("ok")
 
 
-def read_json(p, args, q, qo):
+def read_json(p, args):
+    cmds = []
     for x in get_command(p, args):
+        cmds.append(x)
 
-        log("send to api: " + x)
-
-        send(x)
-
-        # get respone
-        while 1:
-
-            if qo.empty():
-                msg = read()
-                if not msg:
-                    break
-            else:
-                msg = qo.get(False)
-
-            if msg != "ok":
-                log("add to queue q({}) : {}".format(q.qsize(), msg))
-
-                q.put(msg)
-                if q.qsize() > 3:
-                    break
-
-                send("ok")
-
-            else:
-                log("response from api: " + msg)
-                break
-
+    log("send to api: " + "\t".join(cmds))
+    send("\t".join(cmds))
 
 if __name__ == "__main__":
     main(sys.argv[1])
