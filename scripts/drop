@@ -153,6 +153,8 @@ start() {
     banner
     setenv
 
+    docker ps -a |awk '{print $1}'|xargs docker rm -f >/dev/null 2>&1
+
     if [ ! -d ${DROP_LOG_DIR} ]; then
             mkdir -p "${DROP_LOG_DIR}"
     fi

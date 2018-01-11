@@ -64,25 +64,31 @@ def get_ppool_stat(node):
     ppool = {}
     stats = []
     for proc in ps.process_iter():
-        pinfo = proc.as_dict(attrs=["pid", "name", "cmdline",
+        try:
+
+            pinfo = proc.as_dict(attrs=["pid", "name", "cmdline",
                                     "cpu_percent", "memory_percent"])
 
-        if pinfo["cmdline"] is not None:
-            if pinfo["cmdline"][1:3] == ["run", "--rm"]:
+            if pinfo["cmdline"] is not None:
+                if pinfo["cmdline"][1:3] == ["run", "--rm"]:
 
-                # get identity group
-                if "GROUP=" in pinfo["cmdline"][13]:
-                    pname = pinfo["cmdline"][13][6:]
-                else:
-                    # not group identity -> get image name
-                    pname = pinfo["cmdline"][14]
+                    # get identity group
+                    if "GROUP=" in pinfo["cmdline"][13]:
+                        pname = pinfo["cmdline"][13][6:]
+                    else:
+                        # not group identity -> get image name
+                        pname = pinfo["cmdline"][14]
 
-                cnt, pp, mp = ppool.get(pname,
-                                        [0, pinfo["cpu_percent"],
-                                         pinfo["memory_percent"]])
+                    cnt, pp, mp = ppool.get(pname,
+                                            [0, pinfo["cpu_percent"],
+                                             pinfo["memory_percent"]])
 
-                ppool[pname] = [cnt + 1, pp + pinfo["cpu_percent"],
-                                mp + pinfo["memory_percent"]]
+                    ppool[pname] = [cnt + 1, pp + pinfo["cpu_percent"],
+                                    mp + pinfo["memory_percent"]]
+
+        except Exception as e:
+            log("error: {}".format(e))
+
 
     _trace = '{{"tag":"ppool_{}", "values":{}, "labels":{} }}'
 
@@ -120,11 +126,11 @@ def get_node_stat(node):
                   ps.cpu_count(),
                   cpu_p,
                   mem[0]/(1024*1024),
-                  mem[2],
+                  100 - mem[2],
                   disk[0]/(1024*1024),
                   disk[3],
                   len(ps.net_connections(kind="all")),
-                  _trace.format(node, [cpu_p, mem[2], disk[3]],
+                  _trace.format(node, [cpu_p, 100 - mem[2], disk[3]],
                                        json.dumps(["cpu", "ram", "disk"]))
                    )
 
