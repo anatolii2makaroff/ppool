@@ -28,3 +28,6 @@ hostnamectl set-hostname x.x.x
 FIX (fix in new docker version)
     docker ps -a |awk '{print $1}'|xargs docker rm -f
 
+logrotate
+* * * * * ./scripts/droprotate >/dev/null 2>&1
+

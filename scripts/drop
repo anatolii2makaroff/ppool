@@ -25,9 +25,15 @@ banner() {
 
 }
 
-
+ERL_HOME=/opt/erlang/20/bin/
 DROP_HOME="$(dirname $(realpath $0))/../"
 HOSTNAME=`env hostname -f`
+
+
+if [ "x" != "x$ERL_HOME" ] 
+then
+    export PATH=${ERL_HOME}:$PATH
+fi
 
 if [ "x" = "x$NODE_NAME" ] 
 then
