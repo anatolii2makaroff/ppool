@@ -49,7 +49,7 @@ def main(p, node, t):
         #  set clester network balancer
         #  get main node floating ip
         log("get main node..")
-        m_nodes = get_active_nodes(p)
+        m_nodes, m_cnt = get_active_nodes(p)
 
         log("get active nodes: {}".format(m_nodes))
 
@@ -57,6 +57,7 @@ def main(p, node, t):
             m_node = None
         else:
             m_node = m_nodes[0]
+            m_cnt = m_cnt/len(m_nodes)
 
         if m_node != node:
             log("i'm not main node {} ..set rserv".format(m_node))
@@ -65,6 +66,12 @@ def main(p, node, t):
 
             continue
         else:
+
+            if m_cnt < 9:
+                log("main node {} but not enough metrics {}".format(m_node, m_cnt))
+                time.sleep(int(t))
+                continue
+
             log("main node {} ..set admin".format(m_node))
 
         if time.time() - tb < int(t) * 5:
@@ -91,7 +98,7 @@ def main(p, node, t):
 
         log("start decrease flows..")
 
-        decrease_ppools(pstats, m_nodes)
+        decrease_ppools(p, pstats, m_nodes)
 
         send("ok")
         log("tick..")
@@ -103,11 +110,12 @@ def connect(p):
     return sqlite3.connect(p + '/db/node_collector.db', timeout=3)
 
 
-def decrease_ppools(pstats, m_nodes):
+def check_add_resourse(p, name, cnt, node, is_distrib=False):
 
-    """
+    log("....check_add_resourse {} {} {} {}".format(name, cnt, node, is_distrib))
+
     for f in get_flows(p):
-        f_name, f_active, f_ppools, f_count, f_ram = f.get("name"), f.get("active"),\
+        f_name, f_ppools, f_count, f_ram = f.get("name"),\
             [[y.get("cmd").split("::")[3] for y in x.get("cook")
               if y.get("cmd").split("::")[2] == "start_pool"]
              for x in f.get("scenes")
@@ -120,31 +128,79 @@ def decrease_ppools(pstats, m_nodes):
               if y.get("cmd").split("::")[2] == "start_all_workers"]
              for x in f.get("scenes")
              if x["name"] == f.get("start_scene")][0]
-    """
+
+        get_min_stats(p, f_ppools)
+
+        log("....find in conf {} {} {}".format(name, f_name, f_ppools))
+
+        if name in f_ppools:
+
+            v = get_load_nodes(p)
+            for n, l in v.iteritems():
+
+                if is_distrib:
+
+                    if n == node:
+                        continue
+
+                    _ram_need = sum(map(mul, f_ram, f_count))
+
+                    log("....load nodes {} {} {}".format(n, l, _ram_need))
+
+                    log("....try add all flow {} {} {}".format(n, f_name, _ram_need))
+
+                    if l[1] > _ram_need and l[0] < 85:
+                        send("system::{}::{}::start".format(n, f_name))
+                        break
+
+                    else:
+                        continue
+
+                else:
+
+                    idx = f_ppools.index(name)
+                    _ram_need = f_ram[idx] * cnt
+
+                    log("....load node {} {} {}".format(n, l, _ram_need))
+
+                    if l[1] > _ram_need and l[0] < 85:
+                        send("system::{}::change_limit::{}::{}".format(node, name, cnt))
+                        break
+
+                    else:
+                        check_add_resourse(p, name, cnt, node, True)
+                        break
+
+
+def decrease_ppools(p, pstats, m_nodes):
 
     for k, v in pstats.iteritems():
+
+        log("==== start add {} in {} ".format(k, m_nodes))
 
         if k not in m_nodes:
             continue
 
-        log("change ppool : {} {}".format(k, v))
+        log("..change ppool : {} {}".format(k, v))
 
         for i in v:
+            log("..==check {}".format(i[0]))
             if i[2] > 3:
                 i[2] = 3
-                log("too big : {} set {}".format(k, i[2]))
+                log("..too big : {} set {}".format(i[0], i[2]))
 
             if int(i[1] + i[2]) > 50:
-                log("max 50 proc limit : {}".format(k))
+                log("..max 50 proc limit : {}".format(k))
+                check_add_resourse(p, i[0], int(i[1] + i[2]), k, True)
+
                 send("ok")
                 continue
 
             if i[2] > 0:
-                send("system::{}::change_limit::{}::{}".format(k, i[0], int(i[1] + i[2])))
-                log("add ppool : {} {}".format(k, i[0]))
+                check_add_resourse(p, i[0], int(i[1] + i[2]), k, False)
             else:
                 send("system::{}::stop_all_workers::{}::{}".format(k, i[0], int(i[1] + i[2])))
-                log("stop ppool : {} {}".format(k, i[0]))
+                log("..stop ppool : {} {}".format(k, i[0]))
 
 
 def start_init_flows(p, pstats, m_nodes):
@@ -247,7 +303,7 @@ def get_active_nodes(p):
     con = connect(p)
     cur = con.cursor()
 
-    cur.execute("""select s.node, s.date
+    cur.execute("""select s.node, s.date, count(1)
                          from node_stat s left join (select node, active, MAX(date) from node_list
                                                       where date > DATETIME('NOW', '-1 minutes')
                                                     ) l
@@ -260,13 +316,14 @@ def get_active_nodes(p):
                 """)
 
     data = []
-
+    cnt = 0
     for row in cur:
         data.append(row[0])
+        cnt += row[2]
 
     con.close()
 
-    return data
+    return data, cnt
 
 
 def get_stats_decrease(p):
@@ -277,7 +334,8 @@ def get_stats_decrease(p):
 
         select t.node, t.name, t.cnt,
                t.ok/(60*1000/t.time),
-               t.ok, t.nm, t.timeo, t.err
+               t.ok, 1000, --t.nm,
+               t.timeo, t.err
 
           from (
              select s.node, l.name
@@ -341,6 +399,48 @@ def get_stats_decrease(p):
             data[row[0]] = [d]
         else:
             data.get(row[0]).append(d)
+
+    con.close()
+
+    return data
+
+
+def get_min_stats(p, names):
+    con = connect(p)
+    cur = con.cursor()
+
+    log("...----start rebalance flow {}".format(names))
+
+    cur.execute("""
+
+        select node, SUM(pcpu), SUM(pram), ncpu, nram, cpu_count, ram_count
+                from (
+        select s.node, s.name
+               ,AVG(s.cpu_percent) pcpu, AVG(s.ram_percent)*ns.ram_count/100 pram
+               ,AVG(ns.cpu_percent) ncpu, (100 - AVG(ns.ram_percent))*ns.ram_count/100 nram
+               ,ns.cpu_count, ns.ram_count
+
+             from ppool_list l, ppool_stat s,
+                  node_stat ns
+             where l.node = s.node
+                 and l.name = s.name
+                 and s.node = ns.node
+                 and l.date > DATETIME('NOW', '-1 minutes')
+                 and l.name in ({})
+             group by s.node, s.name
+                HAVING MAX(s.count) < 20
+        ) group by node
+        order by ncpu desc
+
+               """.format(','.join(['?']*len(names))), names)
+
+    data = {}
+    for row in cur:
+        print(row)
+        if data.get(row[0]) is None:
+            data[row[0]] = [row]
+        else:
+            data[row[0]].append(row)
 
     con.close()
 
