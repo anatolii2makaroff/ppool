@@ -1,6 +1,6 @@
                                                                                 
- IFACE="eno16777728"                                                            
- VIP="10.128.35.71"                                                             
+ IFACE="ens32"                                                            
+ VIP="10.128.35.70"                                                             
                                                                                 
        
  ifconfig ${IFACE}:0 down

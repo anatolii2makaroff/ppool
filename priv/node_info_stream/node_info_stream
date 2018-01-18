@@ -7,6 +7,7 @@
 import sys
 import time
 import psutil as ps
+import os
 import json
 
 
@@ -110,9 +111,11 @@ def get_ppool_stat(node):
 
 
 def get_node_stat(node):
-    mem = ps.virtual_memory()
+    mem = map(int, os.popen('free -t -m').readlines()[1].split()[1:])  # ps.virtual_memory()
     disk = ps.disk_usage("/")
     cpu_p = ps.cpu_percent()
+
+    print(mem)
 
     _trace = '{{"tag":"node_{}", "values":{}, "labels":{} }}'
 
@@ -123,12 +126,12 @@ def get_node_stat(node):
                   node,
                   ps.cpu_count(),
                   cpu_p,
-                  mem[0]/(1024*1024),
-                  100 - mem[2],
+                  mem[0],
+                  (1 - mem[5]*1.0/mem[0])*100,
                   disk[0]/(1024*1024),
                   disk[3],
                   len(ps.net_connections(kind="all")),
-                  _trace.format(node, [cpu_p, 100 - mem[2], disk[3]],
+                  _trace.format(node, [cpu_p, (1 - mem[5]*1.0/mem[0])*100, disk[3]],
                                        json.dumps(["cpu", "ram", "disk"]))
                    )
 

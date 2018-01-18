@@ -413,12 +413,12 @@ def get_min_stats(p, names):
 
     cur.execute("""
 
-        select node, SUM(pcpu), SUM(pram), ncpu, nram, cpu_count, ram_count
+        select node, SUM(pcpu), SUM(pram), ncpu, nram, cpu_count, ram_count, ram_percent
                 from (
         select s.node, s.name
                ,AVG(s.cpu_percent) pcpu, AVG(s.ram_percent)*ns.ram_count/100 pram
                ,AVG(ns.cpu_percent) ncpu, (100 - AVG(ns.ram_percent))*ns.ram_count/100 nram
-               ,ns.cpu_count, ns.ram_count
+               ,ns.cpu_count, ns.ram_count, ns.ram_percent
 
              from ppool_list l, ppool_stat s,
                   node_stat ns
