@@ -115,8 +115,6 @@ def get_node_stat(node):
     disk = ps.disk_usage("/")
     cpu_p = ps.cpu_percent()
 
-    print(mem)
-
     _trace = '{{"tag":"node_{}", "values":{}, "labels":{} }}'
 
     node_stat = '{{"tag":"node_stat", "node": "{}", "cpu_count": {},"cpu_percent": {},\
