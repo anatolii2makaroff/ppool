@@ -209,16 +209,10 @@ cmd() {
 }
 
 
-install() {
 
-        echo "### install .. ######"
-        for i in "${arr[@]}"
-        do
-            
-            echo "###  host $i ####"
-
-            if [ "$i" = "$HOSTNAME" ]; then 
-               rm -rf /opt/drop && git clone $PPOOL_REPO /opt/drop
+local_install() {
+        echo "### local install $HOSTNAME .. ######"
+ 
                cd /opt/drop && make clean && make install
                yum install -y docker && yum install python-pip
                pip install psutil
@@ -230,9 +224,27 @@ install() {
                ## create symlink
                ln -s /opt/proj/ppool/scripts/drop /usr/bin/drop
                ln -s /opt/proj/ppool/scripts/dropctl /usr/bin/dropctl
-               
+ 
+
+}
+
+install() {
+
+        echo "### install .. ######"
+        for i in "${arr[@]}"
+        do
+            
+            echo "###  host $i ####"
+
+            if [ "$i" = "$HOSTNAME" ]; then 
+               rm -rf /opt/drop && git clone $PPOOL_REPO /opt/drop
+               local_install
+              
             else
-              ssh -t root@$i '/opt/drop/scripts/dropctl install' 
+
+              ssh -t root@$i 'rm -rf /opt/drop && git clone '$PPOOL_REPO' /opt/drop'
+              ssh -t root@$i '/opt/drop/scripts/dropctl local_install' 
+
             fi 
 
         done
@@ -296,6 +308,8 @@ if [ $# -eq 0 ]
   else
       if [ $1 = "install" ]; then 
           install $2
+      elif [ $1 = "local_install" ]; then 
+          local_install
       elif [ $1 = "list" ]; then 
           list
       elif [ $1 = "sync" ]; then 
