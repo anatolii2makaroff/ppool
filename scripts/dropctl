@@ -219,10 +219,20 @@ install() {
 
             if [ "$i" = "$HOSTNAME" ]; then 
                rm -rf /opt/drop && git clone $PPOOL_REPO /opt/drop
-               yum install docker
+               cd /opt/drop && make clean && make install
+               yum install -y docker && yum install python-pip
+               pip install psutil
+               echo "* * * * * /opt/drop/scripts/droprotate >/dev/null 2>&1" >> /var/spool/cron/root
+               cp /opt/drop/conf/drop.service /etc/systemd/system/ && systemctl daemon-reload
+               systemctl start docker
+               systemctl enable drop
+
+               ## create symlink
+               ln -s /opt/proj/ppool/scripts/drop /usr/bin/drop
+               ln -s /opt/proj/ppool/scripts/dropctl /usr/bin/dropctl
                
             else
-               ssh -t root@$i 'echo "'$1'"|xargs sh -c ' 
+              ssh -t root@$i '/opt/drop/scripts/dropctl install' 
             fi 
 
         done
