@@ -1,0 +1,309 @@
+#!/bin/sh
+
+banner() {
+
+    echo "                    ___           ___           ___   "
+    echo "     _____         /\  \         /\  \         /\  \  "
+    echo "    /::\  \       /::\  \       /::\  \       /::\  \ "
+    echo "   /:/\:\  \     /:/\:\__\     /:/\:\  \     /:/\:\__\ "
+    echo "  /:/  \:\__\   /:/ /:/  /    /:/  \:\  \   /:/ /:/  / "
+    echo " /:/__/ \:|__| /:/_/:/__/___ /:/__/ \:\__\ /:/_/:/  /  "
+    echo " \:\  \ /:/  / \:\/:::::/  / \:\  \ /:/  / \:\/:/  /   "
+    echo "  \:\  /:/  /   \::/~~/~~~~   \:\  /:/  /   \::/__/    "
+    echo "   \:\/:/  /     \:\~~\        \:\/:/  /     \:\  \    "
+    echo "    \::/  /       \:\__\        \::/  /       \:\__\   "
+    echo "     \/__/         \/__/         \/__/         \/__/   "
+    echo " "
+    echo " "
+    echo " "
+    echo "     Distribued Reliable Operations Platform           "
+    echo " "
+    echo " "
+    echo " "
+
+
+
+}
+
+
+## CLUSTER HOSTS ##
+
+declare -a arr=("migration-test-arc.egron.test" 
+                "migr-init-01.egron.prod" 
+                )
+
+##################
+
+PPOOL_REPO="https://github.com/anatolii2makaroff/ppool.git"
+
+ERL_HOME=/opt/erlang/20/bin/
+DROP_HOME="$(dirname $(realpath $0))/../"
+HOSTNAME=`env hostname -f`
+DROP_VAR_DIR=/var/lib/drop
+
+if [ "x" != "x$ERL_HOME" ] 
+then
+    export PATH=${ERL_HOME}:$PATH
+fi
+
+
+help() {
+
+    banner  
+
+    echo "install - install from repo"
+    echo "list - list of cluster nodes"
+    echo "sync - synchronize nodes"
+    echo "dev_update - clone and make ppool"
+    echo "make_priv - rebuild priv images"
+    echo "start - start drop on nodes"
+    echo "stop - stop drop on nodes"
+    echo "restart - restart drop on nodes"
+    echo "status - status drop on nodes"
+    echo "cmd - run cmd '' on nodes"
+    echo ""
+
+}
+
+
+list() {
+
+        ## list of nodes
+        for i in "${arr[@]}"
+        do
+            echo "$i"
+        done
+}
+
+sync() {
+
+    ## make .hosts.erlang
+        echo ""
+        echo -n "" > $DROP_HOME/.hosts.erlang
+    
+        for i in "${arr[@]}"
+        do
+            echo "'$i'." >> $DROP_HOME/.hosts.erlang
+        done
+        echo "" >> $DROP_HOME/.hosts.erlang
+
+        echo "### .hosts.erlang updated .. ###"
+        cat $DROP_HOME/.hosts.erlang
+        echo "###############################"
+
+        echo ""
+        echo "### copy to all hosts .. ######"
+        for i in "${arr[@]}"
+        do
+            echo "###  host $i ####"
+
+
+            if [ "$i" = "$HOSTNAME" ]; then 
+               echo "ok"
+            else
+               scp $DROP_HOME/scripts/dropctl root@$i:$DROP_HOME/scripts/
+               scp $DROP_HOME/.hosts.erlang root@$i:$DROP_HOME
+               scp $DROP_VAR_DIR/flows/* root@$i:$DROP_VAR_DIR/flows/
+            fi 
+
+        done
+ 
+        echo "###############################"
+        
+}
+
+
+
+start() {
+
+        echo "### start drop .. ######"
+        for i in "${arr[@]}"
+        do
+            echo "###  host $i ####"
+
+
+            if [ "$i" = "$HOSTNAME" ]; then 
+               systemctl start drop
+            else
+               ssh -t root@$i 'systemctl start drop' 
+            fi 
+
+        done
+
+
+}
+
+
+stop() {
+
+        echo "### stop drop .. ######"
+        for i in "${arr[@]}"
+        do
+            echo "###  host $i ####"
+
+
+            if [ "$i" = "$HOSTNAME" ]; then 
+               systemctl stop drop
+            else
+               ssh -t root@$i 'systemctl stop drop' 
+            fi 
+
+        done
+
+
+}
+
+
+restart() {
+
+        echo "### restart drop .. ######"
+        for i in "${arr[@]}"
+        do
+            echo "###  host $i ####"
+
+
+            if [ "$i" = "$HOSTNAME" ]; then 
+               systemctl restart drop
+            else
+               ssh -t root@$i 'systemctl restart drop' 
+            fi 
+
+        done
+
+}
+
+status() {
+
+        echo "### status drop .. ######"
+        for i in "${arr[@]}"
+        do
+            
+            echo "###  host $i ####"
+
+            if [ "$i" = "$HOSTNAME" ]; then 
+               systemctl status drop |head -n 3
+            else
+               ssh -t root@$i 'systemctl status drop |head -n 3' 
+            fi 
+
+        done
+
+}
+
+cmd() {
+
+        echo "### exec cmd .. ######"
+        for i in "${arr[@]}"
+        do
+            
+            echo "###  host $i ####"
+
+            if [ "$i" = "$HOSTNAME" ]; then 
+               echo "$1"|xargs sh -c 
+            else
+               ssh -t root@$i 'echo "'$1'"|xargs sh -c ' 
+            fi 
+
+        done
+
+}
+
+
+install() {
+
+        echo "### install .. ######"
+        for i in "${arr[@]}"
+        do
+            
+            echo "###  host $i ####"
+
+            if [ "$i" = "$HOSTNAME" ]; then 
+               rm -rf /opt/drop && git clone $PPOOL_REPO /opt/drop
+               yum install docker
+               
+            else
+               ssh -t root@$i 'echo "'$1'"|xargs sh -c ' 
+            fi 
+
+        done
+
+}
+
+
+
+dev_update() {
+
+        echo "### build ppool .. ######"
+        for i in "${arr[@]}"
+        do
+
+            if [ "$i" = "$HOSTNAME" ]; then 
+               cd $DROP_HOME && git pull && make clean && make
+            else
+               ssh -t root@$i 'cd '$DROP_HOME' && git pull && make clean && make' 
+            fi 
+
+        done
+
+        make_priv
+ 
+
+}
+
+
+make_priv() {
+
+        echo "### make priv .. ######"
+        for i in "${arr[@]}"
+        do
+
+            if [ "$i" = "$HOSTNAME" ]; then 
+
+               cd $DROP_HOME/priv/python2 && make clean && make build 
+               cd $DROP_HOME/priv/node_collector && make clean && make build 
+               cd $DROP_HOME/priv/flower && make clean && make build 
+               cd $DROP_HOME/priv/flower_sc_stream && make clean && make build 
+               cd $DROP_HOME/priv/rrd && make clean && make build 
+
+            else
+
+               ssh -t root@$i 'cd '$DROP_HOME'/priv/python2 && make clean && make build'
+               ssh -t root@$i 'cd '$DROP_HOME'/priv/node_collector && make clean && make build'
+               ssh -t root@$i 'cd '$DROP_HOME'/priv/flower && make clean && make build'
+               ssh -t root@$i 'cd '$DROP_HOME'/priv/flower_sc_stream && make clean && make build'
+               ssh -t root@$i 'cd '$DROP_HOME'/priv/rrd && make clean && make build'
+
+            fi 
+
+        done
+ 
+}
+
+
+if [ $# -eq 0 ] 
+  then
+      help    
+  else
+      if [ $1 = "install" ]; then 
+          install $2
+      elif [ $1 = "list" ]; then 
+          list
+      elif [ $1 = "sync" ]; then 
+          sync
+      elif [ $1 = "dev_update" ]; then 
+          dev_update
+      elif [ $1 = "make_priv" ]; then 
+          make_priv
+      elif [ $1 = "start" ]; then 
+          start
+      elif [ $1 = "stop" ]; then 
+          stop
+      elif [ $1 = "restart" ]; then 
+          restart
+      elif [ $1 = "status" ]; then 
+          status
+      elif [ $1 = "cmd" ]; then 
+          cmd "$2"
+      fi      
+fi
+

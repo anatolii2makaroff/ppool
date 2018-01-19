@@ -124,6 +124,8 @@ help() {
     echo "start - start drop"
     echo "stop  - stop drop"
     echo "remsh - remote shell"
+    echo ""
+
 
 }
 
@@ -195,6 +197,7 @@ start() {
         -env DROP_HOME ${DROP_HOME} \
         -env DROP_VAR_DIR ${DROP_VAR_DIR} \
         -env DROP_LOG_DIR ${DROP_LOG_DIR} \
+        -noshell \
         -s main
 
         #-noinput

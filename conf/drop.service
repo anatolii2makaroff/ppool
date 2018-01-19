@@ -8,9 +8,12 @@ Type=simple
 User=root
 Group=root
 
-ExecStart=/opt/drop start
+ExecStart=/opt/proj/ppool/scripts/drop start
+ExecStop=/opt/proj/ppool/scripts/drop stop
+KillMode=process
+
 Restart=on-failure
+
 
 [Install]
 WantedBy=multi-user.target
-Alias=drop.service
