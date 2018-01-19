@@ -212,8 +212,8 @@ cmd() {
 
 local_install() {
         echo "### local install $HOSTNAME .. ######"
- 
-               cd /opt/drop && make clean && make install
+
+               cd /opt/drop && make clean && make
                yum install -y docker && yum install python-pip
                pip install psutil
                echo "* * * * * /opt/drop/scripts/droprotate >/dev/null 2>&1" >> /var/spool/cron/root
