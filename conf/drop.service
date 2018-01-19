@@ -8,8 +8,8 @@ Type=simple
 User=root
 Group=root
 
-ExecStart=/opt/drop/ppool/scripts/drop start
-ExecStop=/opt/drop/ppool/scripts/drop stop
+ExecStart=/opt/drop/scripts/drop start
+ExecStop=/opt/drop/scripts/drop stop
 KillMode=process
 
 Restart=on-failure
