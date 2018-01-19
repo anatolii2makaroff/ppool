@@ -292,7 +292,7 @@ def start_init_flows(p, pstats, m_nodes):
 
                     first_start = False
 
-                else:
+                elif set([x[1] for x in v]).issubset(set(f_ppools)):
                     log("on node {} flow {} is NOT started".format(k, f_name))
 
                     # force clear
