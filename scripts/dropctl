@@ -41,6 +41,9 @@ DROP_HOME="$(dirname $(realpath $0))/../"
 HOSTNAME=`env hostname -f`
 DROP_VAR_DIR=/var/lib/drop
 
+echo "$DROP_HOME"
+
+
 if [ "x" != "x$ERL_HOME" ] 
 then
     export PATH=${ERL_HOME}:$PATH
@@ -222,8 +225,8 @@ local_install() {
                systemctl enable drop
 
                ## create symlink
-               ln -s /opt/proj/ppool/scripts/drop /usr/bin/drop
-               ln -s /opt/proj/ppool/scripts/dropctl /usr/bin/dropctl
+               ln -s /opt/drop/scripts/drop /usr/bin/drop
+               ln -s /opt/drop/scripts/dropctl /usr/bin/dropctl
  
 
 }
