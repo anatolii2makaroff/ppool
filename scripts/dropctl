@@ -57,7 +57,7 @@ help() {
     echo "install - install from repo"
     echo "list - list of cluster nodes"
     echo "sync - synchronize nodes"
-    echo "dev_update - clone and make ppool"
+    echo "update - clone and make ppool"
     echo "make_priv - rebuild priv images"
     echo "start - start drop on nodes"
     echo "stop - stop drop on nodes"
@@ -256,7 +256,7 @@ install() {
 
 
 
-dev_update() {
+update() {
 
         echo "### build ppool .. ######"
         for i in "${arr[@]}"
@@ -317,8 +317,8 @@ if [ $# -eq 0 ]
           list
       elif [ $1 = "sync" ]; then 
           sync
-      elif [ $1 = "dev_update" ]; then 
-          dev_update
+      elif [ $1 = "update" ]; then 
+          update
       elif [ $1 = "make_priv" ]; then 
           make_priv
       elif [ $1 = "start" ]; then 
