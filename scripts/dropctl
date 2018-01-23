@@ -266,6 +266,12 @@ install() {
 
 
 
+
+local_update() {
+    cd $DROP_HOME && git pull && make clean && make
+ 
+}
+
 update() {
 
         echo "### build ppool  $DROP_HOME.. ######"
@@ -273,15 +279,12 @@ update() {
         do
 
             if [ "$i" = "$HOSTNAME" ]; then 
-               cd $DROP_HOME && git pull && make clean && make
+               local_update
             else
-               ssh -t root@$i 'cd '$DROP_HOME' && git pull && make clean && make' 
+               ssh -t root@$i '/opt/drop/scripts/dropctl local_update'
             fi 
 
         done
-
-        make_priv
- 
 
 }
 
@@ -329,6 +332,8 @@ if [ $# -eq 0 ]
           sync
       elif [ $1 = "update" ]; then 
           update
+      elif [ $1 = "local_update" ]; then 
+          local_update
       elif [ $1 = "make_priv" ]; then 
           make_priv
       elif [ $1 = "start" ]; then 
