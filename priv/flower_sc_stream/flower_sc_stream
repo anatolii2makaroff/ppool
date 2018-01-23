@@ -69,6 +69,8 @@ def main(p, node, t):
 
             if m_cnt < 9:
                 log("main node {} but not enough metrics {}".format(m_node, m_cnt))
+                send("ok")
+
                 time.sleep(int(t))
                 continue
 
