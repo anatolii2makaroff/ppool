@@ -328,7 +328,7 @@ def get_load_nodes(p):
     cur = con.cursor()
 
     cur.execute(""" select * from(
-                     select s.node, AVG(s.cpu_percent) cpu, (1 - AVG(s.ram_percent)/100) * s.ram_count ram
+                     select s.node, MAX(s.cpu_percent) cpu, (1 - MAX(s.ram_percent)/100) * s.ram_count ram
                          from node_stat s left join (select node, active, MAX(date) from node_list
                                                       where date > DATETIME('NOW', '-1 minutes')
                                                     ) l
@@ -470,7 +470,7 @@ def get_min_stats(p, names):
         select s.node, s.name
                ,AVG(s.cpu_percent) pcpu, AVG(s.ram_percent)*ns.ram_count/100 pram
                ,AVG(ns.cpu_percent) ncpu, (100 - AVG(ns.ram_percent))*ns.ram_count/100 nram
-               ,ns.cpu_count, ns.ram_count, ns.ram_percent, ROUND(ns.cpu_count/100) as rnd
+               ,ns.cpu_count, ns.ram_count, ns.ram_percent, ROUND(ns.cpu_count/10) as rnd
 
              from ppool_list l, ppool_stat s,
                   node_stat ns
