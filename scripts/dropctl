@@ -219,7 +219,14 @@ local_install() {
                cd /opt/drop && make clean && make
                yum install -y docker && yum install python-pip
                pip install psutil
-               echo "* * * * * /opt/drop/scripts/droprotate >/dev/null 2>&1" >> /var/spool/cron/root
+
+               if grep -q droprotate /var/spool/cron/root; then
+                  echo "cron exist"
+               else
+                 echo "* * * * * /opt/drop/scripts/droprotate >/dev/null 2>&1" >> /var/spool/cron/root
+                 echo "cron ok"
+               fi
+               
                cp /opt/drop/conf/drop.service /etc/systemd/system/ && systemctl daemon-reload
                systemctl start docker
                systemctl enable drop
