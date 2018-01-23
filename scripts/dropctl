@@ -225,6 +225,9 @@ local_install() {
                systemctl enable drop
 
                ## create symlink
+               rm -f /usr/bin/drop
+               rm -f /usr/bin/dropctl
+
                ln -s /opt/drop/scripts/drop /usr/bin/drop
                ln -s /opt/drop/scripts/dropctl /usr/bin/dropctl
  
