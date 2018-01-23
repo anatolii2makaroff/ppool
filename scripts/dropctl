@@ -268,7 +268,7 @@ install() {
 
 update() {
 
-        echo "### build ppool .. ######"
+        echo "### build ppool  $DROP_HOME.. ######"
         for i in "${arr[@]}"
         do
 
