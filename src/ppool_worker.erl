@@ -30,6 +30,7 @@
 
          set_status_worker/3,
          get_result_worker/2,
+         sub_result_status/2,
 
          subscribe/2,
          unsubscribe/2,
@@ -195,6 +196,8 @@ stream_all_workers(Name, Msg) ->
 set_status_worker(Name, Pid, S) ->
     gen_server:cast(Name, {set_status_worker, Pid, S}).
 
+sub_result_status(Name, Pid, S) ->
+    gen_server:cast(Name, {sub_result_status, Pid, S}).
 
 get_result_worker(Name, Msg) ->
     gen_server:call(Name, {get_result_worker, Msg}).
