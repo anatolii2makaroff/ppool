@@ -4,6 +4,7 @@ INSTALL
 
 deps:
   gcc
+  openssl-dev
   erlang
   python2
   python-pip
