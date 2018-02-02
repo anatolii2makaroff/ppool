@@ -19,6 +19,7 @@
          cast_worker/3,
          dcast_worker/3,
          dacast_worker/3,
+         cast_worker_defer/2,
 
          call_map_workers/2,
          call_workers/2,
@@ -30,7 +31,6 @@
 
          set_status_worker/3,
          get_result_worker/2,
-         sub_result_status/2,
 
          subscribe/2,
          unsubscribe/2,
@@ -160,6 +160,9 @@ dcast_worker(Name, Ref, Msg) ->
 dacast_worker(Name, Ref, Msg) ->
     gen_server:cast(Name, {cast_worker, {dmsga, Ref, Msg}}).
 
+cast_worker_defer(Name, Msg) ->
+    gen_server:call(Name, {cast_worker_defer, Msg}).
+
 
 
 call_map_workers(Name, Msg) ->
@@ -196,8 +199,6 @@ stream_all_workers(Name, Msg) ->
 set_status_worker(Name, Pid, S) ->
     gen_server:cast(Name, {set_status_worker, Pid, S}).
 
-sub_result_status(Name, Pid, S) ->
-    gen_server:cast(Name, {sub_result_status, Pid, S}).
 
 get_result_worker(Name, Msg) ->
     gen_server:call(Name, {get_result_worker, Msg}).
@@ -326,6 +327,36 @@ handle_call({call_cast_worker, Msg}, _From, #state{workers_pids=Pids}=State) ->
 
       end;
 
+
+handle_call({cast_worker_defer, Msg}, {From,_}, #state{name=Name,
+                                                   workers_pids=Pids}=State) ->
+    
+    Free=maps:filter(fun(_K, V) -> V=/=2 end ,Pids),
+
+    ?Debug4({cast_worker_defer, From, self(), Msg, Free}),
+
+    case maps:keys(Free) of
+          [] -> 
+
+                %% notify system 
+                 Msg2=erlang:list_to_binary(["system::warning::nomore::", 
+                      atom_to_list(node()),"::",
+                      atom_to_list(Name), "\n"]),
+                 ppool_worker:cast_worker(?NO_MORE_PPOOL, Msg2),
+                %%%%%%
+
+                 [P0|_] = maps:keys(Pids),
+                    R=gen_server:cast(P0, {msg_defer, no, Msg, From}),
+
+
+              {reply, {ok, R}, State};
+
+          [P|_] -> 
+            R=gen_server:cast(P, {msg_defer, no, Msg, From}),
+
+              {reply, {ok, R}, State}
+
+      end;
 
 
 handle_call({call_workers, Msg}, _From, #state{workers_pids=Pids}=State) ->

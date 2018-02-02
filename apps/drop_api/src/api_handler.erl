@@ -1,95 +1,92 @@
 -module(api_handler).
+-behaviour(cowboy_loop_handler).
 
-%% Standard callbacks.
 -export([init/3]).
--export([allowed_methods/2]).
--export([content_types_provided/2]).
--export([content_types_accepted/2]).
-
--export([create_req/2, 
-         create_res/2
-        ]).
+-export([info/3]).
+-export([terminate/3]).
 
 -include("api_handler.hrl").
 
-%% Custom callbacks
-
-init(_Transport, _Req, []) ->
-	{upgrade, protocol, cowboy_rest}.
-
-allowed_methods(Req, State) ->
-	{[<<"GET">>, <<"POST">>], Req, State}.
-
-content_types_provided(Req, State) ->
-	{[
-		{{<<"application">>, <<"octet-stream">>, []}, create_res}
-	], Req, State}.
-
-content_types_accepted(Req, State) ->
-	{[{{<<"application">>, <<"octet-stream">>, []}, create_req}],
-		Req, State}.
 
 
+init(_, Req, State) ->
 
-%% handle GET
-%%
+	{Method, Req2} = cowboy_req:method(Req),
+	 HasBody = cowboy_req:has_body(Req2),
+	
+	  {ok, Req3} = create_req(Method, HasBody, Req2),
 
-create_res(Req, State) ->
-
-	case cowboy_req:binding(flow, Req) of
-		{undefined, Req2} ->
-
-	      {<<"no flow\n">>, Req2, State};
-
-		{Flow, Req2} ->
-            ?Debug2({from_get, Flow}),
-
-	         {<<"flow">>, Req2, State};
-
-        _Any  ->
-            ?Debug2({bad_req, _Any}),
-
-	         {<<"bad req\n">>, Req, State}
+	{loop, Req3, State, 5000}.
 
 
-	end.
+create_req(<<"POST">>, true, Req) ->
+	{Flow, Req2} = cowboy_req:binding(flow, Req),
+        echo(Flow, Req2);
+
+create_req(<<"POST">>, false, Req) ->
+	cowboy_req:reply(400, [], <<"Missing body.">>, Req);
+
+create_req(_, _, Req) ->
+	%% Method not allowed.
+	cowboy_req:reply(405, Req).
 
 
-%% handle POST
-%%
+echo(undefined, Req) ->
+	cowboy_req:reply(400, [], <<"Missing flow name">>, Req);
 
-create_req(Req, State) ->
+echo(Flow, Req) ->
 
-	case cowboy_req:binding(flow, Req) of
+    {ok, Body, Req2} = cowboy_req:body(Req),
 
-		{undefined, Req2} ->
-            {false, Req2, State};
+    ?Debug2({post_req, erlang:binary_to_atom(Flow, latin1), Body}),
 
-		{Flow, Req2} ->
+    Pid = pg2:get_closest_pid(erlang:binary_to_atom(Flow, latin1)),
 
-            {ok, Body, Req3} = cowboy_req:body(Req2),
+    ?Debug2({post_req_pid, Pid}),
 
-            case pg2:get_closest_pid(erlang:binary_to_atom(Flow, latin1)) of
-                {error, _} ->
-                      ?Debug2(no_ppool_found),
-                      _Response = <<"no_ppool_found">>;
-                P ->
-                      _Response = ppool_worker:call_worker(P, Body),
-                      ?Debug2({from_post, P, Flow, Body, _Response})
+    case Pid of
 
-              end,
+        {error,{no_such_group,_}} ->
+            cowboy_req:reply(400, [], <<"Missing Registered Pool">>, Req2);
 
-            Req4 = cowboy_req:set_resp_body(Body, Req3),
+        Pid ->
+            case ppool_worker:cast_worker_defer(Pid, 
+                                                <<Body/binary, <<"\n">>/binary>>) of
+                {ok, ok} ->
+                    ok;
+                 _Err ->
+                    cowboy_req:reply(400, [], 
+                                     <<"Missing Running Pool">>, Req2)
+            end
+            
+    end,
 
-			{true, Req4, State};
-
-        _Any  ->
-            ?Debug2({bad_req, _Any}),
-
-	         {false, Req, State}
+     {ok, Req2}.
 
 
-	end.
+info({response, Res}, Req, State) ->
+    %% {response,{ok,[<<"ping">>]}}
+    %%
+
+    ?Debug2({recv_post_req, Res}),
+
+    case Res of
+        {ok,[Msg]} ->
+            {ok, Req2} = cowboy_req:reply(200, [
+		                {<<"content-type">>, <<"text/plain; charset=utf-8">>}
+    	                ], Msg, Req);
+        _Any ->
+            {ok, Req2} = cowboy_req:reply(503, [], <<"Error occured">>, Req)
+    end,
+
+	{ok, Req2, State}.
+
+
+terminate({normal, timeout}, _, _) ->
+	ok;
+
+terminate(_Reason, _Req, _State) ->
+	ok.
 
 
 
