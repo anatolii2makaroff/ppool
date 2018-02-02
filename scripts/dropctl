@@ -216,7 +216,8 @@ cmd() {
 local_install() {
         echo "### local install $HOSTNAME .. ######"
 
-               cd /opt/drop && make clean && make
+               rm -rf /opt/drop/deps
+               cd /opt/drop && make clean && make deps && make
                yum install -y docker && yum install python-pip
                pip install psutil
 
