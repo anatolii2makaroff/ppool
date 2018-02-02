@@ -58,7 +58,7 @@ DROP_LOGGER_MF_FILES=10
 HEART_BEAT_TIMEOUT=30
 HEART_COMMAND="${DROP_HOME}/scripts/drop"
 
-DROP_EBIN_ROOT="${DROP_HOME}/ebin ${DROP_HOME}/apps/*/ebin "
+DROP_EBIN_ROOT="${DROP_HOME}/ebin ${DROP_HOME}/apps/*/ebin ${DROP_HOME}/deps/*/ebin "
 ERL_CRASH_DUMP="${DROP_LOG_DIR}/erl_crash.dump"
 NOTIFY_SOCKET=
 
