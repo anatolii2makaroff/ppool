@@ -9,8 +9,6 @@
 -include("../../src/ppool.hrl").
 
 
-
-
 init(_, Req, State) ->
 
 	{Method, Req2} = cowboy_req:method(Req),
@@ -46,20 +44,19 @@ echo(Flow, Req) ->
 
     ?Debug2({post_req_pid, Pid}),
 
-    case Pid of
+    case is_pid(Pid) of
 
-        {error,{no_such_group,_}} ->
-            cowboy_req:reply(400, [], <<"Missing Registered Pool">>, Req2);
+        false ->
+            self()!{response, {error, mis_req_pool}};
 
-        Pid ->
-            case ppool_worker:cast_worker_defer(Pid, 
-                                                <<Body/binary, <<"\n">>/binary>>) of
+        true ->
+            case ppool_worker:cast_worker_defer(Pid, body_to_msg(Body)) of
                 {ok, ok} ->
                     ok;
                  _Err ->
-                    cowboy_req:reply(400, [], 
-                                     <<"Missing Running Pool">>, Req2)
-            end
+                    self()!{response, {error, mis_run_pool}}
+
+             end
             
     end,
 
@@ -74,14 +71,31 @@ info({response, Res}, Req, State) ->
 
     case Res of
         {ok,[Msg]} ->
-            {ok, Req2} = cowboy_req:reply(200, [
+            cowboy_req:reply(200, [
 		                {<<"content-type">>, <<"text/plain; charset=utf-8">>}
     	                ], Msg, Req);
+
+        {error, mis_req_pool} ->
+            cowboy_req:reply(400, [], <<"Missing Registered Pool">>, Req);
+
+        {error, mis_run_pool} ->
+            cowboy_req:reply(400, [], <<"Missing Running Pool">>, Req);
+
         _Any ->
-            {ok, Req2} = cowboy_req:reply(503, [], <<"Error occured">>, Req)
+            cowboy_req:reply(503, [], <<"Error occured">>, Req)
     end,
 
-	{ok, Req2, State}.
+	{ok, Req, State};
+
+
+info(Any, Req, State) ->
+
+   error_logger:warning_msg("call no api ~p~n ", [Any]),
+ 
+ 	{ok, Req, State}.
+
+
+
 
 
 terminate({normal, timeout}, _, _) ->
@@ -90,6 +104,16 @@ terminate({normal, timeout}, _, _) ->
 terminate(_Reason, _Req, _State) ->
 	ok.
 
+
+
+
+body_to_msg(Body) ->
+    case binary:last(Body) =:= 10 of
+        true ->
+            Body;
+        false ->
+           <<Body/binary, <<"\n">>/binary>>
+    end.
 
 
 

@@ -329,7 +329,7 @@ handle_call({call_cast_worker, Msg}, _From, #state{workers_pids=Pids}=State) ->
 
 
 handle_call({cast_worker_defer, Msg}, {From,_}, #state{name=Name,
-                                                   workers_pids=Pids}=State) ->
+                                                       workers_pids=Pids}=State) ->
     
     Free=maps:filter(fun(_K, V) -> V=/=2 end ,Pids),
 
@@ -338,22 +338,26 @@ handle_call({cast_worker_defer, Msg}, {From,_}, #state{name=Name,
     case maps:keys(Free) of
           [] -> 
 
-                %% notify system 
-                 Msg2=erlang:list_to_binary(["system::warning::nomore::", 
-                      atom_to_list(node()),"::",
-                      atom_to_list(Name), "\n"]),
-                 ppool_worker:cast_worker(?NO_MORE_PPOOL, Msg2),
-                %%%%%%
+          %% notify system 
+             Msg2=erlang:list_to_binary(["system::warning::nomore::", 
+                                          atom_to_list(node()),"::",
+                                          atom_to_list(Name), "\n"]),
+               ppool_worker:cast_worker(?NO_MORE_PPOOL, Msg2),
+          %%%%%%
 
-                 [P0|_] = maps:keys(Pids),
-                    R=gen_server:cast(P0, {msg_defer, no, Msg, From}),
+           case maps:keys(Pids) of
+               [] ->
+                   {reply, {error, noproc}, State};
 
+               [P0|_ ] ->
 
-              {reply, {ok, R}, State};
+                 R=gen_server:cast(P0, {msg_defer, no, Msg, From}),
+                   {reply, {ok, R}, State}
+           end;
 
           [P|_] -> 
-            R=gen_server:cast(P, {msg_defer, no, Msg, From}),
-
+             R=gen_server:cast(P, {msg_defer, no, Msg, From}),
+ 
               {reply, {ok, R}, State}
 
       end;
