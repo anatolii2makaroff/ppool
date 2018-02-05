@@ -442,9 +442,13 @@ def get_stats_decrease(p):
             log("too many err {}: {} > 70% ".format(row[1],
                                                     row[7]/(row[4] + 0.1)))
             d[2] = -1 * math.ceil(row[2]) + 1
-        else:
-            if d[2] == 0:
-                continue
+
+        # no change
+        if d[2] == 0:
+            continue
+
+        if d[2] < 0 and row[5] / (row[4] + 0.1) > 0.05:  # stay while nomore exists
+            continue
 
         if data.get(row[0]) is None:
             data[row[0]] = [d]

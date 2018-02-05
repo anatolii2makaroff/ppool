@@ -337,11 +337,16 @@ handle_call({cast_worker_defer, Msg}, {From,_}, #state{name=Name,
     case maps:keys(Free) of
           [] -> 
 
-          %% notify system 
+          %% notify system on all nodes
              Msg2=erlang:list_to_binary(["system::warning::nomore::", 
                                           atom_to_list(node()),"::",
                                           atom_to_list(Name), "\n"]),
-               ppool_worker:cast_worker(?NO_MORE_PPOOL, Msg2),
+
+                lists:foreach(fun(Pidd) -> 
+                                ppool_worker:cast_worker(Pidd, Msg2)
+                               end,
+                              pg2:get_members(?NO_MORE_PPOOL)),
+              
           %%%%%%
 
            case maps:keys(Pids) of
