@@ -1,5 +1,9 @@
 #!/bin/bash
 
+
+ps -aux|grep nginx|awk '{print $2}'|xargs kill -9
+ps -aux|grep "python serv.py"|awk '{print $2}'|xargs kill -9
+
 # Start the first process
 nginx
 status=$?
@@ -8,8 +12,18 @@ if [ $status -ne 0 ]; then
   exit $status
 fi
 
+export DB_NAME=/var/lib/drop/db/node_collector.db
+export FLOWS_DIR=/var/lib/drop/flows
+
+HOSTNAME=`env hostname -f`
+
+
+sed -i "/urlDb:/c\ urlDb:'http://"$HOSTNAME":8080'," js/json2db.js
+sed -i "/urlMongo:/c\ urlMongo:'http://"$HOSTNAME":8080'" js/json2db.js
+
+
 # Start the second process
-python ./tools/serv.py &
+cd ./tools && (exec python serv.py > /dev/null 2>&1 &)
 status=$?
 if [ $status -ne 0 ]; then
   echo "Failed to start webbone: $status"
@@ -25,13 +39,17 @@ fi
 while /bin/true; do
   ps aux |grep nginx |grep -q -v grep
   PROCESS_1_STATUS=$?
-  ps aux |grep python |grep -q -v grep
+  ps aux |grep "python serv.py" |grep -q -v grep
   PROCESS_2_STATUS=$?
+
+  # echo $PROCESS_1_STATUS
+  # echo $PROCESS_2_STATUS
+ 
   # If the greps above find anything, they will exit with 0 status
   # If they are not both 0, then something is wrong
   if [ $PROCESS_1_STATUS -ne 0 -o $PROCESS_2_STATUS -ne 0 ]; then
     echo "One of the processes has already exited."
     exit -1
   fi
-  sleep 60
+  sleep 10
 done

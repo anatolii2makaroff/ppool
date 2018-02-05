@@ -1,7 +1,7 @@
 
 FROM python:2.7
 
-RUN apt-get -y install git && apt-get install -y nginx
+RUN apt-get update && apt-get -y install git && apt-get install -y nginx
 RUN pip install flask flask-JWT lxml
 
 RUN useradd drop

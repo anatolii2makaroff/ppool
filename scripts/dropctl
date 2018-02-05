@@ -303,6 +303,8 @@ make_priv() {
                cd $DROP_HOME/priv/flower && make clean && make build 
                cd $DROP_HOME/priv/flower_sc_stream && make clean && make build 
                cd $DROP_HOME/priv/rrd && make clean && make build 
+               cd $DROP_HOME/priv/webbone && make clean && make build 
+
 
             else
 
@@ -311,6 +313,8 @@ make_priv() {
                ssh -t root@$i 'cd '$DROP_HOME'/priv/flower && make clean && make build'
                ssh -t root@$i 'cd '$DROP_HOME'/priv/flower_sc_stream && make clean && make build'
                ssh -t root@$i 'cd '$DROP_HOME'/priv/rrd && make clean && make build'
+               ssh -t root@$i 'cd '$DROP_HOME'/priv/webbone && make clean && make build'
+
 
             fi 
 

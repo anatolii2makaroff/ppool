@@ -10,5 +10,5 @@ build:
 	sudo docker build -t $(NAME):$(VERSION) .
 
 shell:
-	sudo docker run --rm -it -u root -w /home/drop/ -v /var/lib/drop:/var/lib/drop -v /var/log/nginx:/var/log/nginx $(NAME):$(VERSION) /bin/bash
+	sudo docker run --rm -it -u root -w /home/drop/ --net=host -v /var/lib/drop:/var/lib/drop -v /var/log/nginx:/var/log/nginx $(NAME):$(VERSION) /bin/sh start.sh
 

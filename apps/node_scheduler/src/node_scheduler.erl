@@ -57,6 +57,7 @@ handle_call(restart, _From, State) ->
     ppool:stop_pool(ppool, node_api),
     ppool:stop_pool(ppool, flower),
     ppool:stop_pool(ppool, flower_sc_stream),
+    ppool:stop_pool(ppool, webbone),
 
 	{reply, ok, State, 0};
 
@@ -95,6 +96,10 @@ handle_info(timeout, State) ->
 
     ppool:start_pool(ppool, {flower_sc_stream, ?FLOWER_SC_WORKERS, 
                             {port_worker, start_link, []} }),
+
+    ppool:start_pool(ppool, {webbone, ?WEBBONE_WORKERS, 
+                            {port_worker, start_link, []} }),
+
 
 
 
@@ -173,7 +178,15 @@ handle_info(timeout, State) ->
                                   ), ?FLOWER_SC_TIMEOUT}
     ),
 
+    %% webbone
 
+    ppool_worker:start_worker(webbone,         
+               {lists:concat(["docker run --rm -i -u root -w /home/drop/",
+                 " --net=host -v /var/lib/drop:/var/lib/drop",
+                 " -v /var/log/nginx:/var/log/nginx -e GROUP=webbone webbone:"?WEBBONE_VER,
+                 " /bin/sh start.sh 2>/dev/null"
+                             ]), ?WEBBONE_TIMEOUT}
+    ),
 
      % try_start(flower),
 
