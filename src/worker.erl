@@ -176,6 +176,26 @@ handle_cast({stream_msg, R, Msg}, #state{master=N, ev=E, cmd=Cmd,
        end;
 
 
+handle_cast({msg_defer, R, Msg, From}, #state{master=N, ev=E, cmd=Cmd,
+                                                port=Port, timeout=T}=State) ->
+
+    ?Debug4({msg_defer, From, Msg}),
+
+    Ref = new_ets_msg(N, Cmd, R, Msg),
+
+       case process_ets_msg(N, E, Port, Ref, Msg, T) of
+           {error, timeout} -> 
+               From!{response, timeout},
+
+               {stop, port_timeout, State};
+
+           Res -> 
+               From!{response, Res},
+
+               {noreply, State}
+
+       end;
+
 
 handle_cast(_Msg, State) ->
 	{noreply, State}.

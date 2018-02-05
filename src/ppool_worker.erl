@@ -164,7 +164,6 @@ cast_worker_defer(Name, Msg) ->
     gen_server:call(Name, {cast_worker_defer, Msg}).
 
 
-
 call_map_workers(Name, Msg) ->
     lists:map(fun(M) -> call_worker(Name, no, M) end, 
                                    Msg).
