@@ -8,5 +8,8 @@ RUN useradd drop
 
 RUN git clone https://github.com/anatolii2makaroff/webbone.git /home/drop/
 
+RUN rm -rf /etc/nginx/conf.d/*
+
+COPY ./nginx.conf /etc/nginx/
 COPY ./webbone.conf /etc/nginx/conf.d/
 COPY ./start.sh /home/drop/

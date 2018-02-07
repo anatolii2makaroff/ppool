@@ -73,7 +73,7 @@ info({response, Res}, Req, State) ->
         {ok,[Msg]} ->
             cowboy_req:reply(200, [
 		                {<<"content-type">>, <<"text/plain; charset=utf-8">>}
-    	                ], Msg, Req);
+    	                ], msg_to_body(Msg), Req);
 
         {error, mis_req_pool} ->
             cowboy_req:reply(400, [], <<"Missing Registered Pool">>, Req);
@@ -107,14 +107,28 @@ terminate(_Reason, _Req, _State) ->
 
 
 
-body_to_msg(Body) ->
+
+msg_to_body(Body) ->
     case binary:last(Body) =:= 10 of
         true ->
-            Body;
+
+            binary:replace(Body, <<"\t">>, <<"\n">>, [global]);
+
         false ->
-           <<Body/binary, <<"\n">>/binary>>
+            Body2 = binary:replace(Body, <<"\t">>, <<"\n">>, [global]),
+           <<Body2/binary, <<"\n">>/binary>>
     end.
 
 
 
+body_to_msg(Body) ->
+    case binary:last(Body) =:= 10 of
+        true ->
+
+            binary:replace(Body, <<"\n">>, <<"\t">>, [global]);
+
+        false ->
+            Body2 = binary:replace(Body, <<"\n">>, <<"\t">>, [global]),
+           <<Body2/binary, <<"\n">>/binary>>
+    end.
 

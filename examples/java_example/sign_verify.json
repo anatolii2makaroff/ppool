@@ -1,0 +1,43 @@
+{
+    "name": "sign_verify",
+    "active": 1,
+    "priority": 0,
+    "version": 0,
+    "entry_ppool": "sign",
+    "start_scene": "start",
+    "scenes":[
+        {
+            "name" : "start",
+            "cook": [
+                {"num":1,
+                 "cmd":"system::local::start_pool::sign::1"
+                },
+                {"num":2,
+                 "cmd":"system::local::start_pool::verify::1"
+                },
+                {"num":3,
+                 "cmd":"system::local::start_all_workers::sign::-m 100m sign:0.1.0::java -cp bin org.main.Gen ::sign.log::10000"
+                },
+                {"num":4,
+                 "cmd":"system::local::start_all_workers::verify::-m 100m verify:0.1.0::java -cp bin/:./lib/json-20140107.jar org.main.VerSign ::verify.log::10000"
+                }
+            ]
+
+        },
+
+        {
+            "name" : "stop",
+            "cook": [
+                {"num":1,
+                 "cmd":"system::local::stop_pool::verify"
+                },
+                {"num":2,
+                 "cmd":"system::local::stop_pool::sign"
+                }
+
+            ]
+
+        }
+    ]
+
+}

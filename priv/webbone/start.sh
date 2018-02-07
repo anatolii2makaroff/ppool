@@ -18,8 +18,8 @@ export FLOWS_DIR=/var/lib/drop/flows
 HOSTNAME=`env hostname -f`
 
 
-sed -i "/urlDb:/c\ urlDb:'http://"$HOSTNAME":8080'," js/json2db.js
-sed -i "/urlMongo:/c\ urlMongo:'http://"$HOSTNAME":8080'" js/json2db.js
+sed -i "/urlDb:/c\ urlDb:'http://"$HOSTNAME":8082'," js/json2db.js
+sed -i "/urlMongo:/c\ urlMongo:'http://"$HOSTNAME":8082'" js/json2db.js
 
 
 # Start the second process
