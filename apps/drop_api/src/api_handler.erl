@@ -124,11 +124,13 @@ msg_to_body(Body) ->
 body_to_msg(Body) ->
     case binary:last(Body) =:= 10 of
         true ->
+            Body2 = binary:part(Body, {0, byte_size(Body)-1}),
+             Body3 = binary:replace(Body2, <<"\n">>, <<"\t">>, [global]),
 
-            binary:replace(Body, <<"\n">>, <<"\t">>, [global]);
+              <<Body3/binary, <<"\n">>/binary>>;
 
         false ->
             Body2 = binary:replace(Body, <<"\n">>, <<"\t">>, [global]),
-           <<Body2/binary, <<"\n">>/binary>>
+             <<Body2/binary, <<"\n">>/binary>>
     end.
 
