@@ -112,10 +112,10 @@ msg_to_body(Body) ->
     case binary:last(Body) =:= 10 of
         true ->
 
-            binary:replace(Body, <<"\t">>, <<"\n">>, [global]);
+            binary:replace(Body, ?SPLIT_MSG_SEQ, <<"\n">>, [global]);
 
         false ->
-            Body2 = binary:replace(Body, <<"\t">>, <<"\n">>, [global]),
+            Body2 = binary:replace(Body, ?SPLIT_MSG_SEQ, <<"\n">>, [global]),
            <<Body2/binary, <<"\n">>/binary>>
     end.
 
@@ -125,12 +125,12 @@ body_to_msg(Body) ->
     case binary:last(Body) =:= 10 of
         true ->
             Body2 = binary:part(Body, {0, byte_size(Body)-1}),
-             Body3 = binary:replace(Body2, <<"\n">>, <<"\t">>, [global]),
+             Body3 = binary:replace(Body2, <<"\n">>, ?SPLIT_MSG_SEQ, [global]),
 
               <<Body3/binary, <<"\n">>/binary>>;
 
         false ->
-            Body2 = binary:replace(Body, <<"\n">>, <<"\t">>, [global]),
+            Body2 = binary:replace(Body, <<"\n">>, ?SPLIT_MSG_SEQ, [global]),
              <<Body2/binary, <<"\n">>/binary>>
     end.
 

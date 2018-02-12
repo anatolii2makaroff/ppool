@@ -109,8 +109,8 @@ def read_json(p, args):
     for x in get_command(p, args):
         cmds.append(x)
 
-    log("send to api: " + "\t".join(cmds))
-    send("\t".join(cmds))
+    log("send to api: " + "\vchunk\v".join(cmds))
+    send("\vchunk\v".join(cmds))
 
 if __name__ == "__main__":
     main(sys.argv[1])

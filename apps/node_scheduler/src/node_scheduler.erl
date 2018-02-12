@@ -623,7 +623,7 @@ api(F) ->
 
          Msg ->
 
-            Msgs = binary:split(Msg, <<"\t">>, [global]),
+            Msgs = binary:split(Msg, ?SPLIT_MSG_SEQ, [global]),
              ?Debug3({recv, Msgs}),
 
              lists:foreach(fun(M) -> call_api(M) end,  Msgs),
