@@ -23,7 +23,7 @@
 -define(ERROR_TIMEOUT, 500).
 -define(NO_MORE_PPOOL, node_collector).
 
--define(SPLIT_MSG_SEQ, <<"\vchunk\v">>).
+-define(SPLIT_MSG_SEQ, <<"\v\0\v">>).
 
 -record(worker_stat, {
           ref,
