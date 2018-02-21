@@ -60,7 +60,7 @@ public class Gen {
         }
 
         public String read(){
-             return sc.nextLine().replaceAll("\\vchunk\\v", "\n");
+             return sc.nextLine().replaceAll("\\v\\0\\v", "\n");
         }
 
         public Boolean hasNext(){
@@ -69,7 +69,7 @@ public class Gen {
 
 
         public void send(String msg){
-             System.out.println(msg.replaceAll("\n", "\\vchunk\\v"));
+             System.out.println(msg.replaceAll("\n", "\\v\\0\\v"));
         }
     
         public void log(String msg){
