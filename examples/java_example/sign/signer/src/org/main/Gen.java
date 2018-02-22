@@ -60,8 +60,7 @@ public class Gen {
         }
 
         public String read(){
-             String d = sc.nextLine().replaceAll("\\v\\0\\v", "\n");
-             System.out.println(d);
+             String d = sc.nextLine().replaceAll("\tncm\t", "\n");
              return d;
 
         }
@@ -72,7 +71,7 @@ public class Gen {
 
 
         public void send(String msg){
-             System.out.println(msg.replaceAll("\n", "\\v\\0\\v"));
+             System.out.println(msg.replaceAll("\n", "\tncm\t"));
         }
     
         public void log(String msg){

@@ -18,6 +18,7 @@ public class VerSign {
 
 
 
+
     // API class 
     class Actor {
 
@@ -28,7 +29,10 @@ public class VerSign {
         }
 
         public String read(){
-             return sc.nextLine().replaceAll("\\v\\0\\v", "\n");
+             String d = sc.nextLine().replaceAll("\tncm\t", "\n");
+             System.out.println(d);
+             return d;
+
         }
 
         public Boolean hasNext(){
@@ -37,7 +41,7 @@ public class VerSign {
 
 
         public void send(String msg){
-             System.out.println(msg.replaceAll("\n", "\\v\\0\\v"));
+             System.out.println(msg.replaceAll("\n", "\tncm\t"));
         }
     
         public void log(String msg){
@@ -46,6 +50,9 @@ public class VerSign {
     
     
     }
+
+
+
 
 
  

@@ -126,11 +126,15 @@ body_to_msg(Body) ->
         true ->
             Body2 = binary:part(Body, {0, byte_size(Body)-1}),
              Body3 = binary:replace(Body2, <<"\n">>, ?SPLIT_MSG_SEQ, [global]),
+              ?Debug3({Body, Body2, Body3}),
 
               <<Body3/binary, <<"\n">>/binary>>;
 
         false ->
             Body2 = binary:replace(Body, <<"\n">>, ?SPLIT_MSG_SEQ, [global]),
+              ?Debug3({Body, Body2}),
+
+
              <<Body2/binary, <<"\n">>/binary>>
     end.
 
