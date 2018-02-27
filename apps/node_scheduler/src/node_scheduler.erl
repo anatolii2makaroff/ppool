@@ -102,7 +102,6 @@ handle_info(timeout, State) ->
 
 
 
-
     %% link ppools
     
     ppool_worker:subscribe(node_info_stream, {node_collector, <<"no">>, dall}),
@@ -156,7 +155,7 @@ handle_info(timeout, State) ->
                               {{node_scheduler, api}, ?NODE_API_TIMEOUT}
     ),
 
-    ppool_worker:start_all_workers(node_info_internal_stream, 
+    ppool_worker:start_worker(node_info_internal_stream, 
                               {{node_scheduler, node_info_internal_stream}, ?NODE_INFO_IN_TIMEOUT}
     ),
 
@@ -171,12 +170,18 @@ handle_info(timeout, State) ->
 
     %% scheduler
 
-    ppool_worker:start_all_workers(flower_sc_stream, 
-                              {cmd("-m 100m flower_sc_stream:"?FLOWER_SC_VER,
-                     lists:concat(["./flower_sc_stream /tmp/ ", node(), " 3 "]),
-                                   "flower_sc_stream.log"
-                                  ), ?FLOWER_SC_TIMEOUT}
+    ppool_worker:start_worker(flower_sc_stream,         
+               {lists:concat([os:getenv("DROP_HOME"),
+                              "/priv/flower_sc_stream/flower_sc_stream ",
+                              os:getenv("DROP_VAR_DIR"), " ", node(), " ",
+                              ?FLOWER_SC_INTERVAL, " ",
+                              os:getenv("DROP_VIP"), " ", os:getenv("DROP_VIP_IFACE"),
+                              " 2>>",
+                              os:getenv("DROP_LOG_DIR"),
+                              "/flower_sc_stream.log"
+                             ]), ?FLOWER_SC_TIMEOUT}
     ),
+
 
     %% webbone
 
@@ -187,8 +192,6 @@ handle_info(timeout, State) ->
                  " /bin/sh start.sh 2>/dev/null"
                              ]), ?WEBBONE_TIMEOUT}
     ),
-
-     % try_start(flower),
 
 
 	  {noreply, State};

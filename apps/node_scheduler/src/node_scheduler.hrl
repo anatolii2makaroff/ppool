@@ -39,6 +39,7 @@
 -define(FLOWER_SC_WORKERS, 1).
 -define(FLOWER_SC_TIMEOUT, 20000).
 -define(FLOWER_SC_VER, "0.1.0").
+-define(FLOWER_SC_INTERVAL, 3).
 
 -define(WEBBONE_WORKERS, 1).
 -define(WEBBONE_TIMEOUT, 20000).
