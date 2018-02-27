@@ -6,7 +6,6 @@
 #      DROP_VIP_IFACE - interface
 
 
-import os
 import sys
 import time
 import subprocess as sp
@@ -41,36 +40,37 @@ _RSERV_CMDS = [
 ]
 
 
-def make_vip(r_servers, is_vip=False):
+def make_vip(r_servers, is_vip, vip, vip_iface):
     """
     r_servers - list of real servers
     """
-    _vip = os.environ.get("DROP_VIP")
-    _iface = os.environ.get("DROP_VIP_IFACE")
 
-    if _vip is None or _iface is None:
-        log("WARN: not set environ DROP_VIP & DROP_VIP_IFACE..{}/{}/{}".format(_vip, _iface))
+    _vip = vip
+    _iface = vip_iface
+
+    if _vip == "127.0.0.1":
+        log("WARN: not set environ DROP_VIP & DROP_VIP_IFACE..{}/{}".format(_vip, _iface))
         return
 
     log("start make_vip: {} {}".format(is_vip, r_servers))
 
     try:
         if is_vip:
-            
+
             for c in _VIP_CMDS:
                 _cmd = c.format(**{"iface": _iface,
-                                 "vip": _vip,
-                                 "port": _API_PORT
-                                 })
+                                   "vip": _vip,
+                                   "port": _API_PORT
+                                   })
 
                 log(_cmd)
                 log(sp.check_output("{};exit 0".format(_cmd),
                                     shell=True, stderr=sp.STDOUT))
-            for r in r_servers:
+            for r in [x.split("@")[1] for x in r_servers]:
                 _cmd = _ADD_RSERV.format(**{"vip": _vip,
-                                          "port": _API_PORT,
-                                          "serv": r
-                                          })
+                                            "port": _API_PORT,
+                                            "serv": r
+                                            })
                 log(_cmd)
                 log(sp.check_output("{};exit 0".format(_cmd),
                                     shell=True, stderr=sp.STDOUT))
@@ -78,8 +78,8 @@ def make_vip(r_servers, is_vip=False):
             # real server
             for c in _RSERV_CMDS:
                 _cmd = c.format(**{"iface": _iface,
-                                 "vip": _vip
-                                 })
+                                   "vip": _vip
+                                   })
                 log(_cmd)
                 log(sp.check_output("{};exit 0".format(_cmd),
                                     shell=True, stderr=sp.STDOUT))
@@ -93,4 +93,4 @@ if __name__ == "__main__":
     make_vip(["host1",
               "host2"
               ],
-             True)
+             True, "vip", "vip_iface")

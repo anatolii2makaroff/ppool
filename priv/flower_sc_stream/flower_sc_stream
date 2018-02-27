@@ -12,7 +12,6 @@ from operator import mul
 import math
 from float_ip import make_vip
 
-
 # API
 
 def read():
@@ -35,11 +34,13 @@ def send(m):
 #  log  -  logging anything
 
 
-def main(p, node, t):
+def main(p, node, t, vip, vip_iface):
     """
         t - time interval in secs
     """
     tb = time.time()
+
+    # set vip 
 
     msg = read()
     _is_vip_set = 0
@@ -67,7 +68,7 @@ def main(p, node, t):
             # not set or set to main
             if _is_vip_set == 0 or _is_vip_set == 1:
                 # set real server
-                make_vip(m_nodes, False)
+                make_vip(m_nodes, False, vip, vip_iface)
                 _is_vip_set = 2
 
             time.sleep(int(t))
@@ -79,7 +80,7 @@ def main(p, node, t):
             # not set or set to main
             if _is_vip_set == 0 or _is_vip_set == 2:
                 # set real server
-                make_vip(m_nodes, True)
+                make_vip(m_nodes, True, vip, vip_iface)
                 _is_vip_set = 1
 
             if m_cnt < 9:
@@ -570,4 +571,4 @@ def get_flows(p):
 
 
 if __name__ == "__main__":
-    main(sys.argv[1], sys.argv[2], sys.argv[3])
+    main(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5])
