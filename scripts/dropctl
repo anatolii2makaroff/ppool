@@ -101,7 +101,7 @@ sync() {
 
         for i in "${!arr[@]}"
         do
-            echo "        server node$i ${arr[$i]}:8081 check port 8081" >> $DROP_HOME/conf/haproxy.cfg
+            echo "        server node$i ${arr[$i]}:8081 check port 8081 maxconn 100000" >> $DROP_HOME/conf/haproxy.cfg
         done
         
         echo "### haproxy updated .. ###"
