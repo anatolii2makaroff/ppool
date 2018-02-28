@@ -10,6 +10,7 @@ deps:
   python-pip
     psutil
   docker
+  haproxy
 
 start:
   service docker start

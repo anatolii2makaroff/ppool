@@ -15,8 +15,11 @@ fi
 export DB_NAME=/var/lib/drop/db/node_collector.db
 export FLOWS_DIR=/var/lib/drop/flows
 
-HOSTNAME=`env hostname -f`
-
+if [ "$1" == "127.0.0.1" ]; then
+  HOSTNAME=`env hostname -f`
+else
+  HOSTNAME=$1
+fi
 
 sed -i "/urlDb:/c\ urlDb:'http://"$HOSTNAME":8082'," js/json2db.js
 sed -i "/urlMongo:/c\ urlMongo:'http://"$HOSTNAME":8082'" js/json2db.js
