@@ -125,6 +125,7 @@ sync() {
             else
                scp $DROP_HOME/scripts/dropctl root@$i:$DROP_HOME/scripts/
                scp $DROP_HOME/.hosts.erlang root@$i:$DROP_HOME
+               scp $DROP_HOME/conf/haproxy.cfg root@$i:/etc/haproxy/
                scp $DROP_VAR_DIR/flows/* root@$i:$DROP_VAR_DIR/flows/
             fi 
 
