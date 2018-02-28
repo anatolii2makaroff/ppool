@@ -189,7 +189,7 @@ handle_info(timeout, State) ->
                {lists:concat(["docker run --rm -i -u root -w /home/drop/",
                  " --net=host -v /var/lib/drop:/var/lib/drop",
                  " -v /var/log/nginx:/var/log/nginx -e GROUP=webbone webbone:"?WEBBONE_VER,
-                 " /bin/sh start.sh ", os:getenv("DROP_VIP"), " 2>/dev/null"
+                 " /bin/bash start.sh ", os:getenv("DROP_VIP"), " 2>/dev/null"
                 ]), ?WEBBONE_TIMEOUT}
     ),
 
