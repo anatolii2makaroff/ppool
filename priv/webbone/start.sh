@@ -17,14 +17,12 @@ export FLOWS_DIR=/var/lib/drop/flows
 
 if [ "$1" == "127.0.0.1" ]; then
   HOSTNAME=`env hostname -f`
-  PORT=8082
 else
   HOSTNAME=$1
-  PORT=8084
 fi
 
-sed -i "/urlDb:/c\ urlDb:'http://"$HOSTNAME":"$PORT"'," js/json2db.js
-sed -i "/urlMongo:/c\ urlMongo:'http://"$HOSTNAME":"$PORT"'" js/json2db.js
+sed -i "/urlDb:/c\ urlDb:'http://"$HOSTNAME":8084'," js/json2db.js
+sed -i "/urlMongo:/c\ urlMongo:'http://"$HOSTNAME":8084'" js/json2db.js
 
 
 # Start the second process
