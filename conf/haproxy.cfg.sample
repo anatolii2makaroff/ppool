@@ -27,7 +27,7 @@ global
 
     chroot      /var/lib/haproxy
     pidfile     /var/run/haproxy.pid
-    maxconn     10000
+    maxconn     500000
     user        haproxy
     group       haproxy
     daemon
@@ -47,27 +47,31 @@ defaults
     option http-server-close
     option forwardfor       except 127.0.0.0/8
     option                  redispatch
-    retries                 3
+    retries                 2
     timeout http-request    10s
     timeout queue           1m
     timeout connect         10s
     timeout client          1m
     timeout server          1m
-    timeout http-keep-alive 10s
+    timeout http-keep-alive 5s
     timeout check           10s
-    maxconn                 5000
+    maxconn                 100000
 
-
-
-listen drop *:8083
+listen stats *:1936
 
         stats enable
         stats refresh 10s
         stats hide-version
-        stats scope .
         stats uri /haproxy?stats
         stats auth admin:admin123
 
-        balance roundrobin
-        # server node1 SERV1:8081 check port 8081
-        # server node2 SERV2:8081 check port 8081
+frontend http-api
+
+    bind *:8083
+    use_backend drop
+
+backend drop
+        balance leastconn
+        # server node1 SERV1:8081 check port 8081 maxconn 100000
+        # server node2 SERV2:8081 check port 8081 maxconn 100000
+
