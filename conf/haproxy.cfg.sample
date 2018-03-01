@@ -32,8 +32,13 @@ global
     group       haproxy
     daemon
 
+    nbproc      2
+    cpu-map     1 0
+    cpu-map     2 1
+
     # turn on stats unix socket
     stats socket /var/lib/haproxy/stats
+    stats bind-process 1
 
 #---------------------------------------------------------------------
 # common defaults that all the 'listen' and 'backend' sections will
@@ -69,6 +74,6 @@ listen ui *:8084
 
 
 listen drop *:8083
-        balance leastconn
+        balance roundrobin
         # server node1 SERV1:8081 check port 8081 maxconn 100000
         # server node2 SERV2:8081 check port 8081 maxconn 100000
