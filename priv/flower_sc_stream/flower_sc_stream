@@ -14,6 +14,7 @@ from float_ip import make_vip
 
 # API
 
+
 def read():
     line = sys.stdin.readline()
     return line.strip()
@@ -40,7 +41,7 @@ def main(p, node, t, vip, vip_iface):
     """
     tb = time.time()
 
-    # set vip 
+    # set vip
 
     msg = read()
     _is_vip_set = 0
@@ -226,7 +227,8 @@ def decrease_ppools(p, pstats, m_nodes):
 def start_rebalance_flow(p, m_nodes):
 
     for f in get_flows(p):
-        f_name, f_active, f_ppools, f_count, f_ram = f.get("name"), f.get("active"),\
+        f_name, f_active, f_priority, f_ppools, f_count, f_ram = f.get("name"),\
+            f.get("active"), f.get("priority"),\
             [[y.get("cmd").split("::")[3] for y in x.get("cook")
               if y.get("cmd").split("::")[2] == "start_pool"]
              for x in f.get("scenes")
@@ -241,6 +243,10 @@ def start_rebalance_flow(p, m_nodes):
              if x["name"] == f.get("start_scene")][0]
 
         log("read flow {} {} {} {} {}".format(f_name, f_active, f_ppools, f_count, f_ram))
+
+        if f_priority == 1:
+            log("flow {} has 1 priority not rebalance ".format(f_name))
+            continue
 
         _from, _to = get_min_stats(p, f_ppools)
 
@@ -273,7 +279,8 @@ def start_rebalance_flow(p, m_nodes):
 def start_init_flows(p, pstats, m_nodes):
 
     for f in get_flows(p):
-        f_name, f_active, f_ppools, f_count, f_ram = f.get("name"), f.get("active"),\
+        f_name, f_active, f_priority, f_ppools, f_count, f_ram = f.get("name"),\
+            f.get("active"), f.get("priority"),\
             [[y.get("cmd").split("::")[3] for y in x.get("cook")
               if y.get("cmd").split("::")[2] == "start_pool"]
              for x in f.get("scenes")
@@ -287,7 +294,7 @@ def start_init_flows(p, pstats, m_nodes):
              for x in f.get("scenes")
              if x["name"] == f.get("start_scene")][0]
 
-        log("read flow {} {} {} {} {}".format(f_name, f_active, f_ppools, f_count, f_ram))
+        log("read flow {} {} {} {} {} {}".format(f_name, f_active, f_priority, f_ppools, f_count, f_ram))
 
         # if flow not active stop on all nodes
         if f_active == 0:
@@ -298,6 +305,7 @@ def start_init_flows(p, pstats, m_nodes):
             # check already started
 
             first_start = True
+
             for k, v in pstats.iteritems():
 
                 if k not in m_nodes:
@@ -337,6 +345,22 @@ def start_init_flows(p, pstats, m_nodes):
                         break
                     else:
                         continue
+
+            # need start on all avaliable (priority 1)
+
+            if f_priority == 1:
+                log("flow {} priority 1 start on all avaliable".format(f_name))
+
+                _ram_need = sum(map(mul, f_ram, f_count))
+
+                # check resources for first start
+                # ram cpu
+
+                v = get_load_nodes(p)
+                for n, l in v.iteritems():
+                    log("load nodes {} {} {}".format(n, l, _ram_need))
+                    if l[1] > _ram_need and l[0] < 85:
+                        send("system::{}::{}::start".format(n, f_name))
 
 
 def get_load_nodes(p):
