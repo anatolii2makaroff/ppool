@@ -58,7 +58,6 @@ defaults
     maxconn                 100000
 
 listen stats *:1936
-
         stats enable
         stats refresh 10s
         stats hide-version
@@ -69,13 +68,7 @@ listen ui *:8084
         server node0 *:8082
 
 
-frontend http-api
-
-    bind *:8083
-    use_backend drop
-
-backend drop
+listen drop *:8083
         balance leastconn
         # server node1 SERV1:8081 check port 8081 maxconn 100000
         # server node2 SERV2:8081 check port 8081 maxconn 100000
-
