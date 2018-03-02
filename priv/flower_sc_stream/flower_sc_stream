@@ -210,8 +210,8 @@ def decrease_ppools(p, pstats, m_nodes):
                 i[2] = 3
                 log("..too big : {} set {}".format(i[0], i[2]))
 
-            if int(i[1] + i[2]) > 25:
-                log("..max 25 proc limit : {}".format(k))
+            if int(i[1] + i[2]) > 15:
+                log("..max 15 proc limit : {}".format(k))
                 check_add_resourse(p, i[0], int(i[1] + i[2]), k, True)
 
                 send("ok")

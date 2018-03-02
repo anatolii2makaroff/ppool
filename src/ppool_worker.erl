@@ -54,7 +54,7 @@
 -include_lib("stdlib/include/ms_transform.hrl").
 
 -define(INTERVAL, 5000).
--define(INTERVAL_NOMORE, 30000).
+-define(INTERVAL_NOMORE, 5000).
 
 -record(state, {
           limit, 
