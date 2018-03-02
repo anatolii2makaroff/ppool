@@ -156,7 +156,7 @@ stop() {
 stop_s() {
 
     # stop all depend services if beam not started
-    count=$(ps -aux|grep beam.smp|grep -v grep| wc -l)
+    count=$(ps -aux|grep beam.smp|grep drop|grep -v grep| wc -l)
 
     echo $count
     if [ "$count" -eq "0" ]; then
