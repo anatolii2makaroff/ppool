@@ -45,8 +45,6 @@ else
     DROP_NAME=$NODE_NAME@${HOSTNAME}
 fi
 
-echo "DROP_NAME: "$DROP_NAME 
-
 DROP_COOKIE=mesh1
 DROP_LOG_DIR=/var/lib/drop/logs
 DROP_VAR_DIR=/var/lib/drop
@@ -155,6 +153,19 @@ stop() {
 
 }
 
+stop_s() {
+
+    # stop all depend services if beam not started
+    count=$(ps -aux|grep beam.smp|grep -v grep| wc -l)
+
+    echo $count
+    if [ "$count" -eq "0" ]; then
+        ifconfig ${DROP_VIP_IFACE}:0 down
+        systemctl stop haproxy
+    fi
+}
+
+
 
 
 start() {
@@ -218,6 +229,8 @@ if [ $# -eq 0 ]
           start
       elif [ $1 = "stop" ]; then
           stop
+      elif [ $1 = "stop_s" ]; then
+          stop_s
       elif [ $1 = "remsh" ]; then
           remsh
       fi

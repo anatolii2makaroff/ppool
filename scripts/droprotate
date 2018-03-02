@@ -9,3 +9,6 @@ cd /var/lib/drop/logs
 rm -f *.log.1
 find . -iname "*.log" -exec cp "{}" "{}.1" \;
 find . -iname "*.log" -exec /bin/sh -c "> '{}'" ';'
+
+# check started dependant..
+drop stop_s
