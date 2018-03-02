@@ -353,7 +353,10 @@ handle_call({cast_worker_defer, Msg}, {From,_}, #state{name=Name,
                [] ->
                    {reply, {error, noproc}, State};
 
-               [P0|_ ] ->
+               Pidss ->
+
+                  Index = rand:uniform(length(Pidss)),
+                   P0=lists:nth(Index, Pidss),
 
                  R=gen_server:cast(P0, {msg_defer, no, Msg, From}),
                    {reply, {ok, R}, State}

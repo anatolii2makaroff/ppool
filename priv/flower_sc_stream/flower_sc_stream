@@ -210,8 +210,8 @@ def decrease_ppools(p, pstats, m_nodes):
                 i[2] = 3
                 log("..too big : {} set {}".format(i[0], i[2]))
 
-            if int(i[1] + i[2]) > 50:
-                log("..max 50 proc limit : {}".format(k))
+            if int(i[1] + i[2]) > 10:
+                log("..max 10 proc limit : {}".format(k))
                 check_add_resourse(p, i[0], int(i[1] + i[2]), k, True)
 
                 send("ok")
@@ -467,8 +467,8 @@ def get_stats_decrease(p):
 
         # if nomore > 70% when min ppool to 1
 
-        log("check nomore rate {} / {} / {} > 50".format(row[5], row[4], row[2]))
-        if row[5] / (row[4] + 0.1) > 0.5:
+        log("check nomore rate {} / {} / {} > 20".format(row[5], row[4], row[2]))
+        if row[5] / (row[4] + 0.1) > 0.2:
             log("too many nomore {} add workers:{} ".format(row[1],
                                                             math.ceil(1.0*row[2]*row[5]/row[4]+0.1)
                                                             ))

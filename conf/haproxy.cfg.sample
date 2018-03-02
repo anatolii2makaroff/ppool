@@ -74,6 +74,7 @@ listen ui *:8084
 
 
 listen drop *:8083
+        mode tcp
         balance roundrobin
         # server node1 SERV1:8081 check port 8081 maxconn 100000
         # server node2 SERV2:8081 check port 8081 maxconn 100000
