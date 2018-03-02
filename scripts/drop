@@ -158,14 +158,12 @@ stop_s() {
     # stop all depend services if beam not started
     count=$(ps -aux|grep beam.smp|grep drop|grep -v grep| wc -l)
 
-    echo $count
     if [ "$count" -eq "0" ]; then
-        ifconfig ${DROP_VIP_IFACE}:0 down
+        echo $DROP_VIP_IFACE
+        /usr/sbin/ifconfig $DROP_VIP_IFACE:0 down
         systemctl stop haproxy
     fi
 }
-
-
 
 
 start() {
