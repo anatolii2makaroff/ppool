@@ -212,10 +212,7 @@ call_worker0(Pid, R, Msg) ->
                %%                                           [{Pid,R}, Msg]),
 
                 %% notify system 
-                 Msg2=erlang:list_to_binary(["system::warning::nomore::", 
-                      atom_to_list(node()),"::",
-                      atom_to_list(Pid), "\n"]),
-                 ppool_worker:cast_worker(?NO_MORE_PPOOL, Msg2),
+                 ppool_worker:add_nomore_info(Pid),
                 %%%%%%
 
                   ppool_worker:cast_worker(Pid, R, Msg);
@@ -233,10 +230,7 @@ call_worker(Pid, R, Msg) ->
                %%                                          [{Pid,R}, Msg]),
 
                 %% notify system 
-                 Msg2=erlang:list_to_binary(["system::warning::nomore", 
-                      atom_to_list(node()),"::",
-                      atom_to_list(Pid)]),
-                 ppool_worker:cast_worker(?NO_MORE_PPOOL, Msg2),
+                 ppool_worker:add_nomore_info(Pid),
                 %%%%%%
 
                   ppool_worker:dcast_worker(Pid, R, Msg);

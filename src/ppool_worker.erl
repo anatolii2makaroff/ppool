@@ -31,6 +31,8 @@
 
          set_status_worker/3,
          get_result_worker/2,
+         add_nomore_info/1,
+
 
          subscribe/2,
          unsubscribe/2,
@@ -52,12 +54,14 @@
 -include_lib("stdlib/include/ms_transform.hrl").
 
 -define(INTERVAL, 5000).
+-define(INTERVAL_NOMORE, 30000).
 
 -record(state, {
           limit, 
           mfa, 
           name,
-          workers_pids=maps:new()
+          workers_pids=maps:new(),
+          nomore=0
           
 }).
 
@@ -80,6 +84,8 @@ init([Name, Limit, MFA]) ->
      pg2:join(Name, self()),
 
      erlang:send_after(?INTERVAL, self(), clean_ets),
+     erlang:send_after(?INTERVAL_NOMORE, self(), send_nomore),
+
 
 	{ok, #state{limit=Limit, mfa=MFA, name=Name}}.
 
@@ -214,6 +220,10 @@ change_limit(Name, N) ->
    gen_server:cast(Name, {change_limit, N}).
 
 
+add_nomore_info(Name) ->
+    gen_server:cast(Name, {add_nomore_info}).
+
+
    
 %% callbacks
 
@@ -327,8 +337,7 @@ handle_call({call_cast_worker, Msg}, _From, #state{workers_pids=Pids}=State) ->
       end;
 
 
-handle_call({cast_worker_defer, Msg}, {From,_}, #state{name=Name,
-                                                       workers_pids=Pids}=State) ->
+handle_call({cast_worker_defer, Msg}, {From,_}, #state{name=Name, workers_pids=Pids}=State) ->
     
     Free=maps:filter(fun(_K, V) -> V=/=2 end ,Pids),
 
@@ -337,17 +346,7 @@ handle_call({cast_worker_defer, Msg}, {From,_}, #state{name=Name,
     case maps:keys(Free) of
           [] -> 
 
-          %% notify system on all nodes
-             Msg2=erlang:list_to_binary(["system::warning::nomore::", 
-                                          atom_to_list(node()),"::",
-                                          atom_to_list(Name), "\n"]),
-
-                lists:foreach(fun(Pidd) -> 
-                                ppool_worker:cast_worker(Pidd, Msg2)
-                               end,
-                              pg2:get_members(?NO_MORE_PPOOL)),
-              
-          %%%%%%
+            ppool_worker:add_nomore_info(Name),
 
            case maps:keys(Pids) of
                [] ->
@@ -400,6 +399,11 @@ handle_call({get_result_worker, Msg}, _From, #state{name=Name}=State) ->
 
 handle_call(_Request, _From, State) ->
 	{reply, ignored, State}.
+
+
+
+handle_cast({add_nomore_info},  #state{nomore=C}=State) ->
+    {noreply, State#state{nomore=C+1}};
 
 
 handle_cast({cast_worker, Msg},  #state{workers_pids=Pids}=State) ->
@@ -488,6 +492,28 @@ handle_info({'DOWN', _MonitorRef, process, Pid, _Info},
             #state{workers_pids=Pids}=State) ->
 
     	{noreply, State#state{workers_pids=maps:remove(Pid, Pids)}};
+
+
+
+handle_info(send_nomore, #state{name=Name, nomore=C}=State) ->
+
+   %% send nomore info
+    
+      case C > 0 of
+        true ->
+          %% notify system 
+            Msg2=erlang:list_to_binary(["system::warning::nomore::", 
+                atom_to_list(node()),"::",
+                atom_to_list(Name), "::", erlang:integer_to_list(C), "\n"]),
+            ppool_worker:cast_worker(?NO_MORE_PPOOL, Msg2);
+          %%%%%%
+        false ->
+              ok
+      end,
+
+    erlang:send_after(?INTERVAL_NOMORE, self(), send_nomore),
+
+    {noreply, State#state{nomore=0}};
 
 
 handle_info(clean_ets, #state{name=Name}=State) ->

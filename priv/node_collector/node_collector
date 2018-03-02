@@ -201,7 +201,7 @@ def main(p, cnt, t):
 
                 if args[1] == "warning" and args[2] == "nomore":
                     ids = "{}::{}".format(args[3], args[4])
-                    data_nomore_list[ids] = data_nomore_list.get(ids, 0) + 1
+                    data_nomore_list[ids] = args[5]
 
                 else:
                     data_list.append(insert_ppool_info(args))
