@@ -505,7 +505,11 @@ handle_info(send_nomore, #state{name=Name, nomore=C}=State) ->
             Msg2=erlang:list_to_binary(["system::warning::nomore::", 
                 atom_to_list(node()),"::",
                 atom_to_list(Name), "::", erlang:integer_to_list(C), "\n"]),
-            ppool_worker:cast_worker(?NO_MORE_PPOOL, Msg2);
+
+              lists:foreach(fun(Pidd) -> 
+                                    ppool_worker:cast_worker(Pidd, Msg2)   
+                            end,    
+                           pg2:get_members(?NO_MORE_PPOOL));
           %%%%%%
         false ->
               ok
