@@ -16,7 +16,7 @@ init(_, Req, State) ->
 	
 	  {ok, Req3} = create_req(Method, HasBody, Req2),
 
-	{loop, Req3, State, 5000}.
+	{loop, Req3, State}.
 
 
 create_req(<<"POST">>, true, Req) ->
@@ -36,11 +36,24 @@ echo(undefined, Req) ->
 
 echo(Flow, Req) ->
 
-    {ok, Body, Req2} = cowboy_req:body(Req),
+    {ok, Body, Req2} = cowboy_req:body(Req, [{length, infinity}]),
 
-    ?Debug2({post_req, erlang:binary_to_atom(Flow, latin1), Body}),
+    %% ?Debug2({post_req, erlang:binary_to_atom(Flow, latin1), Body}),
 
-    Pid = pg2:get_closest_pid(erlang:binary_to_atom(Flow, latin1)),
+    {Length, _} = cowboy_req:body_length(Req),
+
+    ?Debug2(Length),
+
+    case Length > ?MAX_BODY_REDIRECT of
+        true ->
+            Pid = pg2:get_closest_pid(
+                    erlang:binary_to_atom(
+                      erlang:iolist_to_binary([Flow, <<"_X">>]), latin1)
+                   );
+        _ ->
+            Pid = pg2:get_closest_pid(erlang:binary_to_atom(Flow, latin1))
+    end,
+
 
     ?Debug2({post_req_pid, Pid}),
 

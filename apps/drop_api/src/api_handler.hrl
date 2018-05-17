@@ -11,3 +11,4 @@
 -endif.
 
 
+-define(MAX_BODY_REDIRECT, 5000000).

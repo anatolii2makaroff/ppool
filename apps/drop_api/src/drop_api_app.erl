@@ -12,7 +12,11 @@ start(_Type, _Args) ->
     ]),
 
     cowboy:start_http(http_listener, 100, [{port, 8081}],
-                                    [{env, [{dispatch, Dispatch}]}]
+                                    [{env, [
+                                            {dispatch, Dispatch},
+                                            {cowboy_handler, 
+                                             {loop_max_buffer, 5000}}
+                                           ]}]
                                         ),
 	drop_api_sup:start_link().
 
