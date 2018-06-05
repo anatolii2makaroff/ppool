@@ -9,14 +9,19 @@
 -include("../../src/ppool.hrl").
 
 
-init(_, Req, State) ->
+init(_, Req, _) ->
 
 	{Method, Req2} = cowboy_req:method(Req),
 	 HasBody = cowboy_req:has_body(Req2),
-	
-	  {ok, Req3} = create_req(Method, HasBody, Req2),
 
-	{loop, Req3, State}.
+     case create_req(Method, HasBody, Req2) of
+	
+	   {ok, Req3, Is_Gzip} ->
+             {loop, Req3, Is_Gzip};
+
+       {ok, Req3} ->
+             {loop, Req3}
+     end.
 
 
 create_req(<<"POST">>, true, Req) ->
@@ -40,20 +45,29 @@ echo(Flow, Req) ->
 
     %% ?Debug2({post_req, erlang:binary_to_atom(Flow, latin1), Body}),
 
-    {Length, _} = cowboy_req:body_length(Req),
+    {L, _} = cowboy_req:body_length(Req),
 
-    ?Debug2(Length),
+    ?Debug2(L),
 
-    case Length > ?MAX_BODY_REDIRECT of
-        true ->
+    case L of
+
+        L when L<?MAX_BODY_REDIRECT -> 
+            Pid = pg2:get_closest_pid(erlang:binary_to_atom(Flow, latin1)),
+            %% Body2 = Body;
+            Is_Gzip = false,
+
+            Body2 = Body;
+
+        L when L>?MAX_BODY_REDIRECT ->
             Pid = pg2:get_closest_pid(
                     erlang:binary_to_atom(
                       erlang:iolist_to_binary([Flow, <<"_X">>]), latin1)
-                   );
-        _ ->
-            Pid = pg2:get_closest_pid(erlang:binary_to_atom(Flow, latin1))
-    end,
+                   ),
 
+            Is_Gzip = true,
+            Body2 = base64:encode(zlib:gzip(Body))
+
+    end,
 
     ?Debug2({post_req_pid, Pid}),
 
@@ -63,7 +77,7 @@ echo(Flow, Req) ->
             self()!{response, {error, mis_req_pool}};
 
         true ->
-            case ppool_worker:cast_worker_defer(Pid, body_to_msg(Body)) of
+            case ppool_worker:cast_worker_defer(Pid, body_to_msg(Body2)) of
                 {ok, ok} ->
                     ok;
                  _Err ->
@@ -73,10 +87,10 @@ echo(Flow, Req) ->
             
     end,
 
-     {ok, Req2}.
+     {ok, Req2, Is_Gzip}.
 
 
-info({response, Res}, Req, State) ->
+info({response, Res}, Req, Is_Gzip) ->
     %% {response,{ok,[<<"ping">>]}}
     %%
 
@@ -84,9 +98,17 @@ info({response, Res}, Req, State) ->
 
     case Res of
         {ok,[Msg]} ->
+
+         case Is_Gzip of 
+             true ->
+                  Msg2 = uncompress(Msg); %% zlib:gunzip(Msg);
+             _ ->
+                 Msg2 = Msg
+         end,
+
             cowboy_req:reply(200, [
 		                {<<"content-type">>, <<"text/plain; charset=utf-8">>}
-    	                ], msg_to_body(Msg), Req);
+    	                ], msg_to_body(Msg2), Req);
 
         {error, mis_req_pool} ->
             cowboy_req:reply(400, [], <<"Missing Registered Pool">>, Req);
@@ -98,7 +120,7 @@ info({response, Res}, Req, State) ->
             cowboy_req:reply(503, [], <<"Error occured">>, Req)
     end,
 
-	{ok, Req, State};
+	{ok, Req, Is_Gzip};
 
 
 info(Any, Req, State) ->
@@ -116,8 +138,6 @@ terminate({normal, timeout}, _, _) ->
 
 terminate(_Reason, _Req, _State) ->
 	ok.
-
-
 
 
 
@@ -150,4 +170,25 @@ body_to_msg(Body) ->
 
              <<Body2/binary, <<"\n">>/binary>>
     end.
+
+
+uncompress(Bin) ->
+   Z = zlib:open(),
+   zlib:inflateInit(Z, 31),
+   
+   % hopefully everything fits in memory
+   
+   Uncompressed = zlib:inflate(Z, 
+                               base64:decode(
+                                 binary:replace(Bin, ?SPLIT_MSG_SEQ, <<"\n">>, [global])
+                                )
+                              ),
+   
+   zlib:inflateEnd(Z),
+   zlib:close(Z),
+
+     erlang:list_to_binary(Uncompressed).
+
+
+
 
