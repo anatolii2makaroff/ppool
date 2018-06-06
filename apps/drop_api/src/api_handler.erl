@@ -156,7 +156,9 @@ msg_to_body(Body) ->
 
 body_to_msg(B) ->
 
-   Body = binary:replace(B, <<"\r\n">>, <<"\n">>, [global]),
+   Body = binary:replace(
+            binary:replace(B,<<"\r"/utf8>>, <<"\n">>, [global]),
+            <<"\n\n">>, <<"\n">>, [global]),
  
     case binary:last(Body) =:= 10 of
         true ->
