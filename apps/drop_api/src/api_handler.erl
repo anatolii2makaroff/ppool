@@ -154,7 +154,10 @@ msg_to_body(Body) ->
 
 
 
-body_to_msg(Body) ->
+body_to_msg(B) ->
+
+   Body = binary:replace(B, <<"\r\n">>, <<"\n">>, [global]),
+ 
     case binary:last(Body) =:= 10 of
         true ->
             Body2 = binary:part(Body, {0, byte_size(Body)-1}),
