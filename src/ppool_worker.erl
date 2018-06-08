@@ -37,7 +37,8 @@
          subscribe/2,
          unsubscribe/2,
 
-         change_limit/2
+         change_limit/2,
+         split/2
          
         ]).
 
@@ -255,17 +256,20 @@ handle_call({stop_all_workers, C}, _From,
 
     case Cr - C > 0 of
          true -> 
-           ?Debug4({stop, split(maps:keys(Pids), Cr-C)}),
 
-           lists:foreach(fun(Pid) -> 
-                                 gen_server:cast(Pid, {msg, no, stop}) end, 
-                                 split(maps:keys(Pids), Cr-C)
-                         );
+           Free=maps:filter(fun(_K, V) -> V=/=2 end ,Pids),
+            ?Debug4({stop, split(maps:keys(Free), Cr-C)}),
+
+             lists:foreach(fun(Pid) -> 
+                                   gen_server:cast(Pid, {msg, no, stop}) end, 
+                                   split(maps:keys(Free), Cr-C)
+                           );
          false ->
             ok
      end, 
 
 	   {reply, ok, State};
+
 
 
 handle_call({register, Pid}, _From, #state{workers_pids=Pids}=State) ->
@@ -556,6 +560,9 @@ code_change(_OldVsn, State, _Extra) ->
 
 split(A, I) ->
     split(A, I, []).
+
+split([], _, R) ->
+    R;
 
 split(_, I, R) when I =:= 0 ->
     R;
