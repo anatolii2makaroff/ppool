@@ -257,18 +257,23 @@ handle_call({stop_all_workers, C}, _From,
     case Cr - C > 0 of
          true -> 
 
-           Free=maps:filter(fun(_K, V) -> V=/=2 end ,Pids),
-            ?Debug4({stop, split(maps:keys(Free), Cr-C)}),
+            FreeS=split(maps:keys(Pids), Cr-C),
+            ?Debug4({stop, FreeS}),
 
-             lists:foreach(fun(Pid) -> 
-                                   gen_server:cast(Pid, {msg, no, stop}) end, 
-                                   split(maps:keys(Free), Cr-C)
-                           );
+            NewM = [{X, 3}|| X <- FreeS],
+            NewPids = maps:merge(Pids, maps:from_list(NewM)),
+
+            lists:foreach(fun(Pid) -> 
+                                  gen_server:cast(Pid, {msg, no, stop}) end, 
+                                  FreeS
+                         );
+           
          false ->
-            ok
+            NewPids=Pids,
+             ok
      end, 
 
-	   {reply, ok, State};
+	   {reply, ok, State#state{workers_pids=NewPids}};
 
 
 
@@ -343,7 +348,7 @@ handle_call({call_cast_worker, Msg}, _From, #state{workers_pids=Pids}=State) ->
 
 handle_call({cast_worker_defer, Msg}, {From,_}, #state{name=Name, workers_pids=Pids}=State) ->
     
-    Free=maps:filter(fun(_K, V) -> V=/=2 end ,Pids),
+    Free=maps:filter(fun(_K, V) -> V < 2 end ,Pids),
 
     ?Debug4({cast_worker_defer, From, self(), Msg, Free}),
 
@@ -352,7 +357,7 @@ handle_call({cast_worker_defer, Msg}, {From,_}, #state{name=Name, workers_pids=P
 
             ppool_worker:add_nomore_info(Name),
 
-           case maps:keys(Pids) of
+            case maps:keys(maps:filter(fun(_K, V) -> V =/= 3 end ,Pids)) of
                [] ->
                    {reply, {error, noproc}, State};
 
