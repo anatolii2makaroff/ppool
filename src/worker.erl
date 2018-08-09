@@ -93,8 +93,16 @@ handle_call(_Request, _From, State) ->
 handle_cast({msg, _, restart}, State) ->
     {stop, restart, State};
 
+
 handle_cast({msg, _, stop}, State) ->
-    {stop, normal, State};
+    case erlang:process_info(self(), message_queue_len) of
+        {_, 0} ->
+            {stop, normal, State};
+        _Any ->
+            ok
+    end;
+
+
 
 handle_cast({msg, R, Msg}, #state{master=N, ev=E, cmd=Cmd, 
                                   timeout=T, port=Port}=State) ->

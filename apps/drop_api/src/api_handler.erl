@@ -1,7 +1,6 @@
 -module(api_handler).
--behaviour(cowboy_loop_handler).
 
--export([init/3]).
+-export([init/2]).
 -export([info/3]).
 -export([terminate/3]).
 
@@ -9,24 +8,24 @@
 -include("../../src/ppool.hrl").
 
 
-init(_, Req, _) ->
+init(Req, State) ->
 
-	{Method, Req2} = cowboy_req:method(Req),
-	 HasBody = cowboy_req:has_body(Req2),
+	 Method = cowboy_req:method(Req),
+	 HasBody = cowboy_req:has_body(Req),
 
-     case create_req(Method, HasBody, Req2) of
+     case create_req(Method, HasBody, Req) of
 	
 	   {ok, Req3, Is_Gzip} ->
-             {loop, Req3, Is_Gzip};
+             {cowboy_loop, Req3, Is_Gzip};
 
        {ok, Req3} ->
-             {loop, Req3}
+             {cowboy_loop, Req3, State}
      end.
 
 
 create_req(<<"POST">>, true, Req) ->
-	{Flow, Req2} = cowboy_req:binding(flow, Req),
-        echo(Flow, Req2);
+	    Flow = cowboy_req:binding(flow, Req),
+        echo(Flow, Req);
 
 create_req(<<"POST">>, false, Req) ->
 	cowboy_req:reply(400, [], <<"Missing body.">>, Req);
@@ -41,11 +40,9 @@ echo(undefined, Req) ->
 
 echo(Flow, Req) ->
 
-    {ok, Body, Req2} = cowboy_req:body(Req, [{length, infinity}]),
+    {ok, Body, Req2} = cowboy_req:read_body(Req,  #{length => infinity}),
 
-    %% ?Debug2({post_req, erlang:binary_to_atom(Flow, latin1), Body}),
-
-    {L, _} = cowboy_req:body_length(Req),
+    L = cowboy_req:body_length(Req),
 
     ?Debug2(L),
 
@@ -106,9 +103,9 @@ info({response, Res}, Req, Is_Gzip) ->
                  Msg2 = Msg
          end,
 
-            cowboy_req:reply(200, [
-		                {<<"content-type">>, <<"text/plain; charset=utf-8">>}
-    	                ], msg_to_body(Msg2), Req);
+            cowboy_req:reply(200, 
+                             #{<<"content-type">> => <<"text/plain; charset=utf-8">>}
+    	                    ,msg_to_body(Msg2), Req);
 
         {error, mis_req_pool} ->
             cowboy_req:reply(400, [], <<"Missing Registered Pool">>, Req);
@@ -120,14 +117,14 @@ info({response, Res}, Req, Is_Gzip) ->
             cowboy_req:reply(503, [], <<"Error occured">>, Req)
     end,
 
-	{ok, Req, Is_Gzip};
+	{stop, Req, Is_Gzip};
 
 
 info(Any, Req, State) ->
 
    error_logger:warning_msg("call no api ~p~n ", [Any]),
  
- 	{ok, Req, State}.
+ 	{stop, Req, State}.
 
 
 

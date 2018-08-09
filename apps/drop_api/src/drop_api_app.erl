@@ -11,13 +11,10 @@ start(_Type, _Args) ->
                       ]}
     ]),
 
-    cowboy:start_http(http_listener, 100, [{port, 8081}],
-                                    [{env, [
-                                            {dispatch, Dispatch},
-                                            {cowboy_handler, 
-                                             {loop_max_buffer, 5000}}
-                                           ]}]
-                                        ),
+	{ok, _} = cowboy:start_clear(http, [{port, 8081}], #{
+		env => #{dispatch => Dispatch}
+	}),
+
 	drop_api_sup:start_link().
 
 stop(_State) ->

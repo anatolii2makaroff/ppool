@@ -11,6 +11,10 @@ start() ->
 
     %% http api
     application:start(crypto),
+    application:start(asn1),
+    application:start(public_key),
+    application:start(ssl),
+
     application:start(cowlib),
     application:start(ranch),
     application:start(cowboy),
@@ -33,6 +37,10 @@ stop() ->
      application:stop(cowboy),
      application:stop(ranch),
      application:stop(cowlib),
+
+     application:stop(ssl),
+     application:stop(public_key),
+     application:stop(asn1),
      application:stop(crypto),
 
        ok.
