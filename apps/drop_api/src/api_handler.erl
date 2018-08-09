@@ -28,7 +28,7 @@ create_req(<<"POST">>, true, Req) ->
         echo(Flow, Req);
 
 create_req(<<"POST">>, false, Req) ->
-	cowboy_req:reply(400, [], <<"Missing body.">>, Req);
+	cowboy_req:reply(400, #{}, <<"Missing body.">>, Req);
 
 create_req(_, _, Req) ->
 	%% Method not allowed.
@@ -36,7 +36,7 @@ create_req(_, _, Req) ->
 
 
 echo(undefined, Req) ->
-	cowboy_req:reply(400, [], <<"Missing flow name">>, Req);
+	cowboy_req:reply(400, #{}, <<"Missing flow name">>, Req);
 
 echo(Flow, Req) ->
 
@@ -108,13 +108,13 @@ info({response, Res}, Req, Is_Gzip) ->
     	                    ,msg_to_body(Msg2), Req);
 
         {error, mis_req_pool} ->
-            cowboy_req:reply(400, [], <<"Missing Registered Pool">>, Req);
+            cowboy_req:reply(400, #{}, <<"Missing Registered Pool">>, Req);
 
         {error, mis_run_pool} ->
-            cowboy_req:reply(400, [], <<"Missing Running Pool">>, Req);
+            cowboy_req:reply(400, #{}, <<"Missing Running Pool">>, Req);
 
         _Any ->
-            cowboy_req:reply(503, [], <<"Error occured">>, Req)
+            cowboy_req:reply(503, #{}, <<"Error occured">>, Req)
     end,
 
 	{stop, Req, Is_Gzip};
