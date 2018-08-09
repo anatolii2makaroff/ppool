@@ -28,15 +28,21 @@ create_req(<<"POST">>, true, Req) ->
         echo(Flow, Req);
 
 create_req(<<"POST">>, false, Req) ->
-	cowboy_req:reply(400, #{}, <<"Missing body.">>, Req);
+	Req2=cowboy_req:reply(400, #{}, <<"Missing body.">>, Req),
+
+     {ok, Req2};
 
 create_req(_, _, Req) ->
 	%% Method not allowed.
-	cowboy_req:reply(405, Req).
+	Req2=cowboy_req:reply(405, Req),
+
+     {ok, Req2}.
 
 
 echo(undefined, Req) ->
-	cowboy_req:reply(400, #{}, <<"Missing flow name">>, Req);
+	Req2=cowboy_req:reply(400, #{}, <<"Missing flow name">>, Req),
+     {ok, Req2};
+
 
 echo(Flow, Req) ->
 
