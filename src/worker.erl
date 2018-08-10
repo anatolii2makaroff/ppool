@@ -95,12 +95,14 @@ handle_cast({msg, _, restart}, State) ->
 
 
 handle_cast({msg, _, stop}, State) ->
+
     case erlang:process_info(self(), message_queue_len) of
         {_, 0} ->
             {stop, normal, State};
-        _Any ->
-            ok
+         _ ->
+            {noreply, State}
     end;
+
 
 
 
