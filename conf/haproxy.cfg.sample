@@ -54,10 +54,10 @@ defaults
     option                  redispatch
     retries                 2
     timeout http-request    10s
-    timeout queue           1m
+    timeout queue           3m
     timeout connect         10s
-    timeout client          1m
-    timeout server          1m
+    timeout client          3m
+    timeout server          3m
     timeout http-keep-alive 5s
     timeout check           10s
     maxconn                 100000
@@ -73,8 +73,20 @@ listen ui *:8084
         server node0 *:8082
 
 
-listen drop *:8083
+listen drop 10.135.0.148:8083
         mode tcp
         balance roundrobin
+
+        log global
+        retries 3
+        option redispatch
+        option tcplog
+        option clitcpka 
+
+        timeout queue           3m
+        timeout connect         10s
+        timeout client          3m
+        timeout server          3m
+
         # server node1 SERV1:8081 check port 8081 maxconn 100000
         # server node2 SERV2:8081 check port 8081 maxconn 100000
