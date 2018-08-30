@@ -13,6 +13,7 @@ start(_Type, _Args) ->
 
 	{ok, _} = cowboy:start_clear(http, [{port, 8081}], #{
 		env => #{dispatch => Dispatch}
+        ,idle_timeout => 300000
 	}),
 
 	drop_api_sup:start_link().
