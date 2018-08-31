@@ -4,6 +4,9 @@
 -export([start/2]).
 -export([stop/1]).
 
+-include("api_handler.hrl").
+
+
 start(_Type, _Args) ->
     Dispatch = cowboy_router:compile([
                       {'_', [
@@ -11,9 +14,9 @@ start(_Type, _Args) ->
                       ]}
     ]),
 
-	{ok, _} = cowboy:start_clear(http, [{port, 8081}], #{
+	{ok, _} = cowboy:start_clear(http, [{port, ?PORT}], #{
 		env => #{dispatch => Dispatch}
-        ,idle_timeout => 300000
+        ,idle_timeout => ?IDLE_TIMEOUT
 	}),
 
 	drop_api_sup:start_link().
