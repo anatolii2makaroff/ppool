@@ -254,7 +254,7 @@ handle_call({stop_all_workers, C}, _From,
 
     ?Debug4({stop_all_workers, Cr, C}),
 
-    case Cr - C > 0 of
+    case C > 0 andalso Cr - C > 0 of
          true -> 
 
            Free=maps:filter(fun(_K, V) -> V=/=2 end ,Pids),
